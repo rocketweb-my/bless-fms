@@ -8,6 +8,7 @@ return [
     'Responses'         => 'Responses',
     'Knowledgebase'     => 'Knowledgebase',
     'Categories'        => 'Categories',
+    'Sub Categories'    => 'Sub Categories',
     'Management'        => 'Management',
     'Teams'             => 'Teams',
     'Reports'           => 'Reports',

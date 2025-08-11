@@ -31,6 +31,8 @@ use App\Http\Controllers\LookUpKementerianController;
 use App\Http\Controllers\LookUpAgensiController;
 use App\Http\Controllers\LookUpSubAgensiController;
 use App\Http\Controllers\LookUpStatusLogController;
+use App\Http\Controllers\LookUpKaedahMelaporController;
+use App\Http\Controllers\SubCategoryController;
 use Illuminate\Support\Facades\App;
 
 
@@ -101,6 +103,13 @@ use Illuminate\Support\Facades\App;
         Route::post('/get_to_edit', [CategoryController::class, 'get_to_edit'])->name('category.get_to_edit');
         Route::post('/categories/edit', [CategoryController::class, 'edit'])->name('category.edit');
         Route::post('/categories/delete', [CategoryController::class, 'delete'])->name('category.delete');
+
+        //Sub Category Controller
+        Route::get('/sub-categories', [SubCategoryController::class, 'index'])->name('sub-category.index');
+        Route::post('/add_sub_category', [SubCategoryController::class, 'store'])->name('sub-category.store');
+        Route::post('/get_sub_to_edit', [SubCategoryController::class, 'get_to_edit'])->name('sub-category.get_to_edit');
+        Route::post('/sub-categories/edit', [SubCategoryController::class, 'edit'])->name('sub-category.edit');
+        Route::post('/sub-categories/delete', [SubCategoryController::class, 'delete'])->name('sub-category.delete');
 
         //Team Controller
         Route::get('/teams', [TeamController::class, 'index'])->name('team.index');
@@ -187,6 +196,13 @@ use Illuminate\Support\Facades\App;
         Route::get('/lookup/status-log/{id}/edit',[LookUpStatusLogController::class, 'edit'])->name('lookup.status-log.edit');
         Route::put('/lookup/status-log/{id}',[LookUpStatusLogController::class, 'update'])->name('lookup.status-log.update');
         Route::post('/lookup/status-log/toggle-status',[LookUpStatusLogController::class, 'toggleStatus'])->name('lookup.status-log.toggle-status');
+
+        //Lookup Kaedah Melapor
+        Route::get('/lookup/kaedah-melapor',[LookUpKaedahMelaporController::class, 'index'])->name('lookup.kaedah-melapor.index');
+        Route::post('/lookup/kaedah-melapor',[LookUpKaedahMelaporController::class, 'store'])->name('lookup.kaedah-melapor.store');
+        Route::get('/lookup/kaedah-melapor/{id}/edit',[LookUpKaedahMelaporController::class, 'edit'])->name('lookup.kaedah-melapor.edit');
+        Route::put('/lookup/kaedah-melapor/{id}',[LookUpKaedahMelaporController::class, 'update'])->name('lookup.kaedah-melapor.update');
+        Route::post('/lookup/kaedah-melapor/toggle-status',[LookUpKaedahMelaporController::class, 'toggleStatus'])->name('lookup.kaedah-melapor.toggle-status');
 
         //Report
         Route::get('/report/main',[ReportController::class, 'main'])->name('report.main');

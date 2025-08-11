@@ -38,6 +38,9 @@
                         <li>
                             <a class="side-menu__item" href="{{route('category.index')}}"><i class="side-menu__icon fa fa-briefcase"></i><span class="side-menu__label">{{__('main.Categories')}}</span></a>
                         </li>
+                        <li>
+                            <a class="side-menu__item" href="{{route('sub-category.index')}}"><i class="side-menu__icon fa fa-briefcase"></i><span class="side-menu__label">{{__('main.Sub Categories')}}</span></a>
+                        </li>
                         @endif
                         @if(user()->isadmin == 1)
                         <li><h3>{{__('main.Management')}}</h3></li>
@@ -92,11 +95,8 @@
                                 <li><a class="slide-item" href="{{route('lookup.kementerian.index')}}"><span>{{__('main.Kementerian')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('lookup.agensi.index')}}"><span>{{__('main.Agensi')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('lookup.sub-agensi.index')}}"><span>{{__('main.Sub Agensi')}}</span></a></li>
-                                <li><a class="slide-item" href="{{route('setting.general')}}"><span>{{__('main.Kaedah Melapor')}}</span></a></li>
-                                <li><a class="slide-item" href="{{route('setting.general')}}"><span>{{__('main.Priority/Keutamaan')}}</span></a></li>
+                                <li><a class="slide-item" href="{{route('lookup.kaedah-melapor.index')}}"><span>{{__('main.Kaedah Melapor')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('lookup.status-log.index')}}"><span>{{__('main.Status Log')}}</span></a></li>
-                                <li><a class="slide-item" href="{{route('setting.general')}}"><span>{{__('main.Problem Category')}}</span></a></li>
-                                <li><a class="slide-item" href="{{route('setting.general')}}"><span>{{__('main.Sub Problem Category')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('setting.general')}}"><span>{{__('main.Konsultan')}}</span></a></li>
                             </ul>
                         </li>

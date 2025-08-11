@@ -13,6 +13,7 @@ return array (
     'View list of article in knowledgebase' => 'Lihat senarai artikel dalam pengkalan ilmu',
     'View tickets you submitted in the past' => 'Lihat tiket yang anda hantar pada masa lalu',
     'Categories' => 'Kategori',
+    'Sub Categories' => 'Sub Kategori',
     'Settings' => 'Tetapan',
     'Dashboard' => 'Papan Pemuka',
     'Templates' => 'Templat',
