@@ -95,6 +95,7 @@
                                 <li><a class="slide-item" href="{{route('lookup.kementerian.index')}}"><span>{{__('main.Kementerian')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('lookup.agensi.index')}}"><span>{{__('main.Agensi')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('lookup.sub-agensi.index')}}"><span>{{__('main.Sub Agensi')}}</span></a></li>
+                                <li><a class="slide-item" href="{{route('lookup.lesen.index')}}"><span>{{__('main.Lesen')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('lookup.kaedah-melapor.index')}}"><span>{{__('main.Kaedah Melapor')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('lookup.status-log.index')}}"><span>{{__('main.Status Log')}}</span></a></li>
                                 <li><a class="slide-item" href="{{route('setting.general')}}"><span>{{__('main.Konsultan')}}</span></a></li>

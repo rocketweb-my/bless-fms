@@ -32,6 +32,7 @@ use App\Http\Controllers\LookUpAgensiController;
 use App\Http\Controllers\LookUpSubAgensiController;
 use App\Http\Controllers\LookUpStatusLogController;
 use App\Http\Controllers\LookUpKaedahMelaporController;
+use App\Http\Controllers\LookUpLesenController;
 use App\Http\Controllers\SubCategoryController;
 use Illuminate\Support\Facades\App;
 
@@ -204,6 +205,13 @@ use Illuminate\Support\Facades\App;
         Route::put('/lookup/kaedah-melapor/{id}',[LookUpKaedahMelaporController::class, 'update'])->name('lookup.kaedah-melapor.update');
         Route::post('/lookup/kaedah-melapor/toggle-status',[LookUpKaedahMelaporController::class, 'toggleStatus'])->name('lookup.kaedah-melapor.toggle-status');
 
+        //Lookup Lesen
+        Route::get('/lookup/lesen',[LookUpLesenController::class, 'index'])->name('lookup.lesen.index');
+        Route::post('/lookup/lesen',[LookUpLesenController::class, 'store'])->name('lookup.lesen.store');
+        Route::get('/lookup/lesen/{id}/edit',[LookUpLesenController::class, 'edit'])->name('lookup.lesen.edit');
+        Route::put('/lookup/lesen/{id}',[LookUpLesenController::class, 'update'])->name('lookup.lesen.update');
+        Route::post('/lookup/lesen/toggle-status',[LookUpLesenController::class, 'toggleStatus'])->name('lookup.lesen.toggle-status');
+
         //Report
         Route::get('/report/main',[ReportController::class, 'main'])->name('report.main');
         Route::get('/report/getdata',[ReportController::class, 'getData'])->name('report.getData');
@@ -295,6 +303,9 @@ Route::get('/get-sub-agensi/{agensiId}', [LookUpSubAgensiController::class, 'get
 
 // Agensi by Kementerian API
 Route::get('/get-agensi/{kementerianId}', [LookUpAgensiController::class, 'getAgensiByKementerian'])->name('get-agensi');
+
+// Lesen by Kementerian API
+Route::get('/get-lesen/{kementerianId}', [LookUpLesenController::class, 'getLesenByKementerian'])->name('get-lesen');
 Route::post('/public/reply_form',[PublicController::class, 'reply_form'])->name('public.reply_form');
 Route::post('/public/close_ticket',[PublicController::class, 'close_ticket'])->name('public.close_ticket');
 Route::post('/public/forgot_tracking',[PublicController::class, 'forgot_tracking'])->name('public.forgot_tracking');
