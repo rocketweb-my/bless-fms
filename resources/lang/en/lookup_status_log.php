@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'Status Log'                        => 'Status Log',
+    'Senarai Status Log'               => 'Status Log List',
+    'Tambah Status Log'                => 'Add Status Log',
+    'Kemaskini Status Log'             => 'Update Status Log',
+    'Nama'                              => 'Name',
+    'Deskripsi'                         => 'Description',
+    'Warna'                             => 'Color',
+    'Susunan'                           => 'Order',
+    'Status'                            => 'Status',
+    'Tarikh Dicipta'                    => 'Created Date',
+    'Tindakan'                          => 'Action',
+    'Active'                            => 'Active',
+    'Inactive'                          => 'Inactive',
+    'Tutup'                             => 'Close',
+    'Simpan'                            => 'Save',
+    'Kemaskini'                         => 'Update',
+    'Pengesahan'                        => 'Confirmation',
+    'Ya'                                => 'Yes',
+    'Tidak'                             => 'No',
+    'Lookup'                            => 'Lookup',
+    'mengaktifkan'                      => 'activating',
+    'menyahaktifkan'                    => 'deactivating',
+    'Adakah anda pasti untuk'           => 'Are you sure to',
+    'item ini?'                         => 'this item?',
+];

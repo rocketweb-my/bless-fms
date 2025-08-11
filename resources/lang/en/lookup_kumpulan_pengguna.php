@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'Kumpulan Pengguna'                 => 'User Group',
+    'Senarai Kumpulan Pengguna'        => 'User Group List',
+    'Tambah Kumpulan Pengguna'         => 'Add User Group',
+    'Kemaskini Kumpulan Pengguna'      => 'Update User Group',
+    'Nama'                              => 'Name',
+    'Deskripsi'                         => 'Description',
+    'Status'                            => 'Status',
+    'Tarikh Dicipta'                    => 'Created Date',
+    'Tindakan'                          => 'Action',
+    'Active'                            => 'Active',
+    'Inactive'                          => 'Inactive',
+    'Tutup'                             => 'Close',
+    'Simpan'                            => 'Save',
+    'Kemaskini'                         => 'Update',
+    'Pengesahan'                        => 'Confirmation',
+    'Ya'                                => 'Yes',
+    'Tidak'                             => 'No',
+    'Lookup'                            => 'Lookup',
+    'mengaktifkan'                      => 'activating',
+    'menyahaktifkan'                    => 'deactivating',
+    'Adakah anda pasti untuk'           => 'Are you sure to',
+    'item ini?'                         => 'this item?',
+];

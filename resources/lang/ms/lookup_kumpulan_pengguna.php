@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'Kumpulan Pengguna'                 => 'Kumpulan Pengguna',
+    'Senarai Kumpulan Pengguna'        => 'Senarai Kumpulan Pengguna',
+    'Tambah Kumpulan Pengguna'         => 'Tambah Kumpulan Pengguna',
+    'Kemaskini Kumpulan Pengguna'      => 'Kemaskini Kumpulan Pengguna',
+    'Nama'                              => 'Nama',
+    'Deskripsi'                         => 'Deskripsi',
+    'Status'                            => 'Status',
+    'Tarikh Dicipta'                    => 'Tarikh Dicipta',
+    'Tindakan'                          => 'Tindakan',
+    'Active'                            => 'Aktif',
+    'Inactive'                          => 'Tidak Aktif',
+    'Tutup'                             => 'Tutup',
+    'Simpan'                            => 'Simpan',
+    'Kemaskini'                         => 'Kemaskini',
+    'Pengesahan'                        => 'Pengesahan',
+    'Ya'                                => 'Ya',
+    'Tidak'                             => 'Tidak',
+    'Lookup'                            => 'Carian',
+    'mengaktifkan'                      => 'mengaktifkan',
+    'menyahaktifkan'                    => 'menyahaktifkan',
+    'Adakah anda pasti untuk'           => 'Adakah anda pasti untuk',
+    'item ini?'                         => 'item ini?',
+];

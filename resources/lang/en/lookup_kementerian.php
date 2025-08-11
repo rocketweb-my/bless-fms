@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'Kementerian'                       => 'Kementerian',
+    'Senarai Kementerian'              => 'Kementerian List',
+    'Tambah Kementerian'               => 'Add Kementerian',
+    'Kemaskini Kementerian'            => 'Update Kementerian',
+    'Nama'                              => 'Name',
+    'Deskripsi'                         => 'Description',
+    'Status'                            => 'Status',
+    'Tarikh Dicipta'                    => 'Created Date',
+    'Tindakan'                          => 'Action',
+    'Active'                            => 'Active',
+    'Inactive'                          => 'Inactive',
+    'Tutup'                             => 'Close',
+    'Simpan'                            => 'Save',
+    'Kemaskini'                         => 'Update',
+    'Pengesahan'                        => 'Confirmation',
+    'Ya'                                => 'Yes',
+    'Tidak'                             => 'No',
+    'Lookup'                            => 'Lookup',
+    'mengaktifkan'                      => 'activating',
+    'menyahaktifkan'                    => 'deactivating',
+    'Adakah anda pasti untuk'           => 'Are you sure to',
+    'item ini?'                         => 'this item?',
+];

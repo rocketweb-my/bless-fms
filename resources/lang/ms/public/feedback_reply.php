@@ -1,0 +1,20 @@
+<?php
+
+return [
+    'Subject' => 'Subjek',
+    'Name' => 'Nama',
+    'Email' => 'E-mel',
+    'Attachment' => 'Lampiran',
+    'Show previous replies' => 'Tunjuk balasan sebelumnya',
+    'Reply' => 'Balas',
+    'Message' => 'Mesej',
+    'Submit Reply' => 'Hantar Balasan',
+    'Ticket Status' => 'Status Tiket',
+    'Priority' => 'Keutamaan',
+    'Category' => 'Kategori',
+    'Tracking ID' => 'ID Penjejakan',
+    'Created' => 'Dibuat',
+    'Last Updated' => 'Dikemas Kini Terakhir',
+    'Close Ticket' => 'Tutup Tiket',
+    'Reopen Ticket' => 'Buka Semula Tiket',
+];

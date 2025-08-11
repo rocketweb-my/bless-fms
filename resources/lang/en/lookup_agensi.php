@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'Agensi'                            => 'Agensi',
+    'Senarai Agensi'                   => 'Agensi List',
+    'Tambah Agensi'                    => 'Add Agensi',
+    'Kemaskini Agensi'                 => 'Update Agensi',
+    'Nama'                              => 'Name',
+    'Deskripsi'                         => 'Description',
+    'Kementerian'                       => 'Kementerian',
+    'Status'                            => 'Status',
+    'Tarikh Dicipta'                    => 'Created Date',
+    'Tindakan'                          => 'Action',
+    'Active'                            => 'Active',
+    'Inactive'                          => 'Inactive',
+    'Tutup'                             => 'Close',
+    'Simpan'                            => 'Save',
+    'Kemaskini'                         => 'Update',
+    'Pengesahan'                        => 'Confirmation',
+    'Ya'                                => 'Yes',
+    'Tidak'                             => 'No',
+    'Lookup'                            => 'Lookup',
+    'mengaktifkan'                      => 'activating',
+    'menyahaktifkan'                    => 'deactivating',
+    'Adakah anda pasti untuk'           => 'Are you sure to',
+    'item ini?'                         => 'this item?',
+    'Pilih Kementerian'                 => 'Select Kementerian',
+];
