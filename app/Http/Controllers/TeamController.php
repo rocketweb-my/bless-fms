@@ -115,17 +115,17 @@ class TeamController extends Controller
 
         if ($request->isadmin == 0) {
 
-            $categories = implode(',',$request->categories);
-            $features = implode(',',$request->features);
+            // $categories = implode(',',$request->categories);
+            $features = 'can_view_tickets,can_reply_tickets,can_resolve';
 
             User::create([
-                'user' => $request->username,
+                'user' =>  $request->username,
                 'pass' => $passhash,
                 'isadmin' => $request->isadmin,
                 'name' => $request->name,
                 'email' => $request->email,
                 'signature' => $signature,
-                'categories' => $categories,
+                'categories' => '',
                 'heskprivileges' => $features,
                 'afterreply' => $request->afterreply,
                 'autostart' => $request->autostart,
@@ -139,7 +139,7 @@ class TeamController extends Controller
                 'notify_assigned' => $request->notify_assigned,
                 'notify_pm' => $request->notify_pm,
                 'notify_note' => $request->notify_note,
-                'autoassign' => $request->autoassign,
+                'autoassign' => $request->autoassign ?? 0,
                 'kementerian_id' => $request->kementerian_id,
                 'agensi_id' => $request->agensi_id,
                 'sub_agensi_id' => $request->sub_agensi_id,
@@ -173,7 +173,7 @@ class TeamController extends Controller
                 'notify_assigned' => $request->notify_assigned,
                 'notify_pm' => $request->notify_pm,
                 'notify_note' => $request->notify_note,
-                'autoassign' => $request->autoassign,
+                'autoassign' => $request->autoassign ?? 0,
                 'kementerian_id' => $request->kementerian_id,
                 'agensi_id' => $request->agensi_id,
                 'sub_agensi_id' => $request->sub_agensi_id,
@@ -201,7 +201,7 @@ class TeamController extends Controller
         $user = User::find($id);
         $total_ticket = Ticket::where('owner', $user->id)->get()->count();
         $total_resolved = Ticket::where('owner', $user->id)->where('status','3')->get()->count();
-        
+
         $kementerian = \App\Models\LookupKementerian::where('is_active', 1)->orderBy('nama', 'ASC')->get();
 
         return view('pages.team_profile', compact('user','total_ticket','total_resolved','categories','kementerian'));
@@ -217,16 +217,8 @@ class TeamController extends Controller
             {
                 if ($request->isadmin == 0) {
 
-                    if($request->has('categories'))
-                    {
-                        $categories = implode(',',$request->categories);
-                    }else{
-                        $categories = '';
-                    }
-                    if($request->has('features'))
-                    {
-                        $features = implode(',',$request->features);
-                    }
+                    $categories = '';
+                    $features = 'can_view_tickets,can_reply_tickets,can_resolve';
 
                     User::updateOrCreate(
                         [
@@ -251,7 +243,7 @@ class TeamController extends Controller
                         'notify_assigned' => $request->notify_assigned,
                         'notify_pm' => $request->notify_pm,
                         'notify_note' => $request->notify_note,
-                        'autoassign' => $request->autoassign,
+                        'autoassign' => $request->autoassign ?? 0,
                         'kementerian_id' => $request->kementerian_id,
                         'agensi_id' => $request->agensi_id,
                         'sub_agensi_id' => $request->sub_agensi_id,
@@ -288,7 +280,7 @@ class TeamController extends Controller
                         'notify_assigned' => $request->notify_assigned,
                         'notify_pm' => $request->notify_pm,
                         'notify_note' => $request->notify_note,
-                        'autoassign' => $request->autoassign,
+                        'autoassign' => $request->autoassign ?? 0,
                         'kementerian_id' => $request->kementerian_id,
                         'agensi_id' => $request->agensi_id,
                         'sub_agensi_id' => $request->sub_agensi_id,
@@ -310,8 +302,8 @@ class TeamController extends Controller
                 }else{
                     if ($request->isadmin == 0) {
 
-                        $categories = implode(',',$request->categories);
-                        $features = implode(',',$request->features);
+                        $categories = '';
+                        $features = 'can_view_tickets,can_reply_tickets,can_resolve';
 
                         User::updateOrCreate(
                             [
@@ -336,6 +328,15 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kementerian_id' => $request->kementerian_id,
+                            'agensi_id' => $request->agensi_id,
+                            'sub_agensi_id' => $request->sub_agensi_id,
+                            'no_pejabat' => $request->no_pejabat,
+                            'no_hp' => $request->no_hp,
+                            'no_fax' => $request->no_fax,
+                            'alamat_pejabat' => $request->alamat_pejabat,
+                            'poskod' => $request->poskod,
+                            'negeri' => $request->negeri,
                         ]);
 
                     }else{
@@ -362,6 +363,15 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kementerian_id' => $request->kementerian_id,
+                            'agensi_id' => $request->agensi_id,
+                            'sub_agensi_id' => $request->sub_agensi_id,
+                            'no_pejabat' => $request->no_pejabat,
+                            'no_hp' => $request->no_hp,
+                            'no_fax' => $request->no_fax,
+                            'alamat_pejabat' => $request->alamat_pejabat,
+                            'poskod' => $request->poskod,
+                            'negeri' => $request->negeri,
                         ]);
                     }
                 }
@@ -376,8 +386,8 @@ class TeamController extends Controller
                 {
                     if ($request->isadmin == 0) {
 
-                        $categories = implode(',',$request->categories);
-                        $features = implode(',',$request->features);
+                        $categories = '';
+                        $features = 'can_view_tickets,can_reply_tickets,can_resolve';
 
                         User::updateOrCreate(
                             [
@@ -402,6 +412,15 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kementerian_id' => $request->kementerian_id,
+                            'agensi_id' => $request->agensi_id,
+                            'sub_agensi_id' => $request->sub_agensi_id,
+                            'no_pejabat' => $request->no_pejabat,
+                            'no_hp' => $request->no_hp,
+                            'no_fax' => $request->no_fax,
+                            'alamat_pejabat' => $request->alamat_pejabat,
+                            'poskod' => $request->poskod,
+                            'negeri' => $request->negeri,
                         ]);
 
                     }else{
@@ -428,6 +447,15 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kementerian_id' => $request->kementerian_id,
+                            'agensi_id' => $request->agensi_id,
+                            'sub_agensi_id' => $request->sub_agensi_id,
+                            'no_pejabat' => $request->no_pejabat,
+                            'no_hp' => $request->no_hp,
+                            'no_fax' => $request->no_fax,
+                            'alamat_pejabat' => $request->alamat_pejabat,
+                            'poskod' => $request->poskod,
+                            'negeri' => $request->negeri,
                         ]);
                     }
 
@@ -438,8 +466,8 @@ class TeamController extends Controller
                     }else{
                         if ($request->isadmin == 0) {
 
-                            $categories = implode(',',$request->categories);
-                            $features = implode(',',$request->features);
+                            $categories = '';
+                            $features = 'can_view_tickets,can_reply_tickets,can_resolve';
 
                             User::updateOrCreate(
                                 [
@@ -464,6 +492,16 @@ class TeamController extends Controller
                                 'notify_assigned' => $request->notify_assigned,
                                 'notify_pm' => $request->notify_pm,
                                 'notify_note' => $request->notify_note,
+                                'autoassign' => $request->autoassign ?? 0,
+                                'kementerian_id' => $request->kementerian_id,
+                                'agensi_id' => $request->agensi_id,
+                                'sub_agensi_id' => $request->sub_agensi_id,
+                                'no_pejabat' => $request->no_pejabat,
+                                'no_hp' => $request->no_hp,
+                                'no_fax' => $request->no_fax,
+                                'alamat_pejabat' => $request->alamat_pejabat,
+                                'poskod' => $request->poskod,
+                                'negeri' => $request->negeri,
                             ]);
 
                         }else{

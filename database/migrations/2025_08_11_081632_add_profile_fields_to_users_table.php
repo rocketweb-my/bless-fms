@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('kementerian_id')->nullable();
-            $table->unsignedBigInteger('agensi_id')->nullable();
-            $table->unsignedBigInteger('sub_agensi_id')->nullable();
-            $table->string('no_pejabat', 50)->nullable();
-            $table->string('no_hp', 50)->nullable();
-            $table->string('no_fax', 50)->nullable();
-            $table->text('alamat_pejabat')->nullable();
-            $table->string('poskod', 10)->nullable();
-            $table->string('negeri', 50)->nullable();
+            $table->unsignedBigInteger('kementerian_id')->nullable()->after('profile_picture');
+            $table->unsignedBigInteger('agensi_id')->nullable()->after('kementerian_id');
+            $table->unsignedBigInteger('sub_agensi_id')->nullable()->after('agensi_id');
+            $table->string('no_pejabat', 50)->nullable()->after('sub_agensi_id');
+            $table->string('no_hp', 50)->nullable()->after('no_pejabat');
+            $table->string('no_fax', 50)->nullable()->after('no_hp');
+            $table->text('alamat_pejabat')->nullable()->after('no_fax');
+            $table->string('poskod', 10)->nullable()->after('alamat_pejabat');
+            $table->string('negeri', 50)->nullable()->after('poskod');
         });
     }
 

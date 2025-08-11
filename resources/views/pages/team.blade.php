@@ -84,27 +84,13 @@
                                                                 </div>
                                                             </div>
                                                             <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group mb-5">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
                                                                         <label>No. KP:</label>
                                                                         <input type="text" name="username" class="form-control">
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label class="custom-switch">
-                                                                            <input type="hidden" name="autoassign" value="0">
-                                                                            <input type="checkbox" name="autoassign" class="custom-switch-input" value="1" checked>
-                                                                            <span class="custom-switch-indicator"></span>
-                                                                            <span class="custom-switch-description">{{__('team.Auto-assign tickets to this user')}}.</span>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Profile Fields -->
-                                                            <div class="row">
-                                                                <div class="col-md-4">
+                                                                <div class="col-md-8">
                                                                     <div class="form-group">
                                                                         <label>Kementerian:</label>
                                                                         <select name="kementerian_id" id="kementerian_id_modal" class="form-control">
@@ -115,7 +101,12 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-4">
+                                                            </div>
+                                                            <input type="hidden" name="autoassign" value="0">
+
+                                                            <!-- Profile Fields -->
+                                                            <div class="row">
+                                                                <div class="col-md-6">
                                                                     <div class="form-group">
                                                                         <label>Agensi:</label>
                                                                         <select name="agensi_id" id="agensi_id_modal" class="form-control">
@@ -123,7 +114,7 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-4">
+                                                                <div class="col-md-6">
                                                                     <div class="form-group">
                                                                         <label>Sub Agensi:</label>
                                                                         <select name="sub_agensi_id" id="sub_agensi_id_modal" class="form-control">
@@ -132,7 +123,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <!-- Contact Information -->
                                                             <div class="row">
                                                                 <div class="col-md-4">
@@ -154,7 +145,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <!-- Address Information -->
                                                             <div class="row">
                                                                 <div class="col-md-6">
@@ -213,15 +204,15 @@
                                                                         <span class="custom-control-label">{{__('team.Staff (you can limit features and categories)')}}</span>
                                                                     </label>
 
-                                                                    <!-- Staff Only -->
-                                                                    <div class="form-group form-elements mt-5" v-if="showStaff">
+                                                                    <!-- Staff Only - Categories Hidden -->
+                                                                    <div class="form-group form-elements mt-5" v-if="showStaff" style="display: none;">
                                                                         <div class="form-label">{{__('team.Categories')}}</div>
                                                                         <div class="custom-controls-stacked">
                                                                             <div class="row">
                                                                                 @foreach($categories as $category)
                                                                                     <div class="col-4">
                                                                                         <label class="custom-control custom-checkbox">
-                                                                                            <input type="checkbox" class="custom-control-input" name="categories[]" value="{{$category->id}}" >
+                                                                                            <input type="checkbox" class="custom-control-input" name="categories[]" value="{{$category->id}}">
                                                                                             <span class="custom-control-label">{{$category->name}}</span>
                                                                                         </label>
                                                                                     </div>
@@ -230,219 +221,36 @@
                                                                         </div>
                                                                     </div>
 
-                                                                    <div class="form-group form-elements mt-5" v-if="showStaff">
-                                                                        <div class="form-label">{{__('team.Features')}}</div>
-                                                                        <div class="custom-controls-stacked">
-                                                                            <div class="row">
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_view_tickets" checked>
-                                                                                        <span class="custom-control-label">{{__('team.View tickets')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_reply_tickets" checked>
-                                                                                        <span class="custom-control-label">{{__('team.Reply to tickets')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_del_tickets" >
-                                                                                        <span class="custom-control-label">{{__('team.Delete tickets')}}</span>
-                                                                                    </label>
-                                                                                </div>
-{{--                                                                                <div class="col-4">--}}
-{{--                                                                                    <label class="custom-control custom-checkbox">--}}
-{{--                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_edit_tickets" >--}}
-{{--                                                                                        <span class="custom-control-label">Edit ticket replies</span>--}}
-{{--                                                                                    </label>--}}
-{{--                                                                                </div>--}}
-{{--                                                                                <div class="col-4">--}}
-{{--                                                                                    <label class="custom-control custom-checkbox">--}}
-{{--                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_merge_tickets" >--}}
-{{--                                                                                        <span class="custom-control-label">Merge tickets</span>--}}
-{{--                                                                                    </label>--}}
-{{--                                                                                </div>--}}
+                                                                    <!-- Features Section - All Hidden with Default Values -->
+                                                                    <div style="display: none;" v-if="showStaff">
+                                                                        <!-- Default enabled features -->
+                                                                        <input type="checkbox" name="features[]" value="can_view_tickets" checked>
+                                                                        <input type="checkbox" name="features[]" value="can_reply_tickets" checked>
+                                                                        <input type="checkbox" name="features[]" value="can_resolve" checked>
+                                                                        <input type="checkbox" name="features[]" value="can_change_cat" checked>
 
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_resolve" checked>
-                                                                                        <span class="custom-control-label">{{__('team.Can resolve tickets')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_submit_any_cat" checked>
-                                                                                        <span class="custom-control-label">{{__('team.Can submit tickets to any category')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_del_notes" >
-                                                                                        <span class="custom-control-label">{{__('team.Delete any ticket notes')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_change_cat" checked>
-                                                                                        <span class="custom-control-label">{{__('team.Change ticket category (to any)')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_change_own_cat" >
-                                                                                        <span class="custom-control-label">{{__('team.Change ticket category (to allowed)')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_man_kb" >
-                                                                                        <span class="custom-control-label">{{__('team.Manage knowledgebase')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_man_cat" >
-                                                                                        <span class="custom-control-label">{{__('team.Manage categories')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_man_canned" >
-                                                                                        <span class="custom-control-label">{{__('team.Manage canned responses')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_man_ticket_tpl" >
-                                                                                        <span class="custom-control-label">{{__('team.Manage ticket templates')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_man_settings" >
-                                                                                        <span class="custom-control-label">{{__('team.Manage help desk settings')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-{{--                                                                                <div class="col-4">--}}
-{{--                                                                                    <label class="custom-control custom-checkbox">--}}
-{{--                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_add_archive" >--}}
-{{--                                                                                        <span class="custom-control-label">Can tag tickets</span>--}}
-{{--                                                                                    </label>--}}
-{{--                                                                                </div>--}}
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_assign_self" checked>
-                                                                                        <span class="custom-control-label">{{__('team.Can assign tickets to self')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_assign_others" >
-                                                                                        <span class="custom-control-label">{{__('team.Can assign tickets to others')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_view_unassigned" checked>
-                                                                                        <span class="custom-control-label">{{__('team.Can view unassigned tickets')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_view_ass_others" >
-                                                                                        <span class="custom-control-label">{{__('team.Can assign tickets to others')}}</span>
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_view_ass_by" >
-                                                                                        <span class="custom-control-label">{{__('team.Can view tickets he/she assigned to others')}}</span>
-                                                                                    </label>
-                                                                                </div>
-{{--                                                                                <div class="col-4">--}}
-{{--                                                                                    <label class="custom-control custom-checkbox">--}}
-{{--                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_run_reports" >--}}
-{{--                                                                                        <span class="custom-control-label">Can run reports (own)</span>--}}
-{{--                                                                                    </label>--}}
-{{--                                                                                </div>--}}
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_run_reports_full" >
-                                                                                        <span class="custom-control-label">{{__('team.Can run reports (all)')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_export" >
-                                                                                        <span class="custom-control-label">{{__('team.Can export tickets')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                {{-- <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_view_online" checked>
-                                                                                        <span class="custom-control-label">{{__('team.Can view online staff members')}}</span>
-                                                                                    </label>
-                                                                                </div> --}}
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_ban_emails" >
-                                                                                        <span class="custom-control-label">{{__('team.Can ban emails')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_unban_emails" >
-                                                                                        <span class="custom-control-label">{{__('team.Can unban emails (enables Can ban emails)')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_ban_ips" >
-                                                                                        <span class="custom-control-label">{{__('team.Can ban ips')}}</span>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-4">
-                                                                                    <label class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_unban_ips" >
-                                                                                        <span class="custom-control-label">{{__('team.Can unban ips (enables Can ban ips)')}}</span>
-                                                                                    </label>
-                                                                                </div>
-{{--                                                                                <div class="col-4">--}}
-{{--                                                                                    <label class="custom-control custom-checkbox">--}}
-{{--                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_privacy" >--}}
-{{--                                                                                        <span class="custom-control-label">Can anonymize tickets</span>--}}
-{{--                                                                                    </label>--}}
-{{--                                                                                </div>--}}
-{{--                                                                                <div class="col-4">--}}
-{{--                                                                                    <label class="custom-control custom-checkbox">--}}
-{{--                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_service_msg" >--}}
-{{--                                                                                        <span class="custom-control-label">Edit service messages</span>--}}
-{{--                                                                                    </label>--}}
-{{--                                                                                </div>--}}
-{{--                                                                                <div class="col-4">--}}
-{{--                                                                                    <label class="custom-control custom-checkbox">--}}
-{{--                                                                                        <input type="checkbox" class="custom-control-input" name="features[]" value="can_email_tpl" >--}}
-{{--                                                                                        <span class="custom-control-label">Edit email templates</span>--}}
-{{--                                                                                    </label>--}}
-{{--                                                                                </div>--}}
-
-                                                                            </div>
-                                                                        </div>
+                                                                        <!-- Other features with their default states -->
+                                                                        <input type="checkbox" name="features[]" value="can_del_tickets">
+                                                                        <input type="checkbox" name="features[]" value="can_submit_any_cat" checked>
+                                                                        <input type="checkbox" name="features[]" value="can_del_notes">
+                                                                        <input type="checkbox" name="features[]" value="can_change_own_cat">
+                                                                        <input type="checkbox" name="features[]" value="can_man_kb">
+                                                                        <input type="checkbox" name="features[]" value="can_man_cat">
+                                                                        <input type="checkbox" name="features[]" value="can_man_canned">
+                                                                        <input type="checkbox" name="features[]" value="can_man_ticket_tpl">
+                                                                        <input type="checkbox" name="features[]" value="can_man_settings">
+                                                                        <input type="checkbox" name="features[]" value="can_assign_self" checked>
+                                                                        <input type="checkbox" name="features[]" value="can_assign_others">
+                                                                        <input type="checkbox" name="features[]" value="can_view_unassigned" checked>
+                                                                        <input type="checkbox" name="features[]" value="can_view_ass_others">
+                                                                        <input type="checkbox" name="features[]" value="can_view_ass_by">
+                                                                        <input type="checkbox" name="features[]" value="can_run_reports_full">
+                                                                        <input type="checkbox" name="features[]" value="can_export">
+                                                                        <input type="checkbox" name="features[]" value="can_ban_emails">
+                                                                        <input type="checkbox" name="features[]" value="can_unban_emails">
+                                                                        <input type="checkbox" name="features[]" value="can_ban_ips">
+                                                                        <input type="checkbox" name="features[]" value="can_unban_ips">
                                                                     </div>
-                                                                    <!-- Staff Only End -->
 
                                                                 </div>
                                                             </div>
@@ -460,110 +268,27 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="list-group-item py-4" data-acc-step>
-                                                    <h5 class="mb-0" data-acc-title>{{__('team.Preferences')}}</h5>
-                                                    <div data-acc-content>
-                                                        <div class="my-3">
-                                                            <div class="form-group form-elements">
-                                                                <div class="form-label">{{__('team.After replying to a ticket')}}</div>
-                                                                <div class="custom-controls-stacked">
-                                                                    <label class="custom-control custom-radio">
-                                                                        <input type="radio" class="custom-control-input" name="afterreply" value="0" checked>
-                                                                        <span class="custom-control-label">{{__('team.Show the ticket I just replied to')}}</span>
-                                                                    </label>
-                                                                    <label class="custom-control custom-radio">
-                                                                        <input type="radio" class="custom-control-input" name="afterreply" value="1">
-                                                                        <span class="custom-control-label">{{__('team.Return to main administration page')}}</span>
-                                                                    </label>
-                                                                    <label class="custom-control custom-radio">
-                                                                        <input type="radio" class="custom-control-input" name="afterreply" value="2">
-                                                                        <span class="custom-control-label">{{__('team.Open next ticket that needs my reply')}}</span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group form-elements m-0">
-                                                                <div class="form-label">{{__('team.Defaults')}}</div>
-                                                                <div class="custom-controls-stacked">
-{{--                                                                    <label class="custom-control custom-checkbox">--}}
-                                                                        <input type="hidden" name="autostart" value="1">
-{{--                                                                        <input type="checkbox" class="custom-control-input" name="autostart" value="1" checked>--}}
-{{--                                                                        <span class="custom-control-label">{{__('team.Automatically start timer when I open a ticket')}}</span>--}}
-{{--                                                                    </label>--}}
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="hidden" name="notify_customer_new" value="0">
-                                                                        <input type="checkbox" class="custom-control-input" name="notify_customer_new" value="1" checked>
-                                                                        <span class="custom-control-label">{{__('team.Select notify customer option in the new ticket form')}}</span>
-                                                                    </label>
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="hidden" name="notify_customer_reply" value="0">
-                                                                        <input type="checkbox" class="custom-control-input" name="notify_customer_reply" value="1" checked>
-                                                                        <span class="custom-control-label">{{__('team.Select notify customer option in the ticket reply form')}}</span>
-                                                                    </label>
-{{--                                                                    <label class="custom-control custom-checkbox">--}}
-                                                                        <input type="hidden" name="show_suggested" value="0">
-{{--                                                                        <input type="checkbox" class="custom-control-input" name="show_suggested" value="1" checked>--}}
-{{--                                                                        <span class="custom-control-label">{{__('team.Show what knowledgebase articles were suggested to customers')}}</span>--}}
-{{--                                                                    </label>--}}
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <!-- Hidden default values for Preferences -->
+                                                    <input type="hidden" name="afterreply" value="0">
+                                                    <input type="hidden" name="autostart" value="1">
+                                                    <input type="hidden" name="notify_customer_new" value="1">
+                                                    <input type="hidden" name="notify_customer_reply" value="1">
+                                                    <input type="hidden" name="show_suggested" value="0">
+                                                    
+                                                    <!-- Hidden default values for Notifications -->
+                                                    <input type="hidden" name="notify_new_unassigned" value="0">
+                                                    <input type="hidden" name="notify_new_my" value="1">
+                                                    <input type="hidden" name="notify_reply_unassigned" value="0">
+                                                    <input type="hidden" name="notify_reply_my" value="1">
+                                                    <input type="hidden" name="notify_assigned" value="1">
+                                                    <input type="hidden" name="notify_note" value="1">
+                                                    <input type="hidden" name="notify_pm" value="0">
+                                                    
+                                                    <!-- Submit Button -->
+                                                    <div class="text-center mt-4">
+                                                        <button type="submit" class="btn btn-primary">{{__('team.Register New Team Member')}}</button>
                                                     </div>
                                                 </div>
-                                                <div class="list-group-item py-4" data-acc-step>
-                                                    <h5 class="mb-0" data-acc-title>{{__('team.Notifications')}}</h5>
-                                                    <div data-acc-content>
-                                                        <div class="my-3">
-                                                            <div class="form-group form-elements m-0">
-                                                                <div class="form-label">{{__('team.The help desk will send an email notification when')}}:</div>
-                                                                <div class="custom-controls-stacked mb-4">
-{{--                                                                    <label class="custom-control custom-checkbox">--}}
-                                                                        <input type="hidden" name="notify_new_unassigned" value="0">
-{{--                                                                        <input type="checkbox" class="custom-control-input" name="notify_new_unassigned" value="1" checked>--}}
-{{--                                                                        <span class="custom-control-label">{{__('team.A new ticket is submitted with owner: Unassigned')}}</span>--}}
-{{--                                                                    </label>--}}
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="hidden" name="notify_new_my" value="0">
-                                                                        <input type="checkbox" class="custom-control-input" name="notify_new_my" value="1" checked>
-                                                                        <span class="custom-control-label">{{__('team.A new ticket is submitted with owner: Assigned to me')}}</span>
-                                                                    </label>
-                                                                </div>
-                                                                <div class="custom-controls-stacked mb-4">
-{{--                                                                    <label class="custom-control custom-checkbox">--}}
-                                                                        <input type="hidden" name="notify_reply_unassigned" value="0">
-{{--                                                                        <input type="checkbox" class="custom-control-input" name="notify_reply_unassigned" value="1" checked>--}}
-{{--                                                                        <span class="custom-control-label">{{__('team.Client responds to a ticket with owner: Unassigned')}}</span>--}}
-{{--                                                                    </label>--}}
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="hidden" name="notify_reply_my" value="0">
-                                                                        <input type="checkbox" class="custom-control-input" name="notify_reply_my" value="1" checked>
-                                                                        <span class="custom-control-label">{{__('team.Client responds to a ticket with owner: Assigned to me')}}</span>
-                                                                    </label>
-                                                                </div>
-                                                                <div class="custom-controls-stacked mb-4">
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="hidden" name="notify_assigned" value="0">
-                                                                        <input type="checkbox" class="custom-control-input" name="notify_assigned" value="1" checked>
-                                                                        <span class="custom-control-label">{{__('team.A ticket is assigned to me')}}</span>
-                                                                    </label>
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="hidden" name="notify_note" value="0">
-                                                                        <input type="checkbox" class="custom-control-input" name="notify_note" value="1" checked>
-                                                                        <span class="custom-control-label">{{__('team.Someone adds a note to a ticket assigned to me')}}</span>
-                                                                    </label>
-{{--                                                                    <label class="custom-control custom-checkbox">--}}
-                                                                        <input type="hidden" name="notify_pm" value="0">
-{{--                                                                        <input type="checkbox" class="custom-control-input" name="notify_pm" value="1" checked>--}}
-{{--                                                                        <span class="custom-control-label">{{__('team.A private message is sent to me')}}</span>--}}
-{{--                                                                    </label>--}}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
                                             </div>
                                         </form>
                                     </div>
@@ -667,7 +392,7 @@
                     }
                 });
             });
-            
+
             // Dependent dropdowns for team registration form
             $('#kementerian_id_modal').change(function() {
                 var kementerianId = $(this).val();
