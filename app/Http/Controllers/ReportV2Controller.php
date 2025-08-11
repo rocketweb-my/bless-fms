@@ -144,19 +144,14 @@ class ReportV2Controller extends Controller
                     return categoryName($ticket->category)->name ?? '-';
                 })
                 ->addColumn('status_text', function ($ticket) {
-                    switch ($ticket->status) {
-                        case '1':
-                            return '<span class="badge badge-warning mr-1 mb-1 mt-1">' . __("advance_report.Waiting Reply") . '</span>';
-                        case '2':
-                            return '<span class="badge badge-info mr-1 mb-1 mt-1">' . __("advance_report.Replied") . '</span>';
-                        case '3':
-                            return '<span class="badge badge-success mr-1 mb-1 mt-1">' . __("advance_report.Resolved") . '</span>';
-                        case '4':
-                            return '<span class="badge badge-primary mr-1 mb-1 mt-1">' . __("advance_report.In Progress") . '</span>';
-                        case '5':
-                            return '<span class="badge badge-dark mr-1 mb-1 mt-1">' . __("advance_report.On Hold") . '</span>';
-                        default:
-                            return '<span class="badge badge-danger mr-1 mb-1 mt-1">' . __("advance_report.New") . '</span>';
+                    $statusLookup = \App\Models\LookupStatusLog::find($ticket->status);
+                    if ($statusLookup) {
+                        return '<span class="badge" style="background-color: ' . $statusLookup->color . '; color: white; margin-right: 4px; margin-bottom: 4px; margin-top: 4px;">' . $statusLookup->nama . '</span>';
+                    } else {
+                        // Fallback to New status (ID 0) color
+                        $newStatusLookup = \App\Models\LookupStatusLog::find(0);
+                        $color = $newStatusLookup ? $newStatusLookup->color : '#17a2b8';
+                        return '<span class="badge" style="background-color: ' . $color . '; color: white; margin-right: 4px; margin-bottom: 4px; margin-top: 4px;">New</span>';
                     }
                 })
                 ->addColumn('priority_text', function ($ticket) {
@@ -264,15 +259,8 @@ class ReportV2Controller extends Controller
 
     private function getStatusText($status)
     {
-        switch ($status) {
-            case '0': return 'New';
-            case '1': return 'Waiting Reply';
-            case '2': return 'Replied';
-            case '3': return 'Resolved';
-            case '4': return 'In Progress';
-            case '5': return 'On Hold';
-            default: return 'Unknown';
-        }
+        $statusLookup = \App\Models\LookupStatusLog::find($status);
+        return $statusLookup ? $statusLookup->nama : 'New';
     }
 
     private function getPriorityText($priority)

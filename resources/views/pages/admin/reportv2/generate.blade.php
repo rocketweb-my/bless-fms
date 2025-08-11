@@ -71,12 +71,10 @@
                                     <label class="form-label">{{__('advance_report.Status')}}</label>
                                     <select name="status[]" class="form-control select2" multiple="multiple" id="status">
                                         <option value="all">{{__('advance_report.Select All Status')}}</option>
-                                        <option value="0">{{__('advance_report.New')}}</option>
-                                        <option value="1">{{__('advance_report.Waiting Reply')}}</option>
-                                        <option value="2">{{__('advance_report.Replied')}}</option>
-                                        <option value="3">{{__('advance_report.Resolved')}}</option>
-                                        <option value="4">{{__('advance_report.In Progress')}}</option>
-                                        <option value="5">{{__('advance_report.On Hold')}}</option>
+                                        @php($statusLookups = \App\Models\LookupStatusLog::where('is_active', true)->orderBy('order', 'ASC')->get())
+                                        @foreach($statusLookups as $statusLookup)
+                                            <option value="{{$statusLookup->id}}">{{$statusLookup->nama}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>

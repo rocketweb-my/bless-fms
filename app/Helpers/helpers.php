@@ -85,13 +85,8 @@ if (! function_exists('systemGeneralSetting')) {
 if (! function_exists('statusName')) {
     function statusName($id)
     {
-        if ($id == '1') return ('Waiting Reply');
-       elseif ($id == '0') return ('Waiting Reply');
-       elseif ($id == '2') return ('Replied');
-       elseif ($id == '3') return ('Resolved');
-       elseif ($id == '4') return ('In Progress');
-       elseif ($id == '5') return ('On Hold');
-       else return ('');
+        $statusLookup = \App\Models\LookupStatusLog::find($id);
+        return $statusLookup ? $statusLookup->nama : 'New';
     }
 }
 

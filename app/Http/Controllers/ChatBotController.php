@@ -99,28 +99,8 @@ class ChatBotController extends Controller
         {
             foreach($tickets as $index => $ticket)
             {
-                        switch ($ticket->status)
-                        {
-                            case 1:
-                                $status = 'Waiting Reply';
-                                break;
-
-                            case 2:
-                                $status = 'Replied';
-                                break;
-                            case 3:
-                                $status = 'Resolved';
-                                break;
-                            case 4:
-                                $status = 'In Progress';
-                                break;
-                            case 5:
-                                $status = 'On Hold';
-                                break;
-                            default:
-                                $status = 'New';
-                                break;
-                        }
+                        $statusLookup = \App\Models\LookupStatusLog::find($ticket->status);
+                        $status = $statusLookup ? $statusLookup->nama : 'New';
 
 
 

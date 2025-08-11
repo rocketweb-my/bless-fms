@@ -75,42 +75,17 @@
                                                 </div>
                                                 <div class="custom-controls-stacked">
                                                     <div class="row">
+                                                        @php($statusLookups = \App\Models\LookupStatusLog::where('is_active', true)->orderBy('order', 'ASC')->get())
+                                                        @foreach($statusLookups as $statusLookup)
                                                         <div class="col-4">
                                                             <label class="custom-control custom-checkbox">
-                                                                <input type="checkbox" class="custom-control-input" name="status[]" value="0">
-                                                                <span class="custom-control-label">{{__('ticket.New')}}</span>
+                                                                <input type="checkbox" class="custom-control-input" name="status[]" value="{{$statusLookup->id}}">
+                                                                <span class="custom-control-label">
+                                                                    <span class="badge" style="background-color: {{$statusLookup->color}}; color: white; margin-right: 8px;">{{$statusLookup->nama}}</span>
+                                                                </span>
                                                             </label>
                                                         </div>
-                                                        <div class="col-4">
-                                                            <label class="custom-control custom-checkbox">
-                                                                <input type="checkbox" class="custom-control-input" name="status[]" value="1">
-                                                                <span class="custom-control-label">{{__('ticket.Waiting Reply')}}</span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <label class="custom-control custom-checkbox">
-                                                                <input type="checkbox" class="custom-control-input" name="status[]" value="2">
-                                                                <span class="custom-control-label">{{__('ticket.Replied')}}</span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <label class="custom-control custom-checkbox">
-                                                                <input type="checkbox" class="custom-control-input" name="status[]" value="3">
-                                                                <span class="custom-control-label">{{__('ticket.Resolved')}}</span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <label class="custom-control custom-checkbox">
-                                                                <input type="checkbox" class="custom-control-input" name="status[]" value="4">
-                                                                <span class="custom-control-label">{{__('ticket.In Progress')}}</span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <label class="custom-control custom-checkbox">
-                                                                <input type="checkbox" class="custom-control-input" name="status[]" value="5">
-                                                                <span class="custom-control-label">{{__('ticket.On Hold')}}</span>
-                                                            </label>
-                                                        </div>
+                                                        @endforeach
                                                     </div>
                                                 </div>
                                             </div>

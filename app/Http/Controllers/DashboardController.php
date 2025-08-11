@@ -52,24 +52,14 @@ class DashboardController extends Controller
                 return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('status_edit', function ($data) {
-                        if ($data->status == 1)
-                        {
-                            $status = '<span class="badge badge-warning  mr-1 mb-1 mt-1">'.__('main.Waiting Reply').'</span>';
-                        }elseif($data->status == 2)
-                        {
-                            $status = '<span class="badge badge-info  mr-1 mb-1 mt-1">'.__('main.Replied').'</span>';
-                        }elseif($data->status == 3)
-                        {
-                            $status = '<span class="badge badge-success  mr-1 mb-1 mt-1">'.__('main.Resolved').'</span>';
-                        }elseif($data->status == 4)
-                        {
-                            $status = '<span class="badge badge-primary  mr-1 mb-1 mt-1">'.__('main.In Progress').'</span>';
-                        }elseif($data->status == 5)
-                        {
-                            $status = '<span class="badge badge-dark  mr-1 mb-1 mt-1">'.__('main.On Hold').'</span>';
-                        }else
-                        {
-                            $status = '<span class="badge badge-danger  mr-1 mb-1 mt-1">'.__('main.New').'</span>';
+                        $statusLookup = \App\Models\LookupStatusLog::find($data->status);
+                        if ($statusLookup) {
+                            $status = '<span class="badge" style="background-color: ' . $statusLookup->color . '; color: white; margin-right: 4px; margin-bottom: 4px; margin-top: 4px;">' . $statusLookup->nama . '</span>';
+                        } else {
+                            // Fallback to New status (ID 0) color
+                            $newStatusLookup = \App\Models\LookupStatusLog::find(0);
+                            $color = $newStatusLookup ? $newStatusLookup->color : '#17a2b8';
+                            $status = '<span class="badge" style="background-color: ' . $color . '; color: white; margin-right: 4px; margin-bottom: 4px; margin-top: 4px;">New</span>';
                         }
                         return $status;
                     })

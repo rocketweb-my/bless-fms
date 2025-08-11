@@ -173,42 +173,22 @@
                                                     <div class="form-group form-elements">
                                                         <div class="row">
                                                             <div class="col-1 form-label">{{__('ticket.Status')}}</div>
+                                                            @php($statusLookups = \App\Models\LookupStatusLog::where('is_active', true)->orderBy('order', 'ASC')->get())
+                                                            @php($chunkedStatuses = $statusLookups->chunk(2))
+                                                            @foreach($chunkedStatuses as $statusChunk)
                                                             <div class="col-3">
                                                                 <div class="custom-controls-stacked">
+                                                                    @foreach($statusChunk as $statusLookup)
                                                                     <label class="custom-control custom-checkbox">
-                                                                        <input type="checkbox" class="custom-control-input" name="status[]" value="0" checked="" v-model="status">
-                                                                        <span class="custom-control-label text-red">{{ __('ticket.New') }}</span>
+                                                                        <input type="checkbox" class="custom-control-input" name="status[]" value="{{$statusLookup->id}}" @if(in_array($statusLookup->id, [0,1,2,3,4])) checked="" @endif v-model="status">
+                                                                        <span class="custom-control-label">
+                                                                            <span class="badge" style="background-color: {{$statusLookup->color}}; color: white; margin-right: 8px;">{{$statusLookup->nama}}</span>
+                                                                        </span>
                                                                     </label>
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="checkbox" class="custom-control-input" name="status[]" value="3" checked="" v-model="status">
-                                                                        <span class="custom-control-label text-green">{{ __('ticket.Resolved') }}</span>
-                                                                    </label>
+                                                                    @endforeach
                                                                 </div>
                                                             </div>
-                                                            <div class="col-3">
-                                                                <div class="custom-controls-stacked">
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="checkbox" class="custom-control-input" name="status[]" value="1" checked="" v-model="status">
-                                                                        <span class="custom-control-label text-orange">{{ __('ticket.Waiting Reply') }}</span>
-                                                                    </label>
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="checkbox" class="custom-control-input" name="status[]" value="4" checked="" v-model="status">
-                                                                        <span class="custom-control-label">{{ __('ticket.In Progress') }}</span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-3">
-                                                                <div class="custom-controls-stacked">
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="checkbox" class="custom-control-input" name="status[]" value="2" checked="" v-model="status">
-                                                                        <span class="custom-control-label text-blue">{{ __('ticket.Replied') }}</span>
-                                                                    </label>
-                                                                    <label class="custom-control custom-checkbox">
-                                                                        <input type="checkbox" class="custom-control-input" name="status[]" value="5"  v-model="status">
-                                                                        <span class="custom-control-label">{{ __('ticket.On Hold') }}</span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
+                                                            @endforeach
                                                             <div class="col-2"></div>
                                                         </div>
                                                         <!--Hide-->

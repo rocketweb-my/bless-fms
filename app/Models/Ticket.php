@@ -33,27 +33,15 @@ class Ticket extends Model
         return $this->belongsTo('App\Models\User','owner','id');
     }
 
+    public function status_lookup()
+    {
+        return $this->belongsTo('App\Models\LookupStatusLog','status','id');
+    }
+
     public function getStatusDetailAttribute()
     {
-        if($this->status == 0)
-        {
-            return 'New';
-        }elseif($this->status == 1)
-        {
-            return 'Waiting Reply';
-        }elseif($this->status == 2)
-        {
-            return 'Replied';
-        }elseif($this->status == 3)
-        {
-            return 'Resolved';
-        }elseif($this->status == 4)
-        {
-            return 'In Progress';
-        }elseif($this->status == 5)
-        {
-            return 'On Hold';
-        }
+        $statusLookup = $this->status_lookup;
+        return $statusLookup ? $statusLookup->nama : 'New';
     }
 
     public function getPriorityDetailAttribute()

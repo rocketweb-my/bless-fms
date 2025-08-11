@@ -383,13 +383,15 @@
                                                 <div class="dropdown">
                                                     <button type="button" class="dropdown-toggle font-weight-bold" data-toggle="dropdown">{{statusName($ticket->status)}}</button>
                                                     <div class="dropdown-menu">
-                                                        <button class="dropdown-item" v-on:click="changeStatus(1)" @if($ticket->status == 1 || $ticket->status == 0) style="display: none" @endif>{{ __('ticket_reply.Waiting Reply') }}</button>
-                                                        <button class="dropdown-item" v-on:click="changeStatus(2)" @if($ticket->status == 2) style="display: none" @endif>{{ __('ticket_reply.Replied') }}</button>
-                                                        @if(user()->isadmin == 1 || userPermissionChecker('can_resolve') == true)
-                                                        <button class="dropdown-item" v-on:click="changeStatus(3)" @if($ticket->status == 3) style="display: none" @endif>{{ __('ticket_reply.Resolved') }}</button>
-                                                        @endif
-                                                        <button class="dropdown-item" v-on:click="changeStatus(4)" @if($ticket->status == 4) style="display: none" @endif>{{ __('ticket_reply.In Progress') }}</button>
-                                                        <button class="dropdown-item" v-on:click="changeStatus(5)" @if($ticket->status == 5) style="display: none" @endif>{{ __('ticket_reply.On Hold') }}</button>
+                                                        @php($statusLookups = \App\Models\LookupStatusLog::where('is_active', true)->orderBy('order', 'ASC')->get())
+                                                        @foreach($statusLookups as $statusLookup)
+                                                            @if($statusLookup->id == 3 && !(user()->isadmin == 1 || userPermissionChecker('can_resolve') == true))
+                                                                @continue
+                                                            @endif
+                                                            <button class="dropdown-item" v-on:click="changeStatus({{$statusLookup->id}})" @if($ticket->status == $statusLookup->id) style="display: none" @endif>
+                                                                <span class="badge" style="background-color: {{$statusLookup->color}}; color: white; margin-right: 8px;">{{$statusLookup->nama}}</span>
+                                                            </button>
+                                                        @endforeach
                                                     </div>
                                                 </div>
                                             </div>
