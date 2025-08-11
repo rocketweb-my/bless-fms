@@ -33,7 +33,7 @@
                             <div class="col-md-12">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h3 class="mb-0 card-title">{{__('public/feedback_submission.Submit a Support Request for')}} <u>{{categoryName($selected_category)->name}}</u></h3>
+                                        <h3 class="mb-0 card-title">{{__('public/feedback_submission.Submit a Support Request for')}} <u>{{categoryName($selected_category)->name}}</u> - <u>{{\App\Models\SubCategory::find($selected_sub_category)->name ?? 'Unknown Sub Category'}}</u></h3>
                                     </div>
                                     <div class="card-body">
                                         <form action="{{route('public.submission_form')}}" method="post" enctype="multipart/form-data">
@@ -52,6 +52,14 @@
                                                         <input type="email" class="form-control" name="email" @if (env('OTP_SERVICE') == 'enabled') value="{{ Session::get('email_otp') }}" disabled @endif required>
                                                     </div>
                                                     <div class="form-group">
+                                                        <label class="form-label">{{__('aduan_pertanyaan.Label')}} <small class="text-danger">*</small></label>
+                                                        <select name="aduan_pertanyaan" id="select-aduan-pertanyaan" class="form-control custom-select" required>
+                                                            <option value="">{{__('aduan_pertanyaan.Select Type')}}</option>
+                                                            <option value="aduan">{{__('aduan_pertanyaan.Aduan')}}</option>
+                                                            <option value="pertanyaan">{{__('aduan_pertanyaan.Pertanyaan')}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label class="form-label">{{__('public/feedback_submission.Priority')}}<small class="text-danger">*</small></label>
                                                         <select name="priority" id="select-priority" class="form-control custom-select">
                                                             @foreach($activePriorities as $priority)
@@ -59,6 +67,21 @@
                                                                     {{ $priority->name }}
                                                                 </option>
                                                             @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">{{__('lookup_agensi.Agensi')}}</label>
+                                                        <select name="agensi_id" id="public-agensi-select" class="form-control custom-select">
+                                                            <option value="">{{__('lookup_agensi.Select Agensi')}}</option>
+                                                            @foreach($agensi as $ag)
+                                                                <option value="{{ $ag->id }}">{{ $ag->nama }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">{{__('lookup_sub_agensi.Sub Agensi')}}</label>
+                                                        <select name="sub_agensi_id" id="public-sub-agensi-select" class="form-control custom-select" disabled>
+                                                            <option value="">{{__('lookup_sub_agensi.Select Sub Agensi')}}</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -76,6 +99,10 @@
                                             <hr>
                                             <div class="row">
                                                 <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="form-label">BL No</label>
+                                                        <input type="text" class="form-control" name="bl_no" placeholder="Enter BL Number">
+                                                    </div>
                                                     <div class="form-group">
                                                         <label class="form-label">{{__('public/feedback_submission.Subject')}} <small class="text-danger">*</small></label>
                                                         <input type="text" class="form-control" name="subject" required>
@@ -107,6 +134,7 @@
                                             </div>
                                             <hr>
                                             <input type="hidden" name="category" value="{{$selected_category}}">
+                                            <input type="hidden" name="sub_category" value="{{$selected_sub_category}}">
                                             <input type="hidden" name="dt" value="{{\Carbon\Carbon::now()}}">
                                             <input type="hidden" name="lastchange" value="{{\Carbon\Carbon::now()}}">
                                             <button type="submit" class="btn btn-primary btn-block">{{__('public/feedback_submission.Submit')}}</button>
@@ -151,6 +179,38 @@
             // $(this).find("button[type='submit']").prop('disabled',true);
             $(this).find("button[type='submit']").attr("disabled","disabled");
             $(this).find("button[type='submit']").text('{{__('public/feedback_submission.Sending ticket please wait')}}');
+        });
+
+        // Public Agensi dependent dropdown functionality
+        $('#public-agensi-select').on('change', function() {
+            var agensiId = $(this).val();
+            var subAgensiSelect = $('#public-sub-agensi-select');
+            
+            // Reset sub agensi dropdown
+            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.Select Sub Agensi")}}</option>');
+            subAgensiSelect.prop('disabled', true);
+            
+            if (agensiId) {
+                // Fetch sub agensi for selected agensi
+                $.ajax({
+                    url: '/get-sub-agensi/' + agensiId,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.length > 0) {
+                            $.each(response, function(index, subAgensi) {
+                                subAgensiSelect.append('<option value="' + subAgensi.id + '">' + subAgensi.nama + '</option>');
+                            });
+                            subAgensiSelect.prop('disabled', false);
+                        } else {
+                            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.No Sub Agensi Available")}}</option>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching sub agensi:', xhr, status, error);
+                        alert('Error fetching sub agensi: ' + error);
+                    }
+                });
+            }
         });
     </script>
 @endsection

@@ -61,12 +61,15 @@ class PublicController extends Controller
     public function submission(Request $request)
     {
         $selected_category = $request->category;
+        $selected_sub_category = $request->sub_category;
 
         $after_messages = CustomField::where('place', '1')->where('use', '1')->whereNotNull('value')->orderBy('order','ASC')->get();
 
         $before_messages = CustomField::where('place', '0')->where('use', '1')->whereNotNull('value')->orderBy('order','ASC')->get();
 
-        return view('pages.public.feedback_submission', compact('before_messages', 'after_messages','selected_category'));
+        $agensi = \App\Models\LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+
+        return view('pages.public.feedback_submission', compact('before_messages', 'after_messages','selected_category','selected_sub_category','agensi'));
     }
     public function submission_category(Request $request)
     {

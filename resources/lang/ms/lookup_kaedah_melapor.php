@@ -22,5 +22,6 @@ return [
     'menyahaktifkan' => 'menyahaktifkan',
     'item ini?' => 'item ini?',
     'Ya' => 'Ya',
-    'Tidak' => 'Tidak'
+    'Tidak' => 'Tidak',
+    'Select Kaedah Melapor' => 'Pilih Kaedah Melapor',
 ];

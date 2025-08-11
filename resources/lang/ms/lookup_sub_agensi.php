@@ -26,4 +26,5 @@ return [
     'Adakah anda pasti untuk'           => 'Adakah anda pasti untuk',
     'item ini?'                         => 'item ini?',
     'Pilih Agensi'                      => 'Pilih Agensi',
+    'Select Sub Agensi'                 => 'Pilih Sub Agensi',
 ];

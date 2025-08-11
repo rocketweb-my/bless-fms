@@ -94,8 +94,71 @@
                                                                 <input type="text" name="email" class="form-control" value="{{$user->email}}">
                                                             </div>
                                                             <div class="form-group mb-5">
-                                                                <label>{{__('team_profile.Username')}}:</label>
+                                                                <label>No. KP:</label>
                                                                 <input type="text" name="username" class="form-control" value="{{$user->user}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Kementerian:</label>
+                                                                <select name="kementerian_id" id="kementerian-select" class="form-control custom-select">
+                                                                    <option value="">Select Kementerian</option>
+                                                                    @foreach($kementerian as $kem)
+                                                                        <option value="{{ $kem->id }}" {{ $user->kementerian_id == $kem->id ? 'selected' : '' }}>{{ $kem->nama }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Agensi:</label>
+                                                                <select name="agensi_id" id="team-agensi-select" class="form-control custom-select" {{ $user->kementerian_id ? '' : 'disabled' }}>
+                                                                    <option value="">Select Agensi</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Sub Agensi:</label>
+                                                                <select name="sub_agensi_id" id="team-sub-agensi-select" class="form-control custom-select" {{ $user->agensi_id ? '' : 'disabled' }}>
+                                                                    <option value="">Select Sub Agensi</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>No Pejabat:</label>
+                                                                <input type="text" name="no_pejabat" class="form-control" value="{{$user->no_pejabat}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>No HP:</label>
+                                                                <input type="text" name="no_hp" class="form-control" value="{{$user->no_hp}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>No. Fax:</label>
+                                                                <input type="text" name="no_fax" class="form-control" value="{{$user->no_fax}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Alamat Pejabat:</label>
+                                                                <textarea name="alamat_pejabat" class="form-control" rows="3">{{$user->alamat_pejabat}}</textarea>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Poskod:</label>
+                                                                <input type="text" name="poskod" class="form-control" value="{{$user->poskod}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Negeri:</label>
+                                                                <select name="negeri" class="form-control custom-select">
+                                                                    <option value="">Select Negeri</option>
+                                                                    <option value="Johor" {{ $user->negeri == 'Johor' ? 'selected' : '' }}>Johor</option>
+                                                                    <option value="Kedah" {{ $user->negeri == 'Kedah' ? 'selected' : '' }}>Kedah</option>
+                                                                    <option value="Kelantan" {{ $user->negeri == 'Kelantan' ? 'selected' : '' }}>Kelantan</option>
+                                                                    <option value="Melaka" {{ $user->negeri == 'Melaka' ? 'selected' : '' }}>Melaka</option>
+                                                                    <option value="Negeri Sembilan" {{ $user->negeri == 'Negeri Sembilan' ? 'selected' : '' }}>Negeri Sembilan</option>
+                                                                    <option value="Pahang" {{ $user->negeri == 'Pahang' ? 'selected' : '' }}>Pahang</option>
+                                                                    <option value="Perak" {{ $user->negeri == 'Perak' ? 'selected' : '' }}>Perak</option>
+                                                                    <option value="Perlis" {{ $user->negeri == 'Perlis' ? 'selected' : '' }}>Perlis</option>
+                                                                    <option value="Pulau Pinang" {{ $user->negeri == 'Pulau Pinang' ? 'selected' : '' }}>Pulau Pinang</option>
+                                                                    <option value="Sabah" {{ $user->negeri == 'Sabah' ? 'selected' : '' }}>Sabah</option>
+                                                                    <option value="Sarawak" {{ $user->negeri == 'Sarawak' ? 'selected' : '' }}>Sarawak</option>
+                                                                    <option value="Selangor" {{ $user->negeri == 'Selangor' ? 'selected' : '' }}>Selangor</option>
+                                                                    <option value="Terengganu" {{ $user->negeri == 'Terengganu' ? 'selected' : '' }}>Terengganu</option>
+                                                                    <option value="Wilayah Persekutuan Kuala Lumpur" {{ $user->negeri == 'Wilayah Persekutuan Kuala Lumpur' ? 'selected' : '' }}>Wilayah Persekutuan Kuala Lumpur</option>
+                                                                    <option value="Wilayah Persekutuan Labuan" {{ $user->negeri == 'Wilayah Persekutuan Labuan' ? 'selected' : '' }}>Wilayah Persekutuan Labuan</option>
+                                                                    <option value="Wilayah Persekutuan Putrajaya" {{ $user->negeri == 'Wilayah Persekutuan Putrajaya' ? 'selected' : '' }}>Wilayah Persekutuan Putrajaya</option>
+                                                                </select>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="custom-switch">
@@ -109,7 +172,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="list-group-item py-4" data-acc-step>
-                                                    <h5 class="mb-0" data-acc-title>{{__('team_profile.Per')}}</h5>
+                                                    <h5 class="mb-0" data-acc-title>{{__('team_profile.Preferences')}}</h5>
                                                     <div data-acc-content>
                                                         <div class="my-3">
                                                             <div class="form-group form-elements">
@@ -558,4 +621,98 @@
     <script src="{{ URL::asset('assets/plugins/fileuploads/js/file-upload.js') }}"></script>
 
     <script src="{{ URL::asset('assets/js/form-elements.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Load existing data on page load
+            var userKementerianId = '{{ $user->kementerian_id }}';
+            var userAgensiId = '{{ $user->agensi_id }}';
+            var userSubAgensiId = '{{ $user->sub_agensi_id }}';
+
+            // Load existing agensi if kementerian is selected
+            if (userKementerianId) {
+                loadAgensi(userKementerianId, userAgensiId);
+            }
+
+            // Load existing sub agensi if agensi is selected
+            if (userAgensiId) {
+                loadSubAgensi(userAgensiId, userSubAgensiId);
+            }
+
+            // Kementerian change handler
+            $('#kementerian-select').on('change', function() {
+                var kementerianId = $(this).val();
+                var agensiSelect = $('#team-agensi-select');
+                var subAgensiSelect = $('#team-sub-agensi-select');
+
+                // Reset dependent dropdowns
+                agensiSelect.html('<option value="">Select Agensi</option>');
+                agensiSelect.prop('disabled', true);
+                subAgensiSelect.html('<option value="">Select Sub Agensi</option>');
+                subAgensiSelect.prop('disabled', true);
+
+                if (kementerianId) {
+                    loadAgensi(kementerianId);
+                }
+            });
+
+            // Agensi change handler
+            $('#team-agensi-select').on('change', function() {
+                var agensiId = $(this).val();
+                var subAgensiSelect = $('#team-sub-agensi-select');
+
+                // Reset sub agensi dropdown
+                subAgensiSelect.html('<option value="">Select Sub Agensi</option>');
+                subAgensiSelect.prop('disabled', true);
+
+                if (agensiId) {
+                    loadSubAgensi(agensiId);
+                }
+            });
+
+            function loadAgensi(kementerianId, selectedAgensiId = null) {
+                $.ajax({
+                    url: '/get-agensi/' + kementerianId,
+                    type: 'GET',
+                    success: function(response) {
+                        var agensiSelect = $('#team-agensi-select');
+                        agensiSelect.html('<option value="">Select Agensi</option>');
+
+                        if (response.length > 0) {
+                            $.each(response, function(index, agensi) {
+                                var selected = (selectedAgensiId && agensi.id == selectedAgensiId) ? 'selected' : '';
+                                agensiSelect.append('<option value="' + agensi.id + '" ' + selected + '>' + agensi.nama + '</option>');
+                            });
+                            agensiSelect.prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching agensi:', xhr, status, error);
+                    }
+                });
+            }
+
+            function loadSubAgensi(agensiId, selectedSubAgensiId = null) {
+                $.ajax({
+                    url: '/get-sub-agensi/' + agensiId,
+                    type: 'GET',
+                    success: function(response) {
+                        var subAgensiSelect = $('#team-sub-agensi-select');
+                        subAgensiSelect.html('<option value="">Select Sub Agensi</option>');
+
+                        if (response.length > 0) {
+                            $.each(response, function(index, subAgensi) {
+                                var selected = (selectedSubAgensiId && subAgensi.id == selectedSubAgensiId) ? 'selected' : '';
+                                subAgensiSelect.append('<option value="' + subAgensi.id + '" ' + selected + '>' + subAgensi.nama + '</option>');
+                            });
+                            subAgensiSelect.prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching sub agensi:', xhr, status, error);
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

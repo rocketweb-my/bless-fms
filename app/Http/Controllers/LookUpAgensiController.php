@@ -125,4 +125,13 @@ class LookUpAgensiController extends Controller
         flash('Agensi berjaya ' . $status, 'success');
         return redirect()->back();
     }
+
+    public function getAgensiByKementerian($kementerianId)
+    {
+        $agensi = LookupAgensi::where('kementerian_id', $kementerianId)
+                              ->where('is_active', 1)
+                              ->orderBy('nama', 'ASC')
+                              ->get(['id', 'nama']);
+        return response()->json($agensi);
+    }
 }

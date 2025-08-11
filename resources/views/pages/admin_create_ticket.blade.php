@@ -28,7 +28,7 @@
 
                                 <div class="card">
                                         <div class="card-header">
-                                            <h3 class="mb-0 card-title">Create New Ticket for <u>{{categoryName($selected_category)->name}}</u></h3>
+                                            <h3 class="mb-0 card-title">Create New Ticket for <u>{{categoryName($selected_category)->name}}</u> - <u>{{\App\Models\SubCategory::find($selected_sub_category)->name ?? 'Unknown Sub Category'}}</u></h3>
                                         </div>
                                         <div class="card-body">
                                             <form action="{{route('admin_create_ticket.store')}}" method="post" enctype="multipart/form-data">
@@ -56,6 +56,14 @@
                                                             <input type="email" class="form-control" name="email">
                                                         </div>
                                                         <div class="form-group">
+                                                            <label class="form-label">{{__('aduan_pertanyaan.Label')}} <small class="text-danger">*</small></label>
+                                                            <select name="aduan_pertanyaan" id="select-aduan-pertanyaan" class="form-control custom-select" required>
+                                                                <option value="">{{__('aduan_pertanyaan.Select Type')}}</option>
+                                                                <option value="aduan">{{__('aduan_pertanyaan.Aduan')}}</option>
+                                                                <option value="pertanyaan">{{__('aduan_pertanyaan.Pertanyaan')}}</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
                                                             <label class="form-label">Priority<small class="text-danger">*</small></label>
                                                             <select name="priority" id="select-priority" class="form-control custom-select">
                                                                 @foreach($activePriorities as $priority)
@@ -63,6 +71,30 @@
                                                                         {{ $priority->name }}
                                                                     </option>
                                                                 @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="form-label">{{__('lookup_kaedah_melapor.Kaedah Melapor')}} <small class="text-danger">*</small></label>
+                                                            <select name="kaedah_melapor_id" id="select-kaedah-melapor" class="form-control custom-select" required>
+                                                                <option value="">{{__('lookup_kaedah_melapor.Select Kaedah Melapor')}}</option>
+                                                                @foreach($kaedah_melapor as $kaedah)
+                                                                    <option value="{{ $kaedah->id }}">{{ $kaedah->nama }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="form-label">{{__('lookup_agensi.Agensi')}}</label>
+                                                            <select name="agensi_id" id="agensi-select" class="form-control custom-select">
+                                                                <option value="">{{__('lookup_agensi.Select Agensi')}}</option>
+                                                                @foreach($agensi as $ag)
+                                                                    <option value="{{ $ag->id }}">{{ $ag->nama }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="form-label">{{__('lookup_sub_agensi.Sub Agensi')}}</label>
+                                                            <select name="sub_agensi_id" id="sub-agensi-select" class="form-control custom-select" disabled>
+                                                                <option value="">{{__('lookup_sub_agensi.Select Sub Agensi')}}</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -90,6 +122,10 @@
                                                             </select>
                                                         </div>
 
+                                                        <div class="form-group">
+                                                            <label class="form-label">BL No</label>
+                                                            <input type="text" class="form-control" id="bl_no" name="bl_no" placeholder="Enter BL Number">
+                                                        </div>
                                                         <div class="form-group">
                                                             <label class="form-label">Subject <small class="text-danger">*</small></label>
                                                             <input type="text" class="form-control" id="subject" name="subject" required>
@@ -150,6 +186,7 @@
                                                 <input type="hidden" name="openby" value="{{Illuminate\Support\Facades\Session::get('user_id')}}">
                                                 <hr>
                                                 <input type="hidden" name="category" value="{{$selected_category}}">
+                                                <input type="hidden" name="sub_category" value="{{$selected_sub_category}}">
                                                 <input type="hidden" name="dt" value="{{\Carbon\Carbon::now()}}">
                                                 <input type="hidden" name="lastchange" value="{{\Carbon\Carbon::now()}}">
                                                 <button type="submit" class="btn btn-primary btn-block">Submit</button>
@@ -194,6 +231,38 @@
 
             $("#message").val(message);
             $("#subject").val(name);
+        });
+
+        // Agensi dependent dropdown functionality
+        $('#agensi-select').on('change', function() {
+            var agensiId = $(this).val();
+            var subAgensiSelect = $('#sub-agensi-select');
+            
+            // Reset sub agensi dropdown
+            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.Select Sub Agensi")}}</option>');
+            subAgensiSelect.prop('disabled', true);
+            
+            if (agensiId) {
+                // Fetch sub agensi for selected agensi
+                $.ajax({
+                    url: '/get-sub-agensi/' + agensiId,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.length > 0) {
+                            $.each(response, function(index, subAgensi) {
+                                subAgensiSelect.append('<option value="' + subAgensi.id + '">' + subAgensi.nama + '</option>');
+                            });
+                            subAgensiSelect.prop('disabled', false);
+                        } else {
+                            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.No Sub Agensi Available")}}</option>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching sub agensi:', xhr, status, error);
+                        alert('Error fetching sub agensi: ' + error);
+                    }
+                });
+            }
         });
     </script>
 @endsection

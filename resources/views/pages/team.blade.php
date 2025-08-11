@@ -24,12 +24,12 @@
                         <div class="row">
                             <div class="col-md-12 col-lg-12">
                                 <div class="card">
-{{--                                    <div class="card-header">--}}
-{{--                                        <h3 class="card-title"></h3>--}}
-{{--                                        <div class="card-options">--}}
-{{--                                            <a href="#" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">New Team Member</a>--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
+                                    <div class="card-header">
+                                        <h3 class="card-title">Team Members</h3>
+                                        <div class="card-options">
+                                            <a href="#teamRegistrationForm" class="btn btn-outline-primary">Register New Team Member</a>
+                                        </div>
+                                    </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table id="team_table" class="table table-striped table-bordered text-nowrap display" style="width:100% !important;">
@@ -54,7 +54,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" id="teamRegistrationForm">
                             <div class="col-lg-12">
                                 <div class="card accordion-wizard">
                                     <div class="card-header">
@@ -69,25 +69,130 @@
                                                     <h5 class="mb-0" data-acc-title>{{__('team.Profile information')}}</h5>
                                                     <div data-acc-content>
                                                         <div class="my-3">
-                                                            <div class="form-group">
-                                                                <label>{{__('team.Name')}}:</label>
-                                                                <input type="text" name="name" class="form-control">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label>{{__('team.Name')}}:</label>
+                                                                        <input type="text" name="name" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label>{{__('team.Email')}}:</label>
+                                                                        <input type="text" name="email" class="form-control">
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="form-group">
-                                                                <label>{{__('team.Email')}}:</label>
-                                                                <input type="text" name="email" class="form-control">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group mb-5">
+                                                                        <label>No. KP:</label>
+                                                                        <input type="text" name="username" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label class="custom-switch">
+                                                                            <input type="hidden" name="autoassign" value="0">
+                                                                            <input type="checkbox" name="autoassign" class="custom-switch-input" value="1" checked>
+                                                                            <span class="custom-switch-indicator"></span>
+                                                                            <span class="custom-switch-description">{{__('team.Auto-assign tickets to this user')}}.</span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="form-group mb-5">
-                                                                <label>{{__('team.Username')}}:</label>
-                                                                <input type="text" name="username" class="form-control">
+                                                            
+                                                            <!-- Profile Fields -->
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>Kementerian:</label>
+                                                                        <select name="kementerian_id" id="kementerian_id_modal" class="form-control">
+                                                                            <option value="">Pilih Kementerian</option>
+                                                                            @foreach($kementerian as $k)
+                                                                                <option value="{{$k->id}}">{{$k->nama}}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>Agensi:</label>
+                                                                        <select name="agensi_id" id="agensi_id_modal" class="form-control">
+                                                                            <option value="">Pilih Agensi</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>Sub Agensi:</label>
+                                                                        <select name="sub_agensi_id" id="sub_agensi_id_modal" class="form-control">
+                                                                            <option value="">Pilih Sub Agensi</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="form-group">
-                                                                <label class="custom-switch">
-                                                                    <input type="hidden" name="autoassign" value="0">
-                                                                    <input type="checkbox" name="autoassign" class="custom-switch-input" value="1" checked>
-                                                                    <span class="custom-switch-indicator"></span>
-                                                                    <span class="custom-switch-description">{{__('team.Auto-assign tickets to this user')}}.</span>
-                                                                </label>
+                                                            
+                                                            <!-- Contact Information -->
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>No Pejabat:</label>
+                                                                        <input type="text" name="no_pejabat" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>No HP:</label>
+                                                                        <input type="text" name="no_hp" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>No. Fax:</label>
+                                                                        <input type="text" name="no_fax" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- Address Information -->
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label>Alamat Pejabat:</label>
+                                                                        <textarea name="alamat_pejabat" class="form-control" rows="3"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group">
+                                                                        <label>Poskod:</label>
+                                                                        <input type="text" name="poskod" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group">
+                                                                        <label>Negeri:</label>
+                                                                        <select name="negeri" class="form-control">
+                                                                            <option value="">Pilih Negeri</option>
+                                                                            <option value="Johor">Johor</option>
+                                                                            <option value="Kedah">Kedah</option>
+                                                                            <option value="Kelantan">Kelantan</option>
+                                                                            <option value="Kuala Lumpur">Kuala Lumpur</option>
+                                                                            <option value="Labuan">Labuan</option>
+                                                                            <option value="Melaka">Melaka</option>
+                                                                            <option value="Negeri Sembilan">Negeri Sembilan</option>
+                                                                            <option value="Pahang">Pahang</option>
+                                                                            <option value="Penang">Penang</option>
+                                                                            <option value="Perak">Perak</option>
+                                                                            <option value="Perlis">Perlis</option>
+                                                                            <option value="Putrajaya">Putrajaya</option>
+                                                                            <option value="Sabah">Sabah</option>
+                                                                            <option value="Sarawak">Sarawak</option>
+                                                                            <option value="Selangor">Selangor</option>
+                                                                            <option value="Terengganu">Terengganu</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -459,6 +564,9 @@
                                             </div>
                                         </form>
                                     </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -559,7 +667,64 @@
                     }
                 });
             });
+            
+            // Dependent dropdowns for team registration form
+            $('#kementerian_id_modal').change(function() {
+                var kementerianId = $(this).val();
+                loadAgensiModal(kementerianId);
+                $('#sub_agensi_id_modal').html('<option value="">Pilih Sub Agensi</option>');
+            });
 
+            $('#agensi_id_modal').change(function() {
+                var agensiId = $(this).val();
+                loadSubAgensiModal(agensiId);
+            });
+
+            function loadAgensiModal(kementerianId, selectedAgensiId = null) {
+                if (kementerianId) {
+                    $.ajax({
+                        url: '/get-agensi/' + kementerianId,
+                        type: 'GET',
+                        success: function(response) {
+                            var options = '<option value="">Pilih Agensi</option>';
+                            response.forEach(function(agensi) {
+                                var selected = selectedAgensiId == agensi.id ? 'selected' : '';
+                                options += '<option value="' + agensi.id + '" ' + selected + '>' + agensi.nama + '</option>';
+                            });
+                            $('#agensi_id_modal').html(options);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error loading agensi:', error);
+                            $('#agensi_id_modal').html('<option value="">Error loading data</option>');
+                        }
+                    });
+                } else {
+                    $('#agensi_id_modal').html('<option value="">Pilih Agensi</option>');
+                }
+            }
+
+            function loadSubAgensiModal(agensiId, selectedSubAgensiId = null) {
+                if (agensiId) {
+                    $.ajax({
+                        url: '/get-sub-agensi/' + agensiId,
+                        type: 'GET',
+                        success: function(response) {
+                            var options = '<option value="">Pilih Sub Agensi</option>';
+                            response.forEach(function(subAgensi) {
+                                var selected = selectedSubAgensiId == subAgensi.id ? 'selected' : '';
+                                options += '<option value="' + subAgensi.id + '" ' + selected + '>' + subAgensi.nama + '</option>';
+                            });
+                            $('#sub_agensi_id_modal').html(options);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error loading sub agensi:', error);
+                            $('#sub_agensi_id_modal').html('<option value="">Error loading data</option>');
+                        }
+                    });
+                } else {
+                    $('#sub_agensi_id_modal').html('<option value="">Pilih Sub Agensi</option>');
+                }
+            }
 
         });
     </script>

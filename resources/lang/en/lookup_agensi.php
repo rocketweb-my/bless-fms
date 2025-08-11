@@ -25,4 +25,5 @@ return [
     'Adakah anda pasti untuk'           => 'Are you sure to',
     'item ini?'                         => 'this item?',
     'Pilih Kementerian'                 => 'Select Kementerian',
+    'Select Agensi'                     => 'Select Agensi',
 ];

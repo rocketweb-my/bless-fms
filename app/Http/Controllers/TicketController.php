@@ -473,6 +473,7 @@ class TicketController extends Controller
     public function admin_create_ticket(Request $request)
     {
         $selected_category = $request->category;
+        $selected_sub_category = $request->sub_category;
 
         $ticket_templates =  TicketTemplate::orderBy('tpl_order','ASC')->get();
 
@@ -480,11 +481,25 @@ class TicketController extends Controller
 
         $before_messages = CustomField::where('place', '0')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
 
-        return view('pages.admin_create_ticket', compact('before_messages', 'after_messages','selected_category','ticket_templates'));
+        $kaedah_melapor = \App\Models\LookupKaedahMelapor::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+        $agensi = \App\Models\LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+
+        return view('pages.admin_create_ticket', compact('before_messages', 'after_messages','selected_category','selected_sub_category','ticket_templates','kaedah_melapor','agensi'));
     }
 
     public function admin_create_ticket_store(Request $request)
     {
+        // Validate required fields for admin ticket creation
+        $request->validate([
+            'kaedah_melapor_id' => 'required|exists:lookup_kaedah_melapor,id',
+            'aduan_pertanyaan' => 'required|in:aduan,pertanyaan',
+        ], [
+            'kaedah_melapor_id.required' => 'Kaedah Melapor is required.',
+            'kaedah_melapor_id.exists' => 'Selected Kaedah Melapor is invalid.',
+            'aduan_pertanyaan.required' => 'Aduan/Pertanyaan selection is required.',
+            'aduan_pertanyaan.in' => 'Invalid Aduan/Pertanyaan selection.',
+        ]);
+
         $tracking_id = generateTicketID();
         $history = '';
         $attachment_list = '';

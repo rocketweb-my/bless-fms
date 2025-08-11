@@ -286,6 +286,15 @@ Route::post('/set-language', [PublicController::class, 'setLanguage'])->name('se
 Route::post('/public/reply',[PublicController::class, 'reply_ticket'])->name('public.reply');
 Route::post('/public/submission',[PublicController::class, 'submission'])->name('public.submission');
 Route::post('/public/submission_form',[PublicController::class, 'submission_form'])->name('public.submission_form');
+
+// Sub Category API for public and admin use
+Route::get('/get-sub-categories/{categoryId}', [SubCategoryController::class, 'getSubCategoriesByCategory'])->name('get-sub-categories');
+
+// Sub Agensi API for public and admin use
+Route::get('/get-sub-agensi/{agensiId}', [LookUpSubAgensiController::class, 'getSubAgensiByAgensi'])->name('get-sub-agensi');
+
+// Agensi by Kementerian API
+Route::get('/get-agensi/{kementerianId}', [LookUpAgensiController::class, 'getAgensiByKementerian'])->name('get-agensi');
 Route::post('/public/reply_form',[PublicController::class, 'reply_form'])->name('public.reply_form');
 Route::post('/public/close_ticket',[PublicController::class, 'close_ticket'])->name('public.close_ticket');
 Route::post('/public/forgot_tracking',[PublicController::class, 'forgot_tracking'])->name('public.forgot_tracking');

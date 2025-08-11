@@ -41,13 +41,20 @@
                                             @csrf
                                             <div class="form-group">
                                                 <label class="form-label">{{__('public/feedback_category.Select Feedback Category')}}</label>
-                                                <select class="form-control select2-show-search" name="category">
+                                                <select class="form-control select2-show-search" name="category" id="category_select" required>
+                                                    <option value="">Select Category</option>
                                                     @foreach($public_categories as $category)
                                                         <option value="{{$category->id}}">{!! $category->name !!}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-block">{{__('public/feedback_category.Choose This Category')}}</button>
+                                            <div class="form-group">
+                                                <label class="form-label">Sub Category</label>
+                                                <select class="form-control select2-show-search" name="sub_category" id="sub_category_select" required disabled>
+                                                    <option value="">Select Sub Category</option>
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-block" id="submit_btn" disabled>{{__('public/feedback_category.Choose This Category')}}</button>
                                         </form>
                                     </div>
                                 </div>
@@ -72,4 +79,59 @@
     <script src="{{ URL::asset('assets/plugins/time-picker/jquery.timepicker.js') }}"></script>
     <script src="{{ URL::asset('assets/plugins/time-picker/toggles.min.js') }}"></script>
     <script src="{{ URL::asset('assets/js/form-elements.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        console.log('Public feedback category script loaded');
+        
+        $('#category_select').on('change', function() {
+            var categoryId = $(this).val();
+            var subCategorySelect = $('#sub_category_select');
+            var submitBtn = $('#submit_btn');
+            
+            console.log('Category selected: ' + categoryId);
+            
+            // Reset sub category dropdown
+            subCategorySelect.html('<option value="">Select Sub Category</option>');
+            subCategorySelect.prop('disabled', true);
+            submitBtn.prop('disabled', true);
+            
+            if (categoryId) {
+                console.log('Fetching sub categories for category: ' + categoryId);
+                // Fetch sub categories for selected category
+                $.ajax({
+                    url: '/get-sub-categories/' + categoryId,
+                    type: 'GET',
+                    success: function(response) {
+                        console.log('Sub categories response:', response);
+                        if (response.length > 0) {
+                            $.each(response, function(index, subCategory) {
+                                subCategorySelect.append('<option value="' + subCategory.id + '">' + subCategory.name + '</option>');
+                            });
+                            subCategorySelect.prop('disabled', false);
+                        } else {
+                            subCategorySelect.html('<option value="">No Sub Categories Available</option>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching sub categories:', xhr, status, error);
+                        alert('Error fetching sub categories: ' + error);
+                    }
+                });
+            }
+        });
+        
+        $('#sub_category_select').on('change', function() {
+            var subCategoryId = $(this).val();
+            var submitBtn = $('#submit_btn');
+            
+            console.log('Sub category selected: ' + subCategoryId);
+            
+            if (subCategoryId) {
+                submitBtn.prop('disabled', false);
+            } else {
+                submitBtn.prop('disabled', true);
+            }
+        });
+    });
+    </script>
 @endsection

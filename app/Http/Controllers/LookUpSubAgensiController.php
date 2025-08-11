@@ -128,4 +128,13 @@ class LookUpSubAgensiController extends Controller
         flash('Sub Agensi berjaya ' . $status, 'success');
         return redirect()->back();
     }
+
+    public function getSubAgensiByAgensi($agensiId)
+    {
+        $subAgensi = LookupSubAgensi::where('agensi_id', $agensiId)
+                                    ->where('is_active', 1)
+                                    ->orderBy('nama', 'ASC')
+                                    ->get(['id', 'nama']);
+        return response()->json($subAgensi);
+    }
 }
