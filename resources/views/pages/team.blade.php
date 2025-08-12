@@ -40,7 +40,7 @@
                                                     <th class="">{{__('team.Email')}}</th>
                                                     <th class="">{{__('team.Username')}}</th>
                                                     <th class="">{{__('team.Role')}}</th>
-                                                    <th class="">{{__('team.Auto-Assign')}}</th>
+                                                    <th class="">{{__('main.Kumpulan Pengguna')}}</th>
                                                     <th class="">{{__('team.Status')}}</th>
                                                     <th class="">{{__('team.Action')}}</th>
                                                 </tr>
@@ -348,7 +348,7 @@
                     {data: 'email', name: 'email'},
                     {data: 'user', name: 'user'},
                     {data: 'isadmin_edit', name: 'isadmin_edit'},
-                    {data: 'autoassign_edit', name: 'autoassign_edit'},
+                    {data: 'kumpulan_pengguna', name: 'kumpulan_pengguna'},
                     {data: 'is_active', name: 'is_active'},
                     {data: 'action', name: 'action'},
                 ]

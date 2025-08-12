@@ -142,11 +142,29 @@
                                                                         </div>
                                                                         <div class="form-group">
                                                                             <label class="form-label">{{__('public/feedback_reply.Attachment')}}</label>
-                                                                            <input ref="file" type="file" name="file[1]" size="50" v-on:change="handleFile1Upload($event)" onchange="ValidateSingleInput(this);">
+                                                                            <div id="public-reply-attachment-container">
+                                                                                <div class="attachment-row mb-2">
+                                                                                    <input ref="file1" type="file" name="file[1]" size="50" v-on:change="handleFile1Upload($event)" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                                                </div>
+                                                                                <div class="attachment-row mb-2">
+                                                                                    <input ref="file2" type="file" name="file[2]" size="50" v-on:change="handleFile2Upload($event)" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                                                </div>
+                                                                                <div class="attachment-row mb-2" style="display: none;">
+                                                                                    <input ref="file3" type="file" name="file[3]" size="50" v-on:change="handleFile3Upload($event)" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                                                </div>
+                                                                                <div class="attachment-row mb-2" style="display: none;">
+                                                                                    <input ref="file4" type="file" name="file[4]" size="50" v-on:change="handleFile4Upload($event)" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                                                </div>
+                                                                                <div class="attachment-row mb-2" style="display: none;">
+                                                                                    <input ref="file5" type="file" name="file[5]" size="50" v-on:change="handleFile5Upload($event)" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                                                </div>
+                                                                                <div class="attachment-row mb-2" style="display: none;">
+                                                                                    <input ref="file6" type="file" name="file[6]" size="50" v-on:change="handleFile6Upload($event)" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                                                </div>
+                                                                            </div>
+                                                                            <button type="button" id="add-public-reply-attachment-btn" class="btn btn-sm btn-secondary" onclick="showNextPublicReplyAttachment()">Add Another Attachment</button>
                                                                             <br>
-                                                                            <input ref="file" type="file" name="file[2]" size="50" v-on:change="handleFile2Upload($event)" onchange="ValidateSingleInput(this);">
-                                                                            <br>
-                                                                            <small>File format: .gif,.jpg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
+                                                                            <small>Max file size: 20MB | File format: .gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
                                                                         </div>
                                                                         <button type="button" v-on:click="submit" class="btn btn-primary btn-block" :disabled="message.length == 0"><i class="fe fe-navigation"></i>&nbsp;{{__('public/feedback_reply.Submit reply')}}</button>
                                                                     </form>
@@ -320,6 +338,10 @@
                 form_data : '',
                 fileOne: 'undefined',
                 fileTwo: 'undefined',
+                fileThree: 'undefined',
+                fileFour: 'undefined',
+                fileFive: 'undefined',
+                fileSix: 'undefined',
 
 
             },
@@ -331,6 +353,22 @@
                 handleFile2Upload: function(event){
                     this.fileTwo = event.target.files[0];
                     console.log(this.fileTwo);
+                },
+                handleFile3Upload: function(event){
+                    this.fileThree = event.target.files[0];
+                    console.log(this.fileThree);
+                },
+                handleFile4Upload: function(event){
+                    this.fileFour = event.target.files[0];
+                    console.log(this.fileFour);
+                },
+                handleFile5Upload: function(event){
+                    this.fileFive = event.target.files[0];
+                    console.log(this.fileFive);
+                },
+                handleFile6Upload: function(event){
+                    this.fileSix = event.target.files[0];
+                    console.log(this.fileSix);
                 },
                 submit: function () {
                     // console.log(this.$refs.file);
@@ -347,6 +385,10 @@
                     formData.append('message', this.message);
                     formData.append('file[1]', this.fileOne);
                     formData.append('file[2]', this.fileTwo);
+                    formData.append('file[3]', this.fileThree);
+                    formData.append('file[4]', this.fileFour);
+                    formData.append('file[5]', this.fileFive);
+                    formData.append('file[6]', this.fileSix);
 
                         axios.post('{{route('public.reply_form')}}', formData,
                             {
@@ -401,11 +443,14 @@
         })
     </script>
     <script>
-        var _validFileExtensions = [".gif", ".jpg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var _validFileExtensions = [".gif", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
+        
         function ValidateSingleInput(oInput) {
             if (oInput.type == "file") {
                 var sFileName = oInput.value;
                 if (sFileName.length > 0) {
+                    // Check file extension
                     var blnValid = false;
                     for (var j = 0; j < _validFileExtensions.length; j++) {
                         var sCurExtension = _validFileExtensions[j];
@@ -416,13 +461,40 @@
                     }
 
                     if (!blnValid) {
-                        alert("Sorry, invalid, attachment file format");
+                        alert("Sorry, invalid attachment file format");
                         oInput.value = "";
                         return false;
+                    }
+
+                    // Check file size
+                    if (oInput.files && oInput.files[0]) {
+                        var fileSize = oInput.files[0].size;
+                        if (fileSize > maxFileSize) {
+                            alert("File size exceeds 20MB limit. Please choose a smaller file.");
+                            oInput.value = "";
+                            return false;
+                        }
                     }
                 }
             }
             return true;
+        }
+
+        function showNextPublicReplyAttachment() {
+            var attachmentRows = document.querySelectorAll('#public-reply-attachment-container .attachment-row');
+            var addButton = document.getElementById('add-public-reply-attachment-btn');
+            
+            for (var i = 0; i < attachmentRows.length; i++) {
+                if (attachmentRows[i].style.display === 'none') {
+                    attachmentRows[i].style.display = 'block';
+                    
+                    // Hide button if all 6 attachments are visible
+                    if (i === attachmentRows.length - 1) {
+                        addButton.style.display = 'none';
+                    }
+                    break;
+                }
+            }
         }
     </script>
 @endsection

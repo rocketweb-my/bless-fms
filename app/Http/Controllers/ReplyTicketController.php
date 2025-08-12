@@ -94,9 +94,9 @@ class ReplyTicketController extends Controller
 
         if($request->file()) {
             $this->validate($request, [
-                'file.*' => 'mimes:gif,jpg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:2048',
+                'file.*' => 'mimes:gif,jpg,jpeg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:20480',
             ]);
-            for ($x = 1; $x <= systemSetting()->attachments_max_size ; $x++) {
+            for ($x = 1; $x <= 6 ; $x++) {
                 {
                     if (isset($request->file[$x]))
                     {
@@ -241,7 +241,7 @@ class ReplyTicketController extends Controller
 
         if($request->file()) {
             $this->validate($request, [
-                'file' => 'mimes:gif,jpg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:2048',
+                'file' => 'mimes:gif,jpg,jpeg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:20480',
             ]);
             if (isset($request->file))
             {
@@ -382,6 +382,41 @@ class ReplyTicketController extends Controller
         $ticket->save();
 
         flash('Successfully Added CC Email', 'success');
+        return redirect()->back();
+    }
+
+    public function assign_ticket(Request $request)
+    {
+        $request->validate([
+            'ticket_id' => 'required|exists:tickets,id',
+            'assigned_user_id' => 'required|exists:users,id',
+            'kumpulan_pengguna_id' => 'required|exists:lookup_kumpulan_pengguna,id',
+        ]);
+
+        $ticket = Ticket::findOrFail($request->ticket_id);
+        $assignedUser = User::findOrFail($request->assigned_user_id);
+
+        // Update the ticket owner
+        $ticket->owner = $request->assigned_user_id;
+        
+        // Add history entry
+        $history = '<li class="smaller">'.Carbon::now().' | assigned to '.$assignedUser->name.' by '.User()->name.'</li>';
+        $ticket->history = $ticket->history.$history;
+        
+        $ticket->save();
+
+        // Send email notification to assigned user if they have notifications enabled
+        if($assignedUser->notify_assign == 1) {
+            $data = [
+                'subject' => $ticket->subject,
+                'trackid' => $ticket->trackid,
+                'assigned_by' => User()->name,
+            ];
+            
+            Mail::to($assignedUser->email)->send(new NewTicketAssign($data));
+        }
+
+        flash('Ticket successfully assigned to '.$assignedUser->name, 'success');
         return redirect()->back();
     }
 

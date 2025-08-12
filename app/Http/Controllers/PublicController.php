@@ -145,9 +145,9 @@ class PublicController extends Controller
         // Attachment Start //
         if($request->file()) {
             $this->validate($request, [
-                'file.*' => 'mimes:gif,jpg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:2048',
+                'file.*' => 'mimes:gif,jpg,jpeg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:20480', // 20MB = 20480KB
             ]);
-            for ($x = 1; $x <= systemSetting()->attachments_max_size ; $x++) {
+            for ($x = 1; $x <= 6 ; $x++) { // Support up to 6 attachments
                 {
                     if (isset($request->file[$x]))
                     {

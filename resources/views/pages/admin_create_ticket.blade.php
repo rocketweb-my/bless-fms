@@ -153,11 +153,28 @@
                                                 <hr>
                                                 <div class="form-group">
                                                     <label class="form-label">Attachment</label>
-                                                    <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);">
-                                                    <br>
-                                                    <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);">
-                                                    <br>
-                                                    <small>File format: .gif,.jpg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
+                                                    <div id="attachment-container">
+                                                        <div class="attachment-row mb-2">
+                                                            <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2">
+                                                            <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[3]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[4]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[5]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[6]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" id="add-attachment-btn" class="btn btn-sm btn-secondary" onclick="showNextAttachment()">Add Another Attachment</button>
+                                                    <small class="d-block mt-2">Max file size: 20MB | File format: .gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
                                                 </div>
 
                                                 <div class="form-group">
@@ -211,11 +228,14 @@
 @endsection
 @section('js')
     <script>
-        var _validFileExtensions = [".gif", ".jpg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var _validFileExtensions = [".gif", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
+        
         function ValidateSingleInput(oInput) {
             if (oInput.type == "file") {
                 var sFileName = oInput.value;
                 if (sFileName.length > 0) {
+                    // Check file extension
                     var blnValid = false;
                     for (var j = 0; j < _validFileExtensions.length; j++) {
                         var sCurExtension = _validFileExtensions[j];
@@ -226,13 +246,40 @@
                     }
 
                     if (!blnValid) {
-                        alert("Sorry, invalid, attachment file format");
+                        alert("Sorry, invalid attachment file format");
                         oInput.value = "";
                         return false;
+                    }
+
+                    // Check file size
+                    if (oInput.files && oInput.files[0]) {
+                        var fileSize = oInput.files[0].size;
+                        if (fileSize > maxFileSize) {
+                            alert("File size exceeds 20MB limit. Please choose a smaller file.");
+                            oInput.value = "";
+                            return false;
+                        }
                     }
                 }
             }
             return true;
+        }
+
+        function showNextAttachment() {
+            var attachmentRows = document.querySelectorAll('.attachment-row');
+            var addButton = document.getElementById('add-attachment-btn');
+            
+            for (var i = 0; i < attachmentRows.length; i++) {
+                if (attachmentRows[i].style.display === 'none') {
+                    attachmentRows[i].style.display = 'block';
+                    
+                    // Hide button if all 6 attachments are visible
+                    if (i === attachmentRows.length - 1) {
+                        addButton.style.display = 'none';
+                    }
+                    break;
+                }
+            }
         }
         $('#select-template').on('change', function (e) {
             var message = this.value;

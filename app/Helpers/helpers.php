@@ -44,7 +44,7 @@ if (! function_exists('systemSetting')) {
         $setting = new Collection();
 
         $setting->autoassign = 1;
-        $setting->attachments_max_size = 2;
+        $setting->attachments_max_size = 6;
         $setting->orderdue_day = 3;
 
         return $setting;

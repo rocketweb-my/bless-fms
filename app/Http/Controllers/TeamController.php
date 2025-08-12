@@ -37,24 +37,6 @@ class TeamController extends Controller
                     return $btn;
                 })
 
-                ->addColumn('autoassign_edit', function ($data) {
-
-                    if ($data->autoassign == 0)
-                    {
-                        $autoassign = '<label class="custom-switch">
-                                            <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" disabled>
-                                            <span class="custom-switch-indicator"></span>
-                                        </label>';
-                    }else
-                    {
-                        $autoassign = '<label class="custom-switch">
-                                            <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" checked disabled>
-                                            <span class="custom-switch-indicator"></span>
-                                        </label>';
-                    }
-
-                    return $autoassign;
-                })
 
                 ->addColumn('isadmin_edit', function ($data) {
 
@@ -69,11 +51,19 @@ class TeamController extends Controller
                     return $type;
                 })
 
+                ->addColumn('kumpulan_pengguna', function ($data) {
+                    if ($data->kumpulan_pengguna_id) {
+                        $kumpulanPengguna = \App\Models\LookupKumpulanPengguna::find($data->kumpulan_pengguna_id);
+                        return $kumpulanPengguna ? $kumpulanPengguna->nama : '-';
+                    }
+                    return '-';
+                })
+
                 ->addColumn('is_active', function ($data) {
                     return $data->is_active == 1 ? '<span class="badge badge-success">'.__('team.Active').'</span>' : '<span class="badge badge-danger">'.__('team.Inactive').'</span>';
                 })
 
-                ->rawColumns(['action','autoassign_edit','isadmin_edit','is_active'])
+                ->rawColumns(['action','isadmin_edit','kumpulan_pengguna','is_active'])
                 ->make(true);
         }
 

@@ -95,6 +95,7 @@ use Illuminate\Support\Facades\App;
         Route::post('/ticket/reply/change_priority', [ReplyTicketController::class, 'change_priority'])->name('ticket.reply.change_priority');
         Route::post('/ticket/reply/change_owner', [ReplyTicketController::class, 'change_owner'])->name('ticket.reply.change_owner');
         Route::post('/ticket/reply/add_cc_email', [ReplyTicketController::class, 'add_cc_email'])->name('ticket.reply.add_cc_email');
+        Route::post('/ticket/reply/assign', [ReplyTicketController::class, 'assign_ticket'])->name('ticket.reply.assign');
         Route::post('/ticket/reply/export_pdf', [ReplyTicketController::class, 'export_pdf'])->name('ticket.reply.export_pdf');
         Route::post('/ticket/reply/export_with_notes_pdf', [ReplyTicketController::class, 'export_with_notes_pdf'])->name('ticket.reply.export_with_notes_pdf');
 

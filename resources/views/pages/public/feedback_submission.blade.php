@@ -130,11 +130,28 @@
                                             <hr>
                                             <div class="form-group">
                                                 <label class="form-label">{{__('public/feedback_submission.Attachment')}}</label>
-                                                <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);">
-                                                <br>
-                                                <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);">
-                                                <br>
-                                                <small>{{__('public/feedback_submission.Max file size')}}: 10MB | {{__('public/feedback_submission.Choose file')}}: .gif,.jpg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
+                                                <div id="public-attachment-container">
+                                                    <div class="attachment-row mb-2">
+                                                        <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                    </div>
+                                                    <div class="attachment-row mb-2">
+                                                        <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                    </div>
+                                                    <div class="attachment-row mb-2" style="display: none;">
+                                                        <input type="file" name="file[3]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                    </div>
+                                                    <div class="attachment-row mb-2" style="display: none;">
+                                                        <input type="file" name="file[4]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                    </div>
+                                                    <div class="attachment-row mb-2" style="display: none;">
+                                                        <input type="file" name="file[5]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                    </div>
+                                                    <div class="attachment-row mb-2" style="display: none;">
+                                                        <input type="file" name="file[6]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                    </div>
+                                                </div>
+                                                <button type="button" id="add-public-attachment-btn" class="btn btn-sm btn-secondary" onclick="showNextPublicAttachment()">Add Another Attachment</button>
+                                                <small class="d-block mt-2">Max file size: 20MB | {{__('public/feedback_submission.Choose file')}}: .gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
                                             </div>
                                             <hr>
                                             <input type="hidden" name="category" value="{{$selected_category}}">
@@ -154,28 +171,58 @@
 @endsection
 @section('js')
     <script>
-        var _validFileExtensions = [".gif", ".jpg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var _validFileExtensions = [".gif", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
+        
         function ValidateSingleInput(oInput) {
-        if (oInput.type == "file") {
-        var sFileName = oInput.value;
-        if (sFileName.length > 0) {
-        var blnValid = false;
-        for (var j = 0; j < _validFileExtensions.length; j++) {
-        var sCurExtension = _validFileExtensions[j];
-        if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
-        blnValid = true;
-        break;
-        }
+            if (oInput.type == "file") {
+                var sFileName = oInput.value;
+                if (sFileName.length > 0) {
+                    // Check file extension
+                    var blnValid = false;
+                    for (var j = 0; j < _validFileExtensions.length; j++) {
+                        var sCurExtension = _validFileExtensions[j];
+                        if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                            blnValid = true;
+                            break;
+                        }
+                    }
+
+                    if (!blnValid) {
+                        alert("{{__('public/feedback_submission.Invalid file format')}}");
+                        oInput.value = "";
+                        return false;
+                    }
+
+                    // Check file size
+                    if (oInput.files && oInput.files[0]) {
+                        var fileSize = oInput.files[0].size;
+                        if (fileSize > maxFileSize) {
+                            alert("File size exceeds 20MB limit. Please choose a smaller file.");
+                            oInput.value = "";
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
-        if (!blnValid) {
-        alert("{{__('public/feedback_submission.Invalid file format')}}");
-        oInput.value = "";
-        return false;
-        }
-        }
-        }
-        return true;
+        function showNextPublicAttachment() {
+            var attachmentRows = document.querySelectorAll('#public-attachment-container .attachment-row');
+            var addButton = document.getElementById('add-public-attachment-btn');
+            
+            for (var i = 0; i < attachmentRows.length; i++) {
+                if (attachmentRows[i].style.display === 'none') {
+                    attachmentRows[i].style.display = 'block';
+                    
+                    // Hide button if all 6 attachments are visible
+                    if (i === attachmentRows.length - 1) {
+                        addButton.style.display = 'none';
+                    }
+                    break;
+                }
+            }
         }
     </script>
     <script>

@@ -48,6 +48,7 @@ return [
     'Sub Category'              => 'Sub Kategori',
     'Phone Number'              => 'Nombor Telefon',
     'BL No'                     => 'BL No',
+    'Assign Ticket'             => 'Serahkan Tiket',
 
     'Close'                     => 'Tutup',
     'Select a canned response' => 'Pilih respons prasiap',

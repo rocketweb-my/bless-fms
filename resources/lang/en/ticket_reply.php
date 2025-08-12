@@ -48,6 +48,7 @@ return [
     'Sub Category'              => 'Sub Category',
     'Phone Number'              => 'Phone Number',
     'BL No'                     => 'BL No',
+    'Assign Ticket'             => 'Assign Ticket',
 
     'Close'                     => 'Close',
     'Select a canned response'  => 'Select a canned response',

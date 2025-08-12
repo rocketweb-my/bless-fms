@@ -159,9 +159,9 @@
                                                         <br>
                                                         <div class="form-group">
                                                             <label class="form-label">{{__('ticket_reply.Attachment')}}</label>
-                                                            <input type="file" name="file" size="50" onchange="ValidateSingleInput(this);">
+                                                            <input type="file" name="file" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
                                                             <br>
-                                                            <small>File format: .gif,.jpg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
+                                                            <small>Max file size: 20MB | File format: .gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
                                                         </div>
                                                         <button type="submit" class="btn btn-info"><i class="fe fe-file"></i>{{__('ticket_reply.Submit')}}</button>
                                                         <p class="mt-2">{{__('ticket_reply.Notes are hidden from customers!')}}</p>
@@ -296,11 +296,29 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="form-label">{{__('ticket_reply.Attachment')}}</label>
-                                                    <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);">
+                                                    <div id="reply-attachment-container">
+                                                        <div class="attachment-row mb-2">
+                                                            <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2">
+                                                            <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[3]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[4]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[5]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                        <div class="attachment-row mb-2" style="display: none;">
+                                                            <input type="file" name="file[6]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" id="add-reply-attachment-btn" class="btn btn-sm btn-secondary" onclick="showNextReplyAttachment()">Add Another Attachment</button>
                                                     <br>
-                                                    <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);">
-                                                    <br>
-                                                    <small>{{ __('ticket_reply.File format') }}: .gif,.jpg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
+                                                    <small>Max file size: 20MB | {{ __('ticket_reply.File format') }}: .gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
                                                 </div>
                                                 <div class="form-group form-elements mb-3">
                                                     <div class="custom-controls-stacked">
@@ -488,6 +506,41 @@
                                                 <div class="d-flex justify-content-between mt-2">
                                                     <button type="button" id="add-cc-email" class="btn btn-secondary">{{ __('ticket_reply.Add Email') }}</button>
                                                     <button type="submit" class="btn btn-primary">{{ __('ticket_reply.Save') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">{{__('ticket_reply.Assign Ticket')}}</h3>
+                                            <div class="card-options">
+                                                <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="assignment-form" method="post" action="{{ route('ticket.reply.assign') }}">
+                                                @csrf
+                                                <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label">Select Kumpulan Pengguna</label>
+                                                    <select name="kumpulan_pengguna_id" id="assignment-kumpulan-pengguna-select-reply" class="form-control custom-select">
+                                                        <option value="">Pilih Kumpulan Pengguna</option>
+                                                        @foreach(\App\Models\LookupKumpulanPengguna::where('is_active', 1)->orderBy('nama', 'ASC')->get() as $kp)
+                                                            <option value="{{$kp->id}}">{{$kp->nama}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Assign to Team Member</label>
+                                                    <select name="assigned_user_id" id="assignment-user-select-reply" class="form-control custom-select">
+                                                        <option value="">Select Team Member</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-primary btn-block">Assign Ticket</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -762,6 +815,36 @@
         // Remove a CC email row
         $(document).on('click', '.remove-cc-email', function () {
             $(this).closest('.cc-email-row').remove();
+        });
+
+        // Assignment Kumpulan Pengguna dependent dropdown functionality for ticket assignment
+        $(document).ready(function() {
+            $('#assignment-kumpulan-pengguna-select-reply').on('change', function() {
+                var kumpulanPenggunaId = $(this).val();
+                var ownerSelect = $('#assignment-user-select-reply');
+                
+                // Reset owner dropdown to default options
+                ownerSelect.html('<option value="">Select Team Member</option>');
+                
+                if (kumpulanPenggunaId) {
+                    // Fetch team members for selected kumpulan pengguna
+                    $.ajax({
+                        url: '/get-team/' + kumpulanPenggunaId,
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.length > 0) {
+                                $.each(response, function(index, teamMember) {
+                                    ownerSelect.append('<option value="' + teamMember.id + '">' + teamMember.name + '</option>');
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching team members:', xhr, status, error);
+                            alert('Error fetching team members: ' + error);
+                        }
+                    });
+                }
+            });
         });
     </script>
     <script>
@@ -1064,11 +1147,14 @@
         }
     </script>
     <script>
-        var _validFileExtensions = [".gif", ".jpg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var _validFileExtensions = [".gif", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
+        var maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
+        
         function ValidateSingleInput(oInput) {
             if (oInput.type == "file") {
                 var sFileName = oInput.value;
                 if (sFileName.length > 0) {
+                    // Check file extension
                     var blnValid = false;
                     for (var j = 0; j < _validFileExtensions.length; j++) {
                         var sCurExtension = _validFileExtensions[j];
@@ -1079,13 +1165,40 @@
                     }
 
                     if (!blnValid) {
-                        alert("Sorry, invalid, attachment file format");
+                        alert("Sorry, invalid attachment file format");
                         oInput.value = "";
                         return false;
+                    }
+
+                    // Check file size
+                    if (oInput.files && oInput.files[0]) {
+                        var fileSize = oInput.files[0].size;
+                        if (fileSize > maxFileSize) {
+                            alert("File size exceeds 20MB limit. Please choose a smaller file.");
+                            oInput.value = "";
+                            return false;
+                        }
                     }
                 }
             }
             return true;
+        }
+
+        function showNextReplyAttachment() {
+            var attachmentRows = document.querySelectorAll('#reply-attachment-container .attachment-row');
+            var addButton = document.getElementById('add-reply-attachment-btn');
+            
+            for (var i = 0; i < attachmentRows.length; i++) {
+                if (attachmentRows[i].style.display === 'none') {
+                    attachmentRows[i].style.display = 'block';
+                    
+                    // Hide button if all 6 attachments are visible
+                    if (i === attachmentRows.length - 1) {
+                        addButton.style.display = 'none';
+                    }
+                    break;
+                }
+            }
         }
     </script>
 @endsection
