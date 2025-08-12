@@ -19,4 +19,6 @@ return array (
   'Max file size' => 'Saiz fail maksimum',
   'Invalid file format' => 'Maaf, format fail lampiran tidak sah',
   'Sending ticket please wait' => 'Menghantar Tiket Anda.. Sila Tunggu..',
+  'Phone Number' => 'Nombor Telefon',
+  'Enter phone number' => 'Masukkan nombor telefon',
 );

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LookupLesen;
-use App\Models\LookupKementerian;
+use App\Models\LookupAgensi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -13,12 +13,12 @@ class LookUpLesenController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = LookupLesen::with('kementerian')->orderBy('nama', 'ASC')->get();
+            $data = LookupLesen::with('agensi')->orderBy('nama', 'ASC')->get();
             
             return Datatables::of($data)
                 ->addIndexColumn()
-                ->addColumn('kementerian_nama', function ($data) {
-                    return $data->kementerian ? $data->kementerian->nama : '-';
+                ->addColumn('agensi_nama', function ($data) {
+                    return $data->agensi ? $data->agensi->nama : '-';
                 })
                 ->addColumn('status', function ($data) {
                     if ($data->is_active) {
@@ -45,8 +45,8 @@ class LookUpLesenController extends Controller
                 ->make(true);
         }
         
-        $kementerian = LookupKementerian::where('is_active', 1)->orderBy('nama', 'ASC')->get();
-        return view('pages.lookup_lesen', compact('kementerian'));
+        $agensi = LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+        return view('pages.lookup_lesen', compact('agensi'));
     }
 
     public function store(Request $request)
@@ -54,21 +54,21 @@ class LookUpLesenController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'penerangan' => 'nullable|string',
-            'kementerian_id' => 'required|exists:lookup_kementerian,id',
+            'agensi_id' => 'required|exists:lookup_agensi,id',
         ]);
 
         $duplicate = LookupLesen::where('nama', $request->nama)
-                               ->where('kementerian_id', $request->kementerian_id)
+                               ->where('agensi_id', $request->agensi_id)
                                ->first();
 
         if ($duplicate != null) {
-            return redirect()->back()->withErrors('Nama Lesen untuk Kementerian ini sudah wujud');
+            return redirect()->back()->withErrors('Nama Lesen untuk Agensi ini sudah wujud');
         }
 
         LookupLesen::create([
             'nama' => $request->nama,
             'penerangan' => $request->penerangan,
-            'kementerian_id' => $request->kementerian_id,
+            'agensi_id' => $request->agensi_id,
             'is_active' => true,
         ]);
 
@@ -78,7 +78,7 @@ class LookUpLesenController extends Controller
 
     public function edit($id)
     {
-        $lookup = LookupLesen::with('kementerian')->findOrFail($id);
+        $lookup = LookupLesen::with('agensi')->findOrFail($id);
         return response()->json($lookup);
     }
 
@@ -87,24 +87,24 @@ class LookUpLesenController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'penerangan' => 'nullable|string',
-            'kementerian_id' => 'required|exists:lookup_kementerian,id',
+            'agensi_id' => 'required|exists:lookup_agensi,id',
         ]);
 
         $lookup = LookupLesen::findOrFail($id);
         
         $duplicate = LookupLesen::where('nama', $request->nama)
-                               ->where('kementerian_id', $request->kementerian_id)
+                               ->where('agensi_id', $request->agensi_id)
                                ->where('id', '!=', $id)
                                ->first();
 
         if ($duplicate != null) {
-            return redirect()->back()->withErrors('Nama Lesen untuk Kementerian ini sudah wujud');
+            return redirect()->back()->withErrors('Nama Lesen untuk Agensi ini sudah wujud');
         }
 
         $lookup->update([
             'nama' => $request->nama,
             'penerangan' => $request->penerangan,
-            'kementerian_id' => $request->kementerian_id,
+            'agensi_id' => $request->agensi_id,
         ]);
 
         flash('Lesen berjaya dikemaskini', 'success');
@@ -123,10 +123,10 @@ class LookUpLesenController extends Controller
         return redirect()->back();
     }
 
-    // API method to get Lesen by Kementerian ID
-    public function getLesenByKementerian($kementerianId)
+    // API method to get Lesen by Agensi ID
+    public function getLesenByAgensi($agensiId)
     {
-        $lesen = LookupLesen::where('kementerian_id', $kementerianId)
+        $lesen = LookupLesen::where('agensi_id', $agensiId)
                            ->where('is_active', 1)
                            ->orderBy('nama', 'ASC')
                            ->get();

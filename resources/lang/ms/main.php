@@ -42,6 +42,7 @@ return array (
     'On Hold'       => 'Ditangguhkan',
     'New'           => 'Baru',
     'Lookup'        => 'Lookup',
+    'Lesen'       => 'Lesen',
 
     'High'          => 'Tinggi',
     'Medium'        => 'Sederhana',

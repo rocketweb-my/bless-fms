@@ -19,4 +19,6 @@ return [
     'Max file size' => 'Max file size',
     'Invalid file format' => 'Sorry, invalid attachment file format',
     'Sending ticket please wait' => 'Sending Your Ticket.. Please Wait..',
+    'Phone Number' => 'Phone Number',
+    'Enter phone number' => 'Enter phone number',
 ];

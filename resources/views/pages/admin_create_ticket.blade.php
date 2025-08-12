@@ -56,6 +56,10 @@
                                                             <input type="email" class="form-control" name="email">
                                                         </div>
                                                         <div class="form-group">
+                                                            <label class="form-label">Phone Number</label>
+                                                            <input type="text" class="form-control" name="phone_number" placeholder="Enter phone number">
+                                                        </div>
+                                                        <div class="form-group">
                                                             <label class="form-label">{{__('aduan_pertanyaan.Label')}} <small class="text-danger">*</small></label>
                                                             <select name="aduan_pertanyaan" id="select-aduan-pertanyaan" class="form-control custom-select" required>
                                                                 <option value="">{{__('aduan_pertanyaan.Select Type')}}</option>
@@ -92,10 +96,14 @@
                                                             </select>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label class="form-label">{{__('lookup_sub_agensi.Sub Agensi')}}</label>
-                                                            <select name="sub_agensi_id" id="sub-agensi-select" class="form-control custom-select" disabled>
-                                                                <option value="">{{__('lookup_sub_agensi.Select Sub Agensi')}}</option>
+                                                            <label class="form-label">{{__('main.Lesen')}}</label>
+                                                            <select name="lesen_id" id="admin-lesen-select" class="form-control custom-select" disabled>
+                                                                <option value="">Pilih Lesen</option>
                                                             </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="form-label">BL No</label>
+                                                            <input type="text" class="form-control" id="bl_no" name="bl_no" placeholder="Enter BL Number">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -122,10 +130,6 @@
                                                             </select>
                                                         </div>
 
-                                                        <div class="form-group">
-                                                            <label class="form-label">BL No</label>
-                                                            <input type="text" class="form-control" id="bl_no" name="bl_no" placeholder="Enter BL Number">
-                                                        </div>
                                                         <div class="form-group">
                                                             <label class="form-label">Subject <small class="text-danger">*</small></label>
                                                             <input type="text" class="form-control" id="subject" name="subject" required>
@@ -174,13 +178,18 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
+                                                    <label class="form-label">Select Kumpulan Pengguna for Assignment</label>
+                                                    <select name="assignment_kumpulan_pengguna_id" id="assignment-kumpulan-pengguna-select" class="form-control custom-select">
+                                                        <option value="">Pilih Kumpulan Pengguna</option>
+                                                        @foreach(\App\Models\LookupKumpulanPengguna::where('is_active', 1)->orderBy('nama', 'ASC')->get() as $kp)
+                                                            <option value="{{$kp->id}}">{{$kp->nama}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
                                                     <label class="form-label">Assign this ticket to</label>
                                                     <select name="owner" id="select-owner" class="form-control custom-select">
                                                         <option value="-1" selected>> Unassigned <</option>
-                                                        <option value="-2">> Auto-assign <</option>
-                                                        @foreach( allUser() as $user)
-                                                            <option value="{{$user->id}}">{{$user->name}}</option>
-                                                        @endforeach
                                                     </select>
                                                 </div>
                                                 <input type="hidden" name="openby" value="{{Illuminate\Support\Facades\Session::get('user_id')}}">
@@ -233,33 +242,61 @@
             $("#subject").val(name);
         });
 
-        // Agensi dependent dropdown functionality
+        // Agensi dependent dropdown functionality for Lesen
         $('#agensi-select').on('change', function() {
             var agensiId = $(this).val();
-            var subAgensiSelect = $('#sub-agensi-select');
+            var lesenSelect = $('#admin-lesen-select');
             
-            // Reset sub agensi dropdown
-            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.Select Sub Agensi")}}</option>');
-            subAgensiSelect.prop('disabled', true);
+            // Reset lesen dropdown
+            lesenSelect.html('<option value="">Pilih Lesen</option>');
+            lesenSelect.prop('disabled', true);
             
             if (agensiId) {
-                // Fetch sub agensi for selected agensi
+                // Fetch lesen for selected agensi
                 $.ajax({
-                    url: '/get-sub-agensi/' + agensiId,
+                    url: '/get-lesen/' + agensiId,
                     type: 'GET',
                     success: function(response) {
                         if (response.length > 0) {
-                            $.each(response, function(index, subAgensi) {
-                                subAgensiSelect.append('<option value="' + subAgensi.id + '">' + subAgensi.nama + '</option>');
+                            $.each(response, function(index, lesen) {
+                                lesenSelect.append('<option value="' + lesen.id + '">' + lesen.nama + '</option>');
                             });
-                            subAgensiSelect.prop('disabled', false);
+                            lesenSelect.prop('disabled', false);
                         } else {
-                            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.No Sub Agensi Available")}}</option>');
+                            lesenSelect.html('<option value="">Tiada Lesen Tersedia</option>');
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error fetching sub agensi:', xhr, status, error);
-                        alert('Error fetching sub agensi: ' + error);
+                        console.error('Error fetching lesen:', xhr, status, error);
+                        alert('Error fetching lesen: ' + error);
+                    }
+                });
+            }
+        });
+
+        // Kumpulan Pengguna dependent dropdown functionality for ticket assignment
+        $('#assignment-kumpulan-pengguna-select').on('change', function() {
+            var kumpulanPenggunaId = $(this).val();
+            var ownerSelect = $('#select-owner');
+            
+            // Reset owner dropdown to default options
+            ownerSelect.html('<option value="-1" selected>> Unassigned <</option>');
+            
+            if (kumpulanPenggunaId) {
+                // Fetch team members for selected kumpulan pengguna
+                $.ajax({
+                    url: '/get-team/' + kumpulanPenggunaId,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.length > 0) {
+                            $.each(response, function(index, teamMember) {
+                                ownerSelect.append('<option value="' + teamMember.id + '">' + teamMember.name + '</option>');
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching team members:', xhr, status, error);
+                        alert('Error fetching team members: ' + error);
                     }
                 });
             }

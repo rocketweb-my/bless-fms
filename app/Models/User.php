@@ -13,5 +13,9 @@ class User extends Model
     protected $guarded = ['id'];
     public $timestamps = false;
 
-
+    // Relationship with Kumpulan Pengguna
+    public function kumpulanPengguna()
+    {
+        return $this->belongsTo(LookupKumpulanPengguna::class, 'kumpulan_pengguna_id');
+    }
 }

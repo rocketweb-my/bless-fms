@@ -52,6 +52,10 @@
                                                         <input type="email" class="form-control" name="email" @if (env('OTP_SERVICE') == 'enabled') value="{{ Session::get('email_otp') }}" disabled @endif required>
                                                     </div>
                                                     <div class="form-group">
+                                                        <label class="form-label">{{__('public/feedback_submission.Phone Number')}}</label>
+                                                        <input type="text" class="form-control" name="phone_number">
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label class="form-label">{{__('aduan_pertanyaan.Label')}} <small class="text-danger">*</small></label>
                                                         <select name="aduan_pertanyaan" id="select-aduan-pertanyaan" class="form-control custom-select" required>
                                                             <option value="">{{__('aduan_pertanyaan.Select Type')}}</option>
@@ -79,10 +83,14 @@
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="form-label">{{__('lookup_sub_agensi.Sub Agensi')}}</label>
-                                                        <select name="sub_agensi_id" id="public-sub-agensi-select" class="form-control custom-select" disabled>
-                                                            <option value="">{{__('lookup_sub_agensi.Select Sub Agensi')}}</option>
+                                                        <label class="form-label">{{__('main.Lesen')}}</label>
+                                                        <select name="lesen_id" id="public-lesen-select" class="form-control custom-select" disabled>
+                                                            <option value="">Pilih Lesen</option>
                                                         </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">BL No</label>
+                                                        <input type="text" class="form-control" name="bl_no" placeholder="Enter BL Number">
                                                     </div>
                                                 </div>
                                             </div>
@@ -99,10 +107,6 @@
                                             <hr>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label class="form-label">BL No</label>
-                                                        <input type="text" class="form-control" name="bl_no" placeholder="Enter BL Number">
-                                                    </div>
                                                     <div class="form-group">
                                                         <label class="form-label">{{__('public/feedback_submission.Subject')}} <small class="text-danger">*</small></label>
                                                         <input type="text" class="form-control" name="subject" required>
@@ -181,33 +185,33 @@
             $(this).find("button[type='submit']").text('{{__('public/feedback_submission.Sending ticket please wait')}}');
         });
 
-        // Public Agensi dependent dropdown functionality
+        // Agensi dependent dropdown functionality for Lesen
         $('#public-agensi-select').on('change', function() {
             var agensiId = $(this).val();
-            var subAgensiSelect = $('#public-sub-agensi-select');
-            
-            // Reset sub agensi dropdown
-            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.Select Sub Agensi")}}</option>');
-            subAgensiSelect.prop('disabled', true);
-            
+            var lesenSelect = $('#public-lesen-select');
+
+            // Reset lesen dropdown
+            lesenSelect.html('<option value="">Pilih Lesen</option>');
+            lesenSelect.prop('disabled', true);
+
             if (agensiId) {
-                // Fetch sub agensi for selected agensi
+                // Fetch lesen for selected agensi
                 $.ajax({
-                    url: '/get-sub-agensi/' + agensiId,
+                    url: '/get-lesen/' + agensiId,
                     type: 'GET',
                     success: function(response) {
                         if (response.length > 0) {
-                            $.each(response, function(index, subAgensi) {
-                                subAgensiSelect.append('<option value="' + subAgensi.id + '">' + subAgensi.nama + '</option>');
+                            $.each(response, function(index, lesen) {
+                                lesenSelect.append('<option value="' + lesen.id + '">' + lesen.nama + '</option>');
                             });
-                            subAgensiSelect.prop('disabled', false);
+                            lesenSelect.prop('disabled', false);
                         } else {
-                            subAgensiSelect.html('<option value="">{{__("lookup_sub_agensi.No Sub Agensi Available")}}</option>');
+                            lesenSelect.html('<option value="">Tiada Lesen Tersedia</option>');
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error fetching sub agensi:', xhr, status, error);
-                        alert('Error fetching sub agensi: ' + error);
+                        console.error('Error fetching lesen:', xhr, status, error);
+                        alert('Error fetching lesen: ' + error);
                     }
                 });
             }

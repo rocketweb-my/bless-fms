@@ -212,6 +212,56 @@
                                             </div>
 
                                             <div class="col-5 mb-2">
+                                                <label>{{__('public/feedback_reply.Sub Category')}}:</label>
+                                            </div>
+                                            <div class="col-7">
+                                                <span class="font-weight-bold mr-2">{{\App\Models\SubCategory::find($ticket->sub_category)->name ?? 'Unknown Sub Category'}}</span>
+                                            </div>
+
+                                            <div class="col-5 mb-2">
+                                                <label>{{__('aduan_pertanyaan.Label')}}:</label>
+                                            </div>
+                                            <div class="col-7">
+                                                <span class="font-weight-bold mr-2">{{ ucfirst($ticket->aduan_pertanyaan) }}</span>
+                                            </div>
+
+                                            @if($ticket->kaedah_melapor_id)
+                                            <div class="col-5 mb-2">
+                                                <label>{{__('lookup_kaedah_melapor.Kaedah Melapor')}}:</label>
+                                            </div>
+                                            <div class="col-7">
+                                                <span class="font-weight-bold mr-2">{{\App\Models\LookupKaedahMelapor::find($ticket->kaedah_melapor_id)->nama ?? 'Unknown Kaedah Melapor'}}</span>
+                                            </div>
+                                            @endif
+
+                                            @if($ticket->agensi_id)
+                                            <div class="col-5 mb-2">
+                                                <label>{{__('lookup_agensi.Agensi')}}:</label>
+                                            </div>
+                                            <div class="col-7">
+                                                <span class="font-weight-bold mr-2">{{\App\Models\LookupAgensi::find($ticket->agensi_id)->nama ?? 'Unknown Agensi'}}</span>
+                                            </div>
+                                            @endif
+
+                                            @if($ticket->lesen_id)
+                                            <div class="col-5 mb-2">
+                                                <label>{{__('main.Lesen')}}:</label>
+                                            </div>
+                                            <div class="col-7">
+                                                <span class="font-weight-bold mr-2">{{$ticket->lesen->nama ?? 'Unknown Lesen'}}</span>
+                                            </div>
+                                            @endif
+
+                                            @if($ticket->bl_no)
+                                            <div class="col-5 mb-2">
+                                                <label>BL No:</label>
+                                            </div>
+                                            <div class="col-7">
+                                                <span class="font-weight-bold mr-2">{{$ticket->bl_no}}</span>
+                                            </div>
+                                            @endif
+
+                                            <div class="col-5 mb-2">
                                                 <label>{{__('public/feedback_reply.Replies')}}:</label>
                                             </div>
                                             <div class="col-7">

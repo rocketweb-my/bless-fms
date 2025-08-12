@@ -45,6 +45,9 @@ return [
     'Ticket History'            => 'Ticket History',
     'Action'                    => 'Action',
     'Delete ticket'             => 'Delete ticket',
+    'Sub Category'              => 'Sub Category',
+    'Phone Number'              => 'Phone Number',
+    'BL No'                     => 'BL No',
 
     'Close'                     => 'Close',
     'Select a canned response'  => 'Select a canned response',

@@ -41,7 +41,7 @@
                                                 <tr>
                                                     <th class="">No</th>
                                                     <th class="">Nama</th>
-                                                    <th class="">Kementerian</th>
+                                                    <th class="">Agensi</th>
                                                     <th class="">Penerangan</th>
                                                     <th class="">Status</th>
                                                     <th class="">Tarikh Dicipta</th>
@@ -76,11 +76,11 @@
                                 @csrf
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label for="kementerian_id" class="form-control-label">Kementerian <small class="text-danger">*</small></label>
-                                        <select class="form-control" id="kementerian_id" name="kementerian_id" required>
-                                            <option value="">Pilih Kementerian</option>
-                                            @foreach($kementerian as $k)
-                                                <option value="{{ $k->id }}">{{ $k->nama }}</option>
+                                        <label for="agensi_id" class="form-control-label">Agensi <small class="text-danger">*</small></label>
+                                        <select class="form-control" id="agensi_id" name="agensi_id" required>
+                                            <option value="">Pilih Agensi</option>
+                                            @foreach($agensi as $a)
+                                                <option value="{{ $a->id }}">{{ $a->nama }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -117,11 +117,11 @@
                                 @method('PUT')
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label for="edit_kementerian_id" class="form-control-label">Kementerian <small class="text-danger">*</small></label>
-                                        <select class="form-control" id="edit_kementerian_id" name="kementerian_id" required>
-                                            <option value="">Pilih Kementerian</option>
-                                            @foreach($kementerian as $k)
-                                                <option value="{{ $k->id }}">{{ $k->nama }}</option>
+                                        <label for="edit_agensi_id" class="form-control-label">Agensi <small class="text-danger">*</small></label>
+                                        <select class="form-control" id="edit_agensi_id" name="agensi_id" required>
+                                            <option value="">Pilih Agensi</option>
+                                            @foreach($agensi as $a)
+                                                <option value="{{ $a->id }}">{{ $a->nama }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -159,7 +159,7 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'nama', name: 'nama'},
-                    {data: 'kementerian_nama', name: 'kementerian_nama'},
+                    {data: 'agensi_nama', name: 'agensi_nama'},
                     {data: 'penerangan', name: 'penerangan'},
                     {data: 'status', name: 'status'},
                     {data: 'created_date', name: 'created_date'},
@@ -174,7 +174,7 @@
                     $('#editForm').attr('action', '/lookup/lesen/' + id);
                     $('#edit_nama').val(data.nama);
                     $('#edit_penerangan').val(data.penerangan);
-                    $('#edit_kementerian_id').val(data.kementerian_id);
+                    $('#edit_agensi_id').val(data.agensi_id);
                     $('#editModal').modal('show');
                 });
             });

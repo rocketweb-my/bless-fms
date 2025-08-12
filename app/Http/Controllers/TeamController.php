@@ -79,8 +79,9 @@ class TeamController extends Controller
 
         $categories = Category::all();
         $kementerian = \App\Models\LookupKementerian::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+        $kumpulanPengguna = \App\Models\LookupKumpulanPengguna::where('is_active', 1)->orderBy('nama', 'ASC')->get();
 
-        return view('pages.team', compact('categories', 'kementerian'));
+        return view('pages.team', compact('categories', 'kementerian', 'kumpulanPengguna'));
     }
 
     public function store(Request $request)
@@ -140,6 +141,7 @@ class TeamController extends Controller
                 'notify_pm' => $request->notify_pm,
                 'notify_note' => $request->notify_note,
                 'autoassign' => $request->autoassign ?? 0,
+                'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                 'kementerian_id' => $request->kementerian_id,
                 'agensi_id' => $request->agensi_id,
                 'sub_agensi_id' => $request->sub_agensi_id,
@@ -174,6 +176,7 @@ class TeamController extends Controller
                 'notify_pm' => $request->notify_pm,
                 'notify_note' => $request->notify_note,
                 'autoassign' => $request->autoassign ?? 0,
+                'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                 'kementerian_id' => $request->kementerian_id,
                 'agensi_id' => $request->agensi_id,
                 'sub_agensi_id' => $request->sub_agensi_id,
@@ -203,8 +206,9 @@ class TeamController extends Controller
         $total_resolved = Ticket::where('owner', $user->id)->where('status','3')->get()->count();
 
         $kementerian = \App\Models\LookupKementerian::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+        $kumpulanPengguna = \App\Models\LookupKumpulanPengguna::where('is_active', 1)->orderBy('nama', 'ASC')->get();
 
-        return view('pages.team_profile', compact('user','total_ticket','total_resolved','categories','kementerian'));
+        return view('pages.team_profile', compact('user','total_ticket','total_resolved','categories','kementerian','kumpulanPengguna'));
     }
 
     public function update_profile(Request $request)
@@ -244,6 +248,7 @@ class TeamController extends Controller
                         'notify_pm' => $request->notify_pm,
                         'notify_note' => $request->notify_note,
                         'autoassign' => $request->autoassign ?? 0,
+                        'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                         'kementerian_id' => $request->kementerian_id,
                         'agensi_id' => $request->agensi_id,
                         'sub_agensi_id' => $request->sub_agensi_id,
@@ -281,6 +286,7 @@ class TeamController extends Controller
                         'notify_pm' => $request->notify_pm,
                         'notify_note' => $request->notify_note,
                         'autoassign' => $request->autoassign ?? 0,
+                        'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                         'kementerian_id' => $request->kementerian_id,
                         'agensi_id' => $request->agensi_id,
                         'sub_agensi_id' => $request->sub_agensi_id,
@@ -328,6 +334,7 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                             'kementerian_id' => $request->kementerian_id,
                             'agensi_id' => $request->agensi_id,
                             'sub_agensi_id' => $request->sub_agensi_id,
@@ -363,6 +370,7 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                             'kementerian_id' => $request->kementerian_id,
                             'agensi_id' => $request->agensi_id,
                             'sub_agensi_id' => $request->sub_agensi_id,
@@ -412,6 +420,7 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                             'kementerian_id' => $request->kementerian_id,
                             'agensi_id' => $request->agensi_id,
                             'sub_agensi_id' => $request->sub_agensi_id,
@@ -447,6 +456,7 @@ class TeamController extends Controller
                             'notify_assigned' => $request->notify_assigned,
                             'notify_pm' => $request->notify_pm,
                             'notify_note' => $request->notify_note,
+                            'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                             'kementerian_id' => $request->kementerian_id,
                             'agensi_id' => $request->agensi_id,
                             'sub_agensi_id' => $request->sub_agensi_id,
@@ -493,6 +503,7 @@ class TeamController extends Controller
                                 'notify_pm' => $request->notify_pm,
                                 'notify_note' => $request->notify_note,
                                 'autoassign' => $request->autoassign ?? 0,
+                                'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                                 'kementerian_id' => $request->kementerian_id,
                                 'agensi_id' => $request->agensi_id,
                                 'sub_agensi_id' => $request->sub_agensi_id,
@@ -528,6 +539,7 @@ class TeamController extends Controller
                                 'notify_assigned' => $request->notify_assigned,
                                 'notify_pm' => $request->notify_pm,
                                 'notify_note' => $request->notify_note,
+                                'kumpulan_pengguna_id' => $request->kumpulan_pengguna_id,
                             ]);
                         }
                     }
@@ -595,6 +607,17 @@ class TeamController extends Controller
             flash('User Status Changed to Inactive', 'success');
         }
         return response()->json(['success'=>'Ajax request submitted successfully']);
+    }
+
+    // API method to get Team Members by Kumpulan Pengguna ID
+    public function getTeamByKumpulanPengguna($kumpulanPenggunaId)
+    {
+        $teamMembers = User::where('kumpulan_pengguna_id', $kumpulanPenggunaId)
+                          ->where('is_active', 1)
+                          ->orderBy('name', 'ASC')
+                          ->get(['id', 'name']);
+        
+        return response()->json($teamMembers);
     }
 
 }

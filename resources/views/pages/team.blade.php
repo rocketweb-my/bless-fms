@@ -123,6 +123,19 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <label>Kumpulan Pengguna:</label>
+                                                                        <select name="kumpulan_pengguna_id" id="kumpulan_pengguna_id_modal" class="form-control">
+                                                                            <option value="">Pilih Kumpulan Pengguna</option>
+                                                                            @foreach($kumpulanPengguna as $kp)
+                                                                                <option value="{{$kp->id}}">{{$kp->nama}}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
                                                             <!-- Contact Information -->
                                                             <div class="row">

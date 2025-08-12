@@ -48,4 +48,9 @@ class Ticket extends Model
     {
         return getPriorityName($this->priority) ?: 'Unknown';
     }
+
+    public function lesen()
+    {
+        return $this->belongsTo('App\Models\LookupLesen', 'lesen_id', 'id');
+    }
 }

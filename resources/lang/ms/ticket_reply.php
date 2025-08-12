@@ -45,6 +45,9 @@ return [
     'Ticket History'            => 'Sejarah Tiket',
     'Action'                    => 'Tindakan',
     'Delete ticket'             => 'Padam tiket',
+    'Sub Category'              => 'Sub Kategori',
+    'Phone Number'              => 'Nombor Telefon',
+    'BL No'                     => 'BL No',
 
     'Close'                     => 'Tutup',
     'Select a canned response' => 'Pilih respons prasiap',

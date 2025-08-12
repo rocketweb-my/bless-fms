@@ -57,6 +57,16 @@
                                                     <span class="font-weight-bold mr-2">{{ $ticket->email }}</span>
                                                 </div>
 
+                                                <!-- Phone Number -->
+                                                @if($ticket->phone_number)
+                                                <div class="col-2 mb-2">
+                                                    <label>{{__('ticket_reply.Phone Number')}}</label>
+                                                </div>
+                                                <div class="col-10">
+                                                    <span class="font-weight-bold mr-2">{{ $ticket->phone_number }}</span>
+                                                </div>
+                                                @endif
+
                                                 <!-- Custom Fields -->
                                                 @for ($i = 1; $i <= 20; $i++)
                                                     @if ($ticket->{'custom' . $i})
@@ -532,6 +542,56 @@
                                                 <div class="col-7">
                                                     <span class="font-weight-bold mr-2">{{categoryName($ticket->category)->name}}</span>
                                                 </div>
+
+                                                <div class="col-5 mb-2">
+                                                    <label>{{__('ticket_reply.Sub Category')}}:</label>
+                                                </div>
+                                                <div class="col-7">
+                                                    <span class="font-weight-bold mr-2">{{\App\Models\SubCategory::find($ticket->sub_category)->name ?? 'Unknown Sub Category'}}</span>
+                                                </div>
+
+                                                <div class="col-5 mb-2">
+                                                    <label>{{__('aduan_pertanyaan.Label')}}:</label>
+                                                </div>
+                                                <div class="col-7">
+                                                    <span class="font-weight-bold mr-2">{{ ucfirst($ticket->aduan_pertanyaan) }}</span>
+                                                </div>
+
+                                                @if($ticket->kaedah_melapor_id)
+                                                <div class="col-5 mb-2">
+                                                    <label>{{__('lookup_kaedah_melapor.Kaedah Melapor')}}:</label>
+                                                </div>
+                                                <div class="col-7">
+                                                    <span class="font-weight-bold mr-2">{{\App\Models\LookupKaedahMelapor::find($ticket->kaedah_melapor_id)->nama ?? 'Unknown Kaedah Melapor'}}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->agensi_id)
+                                                <div class="col-5 mb-2">
+                                                    <label>{{__('lookup_agensi.Agensi')}}:</label>
+                                                </div>
+                                                <div class="col-7">
+                                                    <span class="font-weight-bold mr-2">{{\App\Models\LookupAgensi::find($ticket->agensi_id)->nama ?? 'Unknown Agensi'}}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->lesen_id)
+                                                <div class="col-5 mb-2">
+                                                    <label>{{__('main.Lesen')}}:</label>
+                                                </div>
+                                                <div class="col-7">
+                                                    <span class="font-weight-bold mr-2">{{$ticket->lesen->nama ?? 'Unknown Lesen'}}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->bl_no)
+                                                <div class="col-5 mb-2">
+                                                    <label>BL No:</label>
+                                                </div>
+                                                <div class="col-7">
+                                                    <span class="font-weight-bold mr-2">{{$ticket->bl_no}}</span>
+                                                </div>
+                                                @endif
 
                                                 <div class="col-5 mb-2">
                                                     <label>{{__('ticket_reply.Replies')}}:</label>

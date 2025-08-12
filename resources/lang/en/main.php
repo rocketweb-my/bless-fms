@@ -33,6 +33,7 @@ return [
     'Slider'            => 'Slider',
     'Thank You Message'            => 'Thank You Message',
     'Lookup'          => 'Lookup',
+    'Lesen'         => 'Lesen',
 
     /*Tickets Page*/
 

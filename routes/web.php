@@ -304,8 +304,11 @@ Route::get('/get-sub-agensi/{agensiId}', [LookUpSubAgensiController::class, 'get
 // Agensi by Kementerian API
 Route::get('/get-agensi/{kementerianId}', [LookUpAgensiController::class, 'getAgensiByKementerian'])->name('get-agensi');
 
-// Lesen by Kementerian API
-Route::get('/get-lesen/{kementerianId}', [LookUpLesenController::class, 'getLesenByKementerian'])->name('get-lesen');
+// Lesen by Agensi API
+Route::get('/get-lesen/{agensiId}', [LookUpLesenController::class, 'getLesenByAgensi'])->name('get-lesen');
+
+// Team Members by Kumpulan Pengguna API
+Route::get('/get-team/{kumpulanPenggunaId}', [TeamController::class, 'getTeamByKumpulanPengguna'])->name('get-team');
 Route::post('/public/reply_form',[PublicController::class, 'reply_form'])->name('public.reply_form');
 Route::post('/public/close_ticket',[PublicController::class, 'close_ticket'])->name('public.close_ticket');
 Route::post('/public/forgot_tracking',[PublicController::class, 'forgot_tracking'])->name('public.forgot_tracking');

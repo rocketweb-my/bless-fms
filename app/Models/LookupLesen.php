@@ -14,7 +14,7 @@ class LookupLesen extends Model
     protected $fillable = [
         'nama',
         'penerangan',
-        'kementerian_id',
+        'agensi_id',
         'is_active'
     ];
 
@@ -22,9 +22,9 @@ class LookupLesen extends Model
         'is_active' => 'boolean',
     ];
 
-    // Relationship with Kementerian
-    public function kementerian()
+    // Relationship with Agensi
+    public function agensi()
     {
-        return $this->belongsTo(LookupKementerian::class, 'kementerian_id');
+        return $this->belongsTo(LookupAgensi::class, 'agensi_id');
     }
 }

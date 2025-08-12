@@ -68,8 +68,9 @@ class PublicController extends Controller
         $before_messages = CustomField::where('place', '0')->where('use', '1')->whereNotNull('value')->orderBy('order','ASC')->get();
 
         $agensi = \App\Models\LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+        $activePriorities = \App\Models\LookupPriority::where('is_active', 1)->orderBy('priority_value', 'ASC')->get();
 
-        return view('pages.public.feedback_submission', compact('before_messages', 'after_messages','selected_category','selected_sub_category','agensi'));
+        return view('pages.public.feedback_submission', compact('before_messages', 'after_messages','selected_category','selected_sub_category','agensi','activePriorities'));
     }
     public function submission_category(Request $request)
     {
@@ -135,28 +136,11 @@ class PublicController extends Controller
 
         $tracking_id = generateTicketID();
         $attachment_list= '';
-        $owner = 0;
+        $owner = 0; // Always keep public tickets unassigned
         $owner_email = '';
         $history = '<li class="smaller">'.Carbon::now().' | submitted by Customer</li>';
 
-        //Auto Assign Ticket
-        if (systemSetting()->autoassign == 1)
-        {
-
-        $autoassign_owner = autoAssignTicket($request->category);
-
-            if ($autoassign_owner != null)
-            {
-                $owner   = $autoassign_owner->id;
-                $owner_email = $autoassign_owner->email;
-                $history .= '<li class="smaller">'.Carbon::now().' | automatically assigned to '.$autoassign_owner->name.' ('.$autoassign_owner->user.')</li>';
-            }
-            else
-            {
-                $owner= 0;
-
-            }
-        }
+        // Skip auto-assignment for public tickets - always keep them unassigned
 
         // Attachment Start //
         if($request->file()) {
@@ -211,15 +195,7 @@ class PublicController extends Controller
         $data = $request->all();
         Ticket::create($data);
 
-        if($autoassign_owner != null) {
-            if($autoassign_owner->notify_new_my == 1)
-            {
-                Mail::to($owner_email)
-        //            ->cc($moreUsers)
-        //            ->bcc($evenMoreUsers)
-                    ->send(new StaffNotificationSumbmission($data));
-            }
-        }
+        // Skip staff notification since public tickets remain unassigned
 
         Mail::to($request->email)
 //            ->cc($moreUsers)

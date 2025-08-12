@@ -483,8 +483,9 @@ class TicketController extends Controller
 
         $kaedah_melapor = \App\Models\LookupKaedahMelapor::where('is_active', 1)->orderBy('nama', 'ASC')->get();
         $agensi = \App\Models\LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get();
+        $activePriorities = \App\Models\LookupPriority::where('is_active', 1)->orderBy('priority_value', 'ASC')->get();
 
-        return view('pages.admin_create_ticket', compact('before_messages', 'after_messages','selected_category','selected_sub_category','ticket_templates','kaedah_melapor','agensi'));
+        return view('pages.admin_create_ticket', compact('before_messages', 'after_messages','selected_category','selected_sub_category','ticket_templates','kaedah_melapor','agensi','activePriorities'));
     }
 
     public function admin_create_ticket_store(Request $request)
