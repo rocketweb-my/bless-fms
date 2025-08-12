@@ -103,6 +103,10 @@ class ReportV2Controller extends Controller
             $query->whereIn('category', $request->categories);
         }
         
+        if ($request->filled('sub_categories') && !in_array('all', $request->sub_categories)) {
+            $query->whereIn('sub_category', $request->sub_categories);
+        }
+        
         if ($request->filled('date_from')) {
             $query->where('dt', '>=', $request->date_from . ' 00:00:00');
         }
@@ -117,6 +121,27 @@ class ReportV2Controller extends Controller
         
         if ($request->filled('priority') && !in_array('all', $request->priority)) {
             $query->whereIn('priority', $request->priority);
+        }
+
+        // Apply new filter fields
+        if ($request->filled('aduan_pertanyaan') && !in_array('all', $request->aduan_pertanyaan)) {
+            $query->whereIn('aduan_pertanyaan', $request->aduan_pertanyaan);
+        }
+        
+        if ($request->filled('kaedah_melapor') && !in_array('all', $request->kaedah_melapor)) {
+            $query->whereIn('kaedah_melapor_id', $request->kaedah_melapor);
+        }
+        
+        if ($request->filled('agensi') && !in_array('all', $request->agensi)) {
+            $query->whereIn('agensi_id', $request->agensi);
+        }
+        
+        if ($request->filled('lesen') && !in_array('all', $request->lesen)) {
+            $query->whereIn('lesen_id', $request->lesen);
+        }
+        
+        if ($request->filled('bl_no')) {
+            $query->where('bl_no', 'like', '%' . $request->bl_no . '%');
         }
 
         // Apply custom field filters
@@ -185,6 +210,10 @@ class ReportV2Controller extends Controller
             $query->whereIn('category', $request->categories);
         }
         
+        if ($request->filled('sub_categories') && !in_array('all', $request->sub_categories)) {
+            $query->whereIn('sub_category', $request->sub_categories);
+        }
+        
         if ($request->filled('date_from')) {
             $query->where('dt', '>=', $request->date_from . ' 00:00:00');
         }
@@ -199,6 +228,27 @@ class ReportV2Controller extends Controller
         
         if ($request->filled('priority') && !in_array('all', $request->priority)) {
             $query->whereIn('priority', $request->priority);
+        }
+
+        // Apply new filter fields
+        if ($request->filled('aduan_pertanyaan') && !in_array('all', $request->aduan_pertanyaan)) {
+            $query->whereIn('aduan_pertanyaan', $request->aduan_pertanyaan);
+        }
+        
+        if ($request->filled('kaedah_melapor') && !in_array('all', $request->kaedah_melapor)) {
+            $query->whereIn('kaedah_melapor_id', $request->kaedah_melapor);
+        }
+        
+        if ($request->filled('agensi') && !in_array('all', $request->agensi)) {
+            $query->whereIn('agensi_id', $request->agensi);
+        }
+        
+        if ($request->filled('lesen') && !in_array('all', $request->lesen)) {
+            $query->whereIn('lesen_id', $request->lesen);
+        }
+        
+        if ($request->filled('bl_no')) {
+            $query->where('bl_no', 'like', '%' . $request->bl_no . '%');
         }
 
         // Apply custom field filters

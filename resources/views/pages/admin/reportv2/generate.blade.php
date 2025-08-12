@@ -37,6 +37,7 @@
                 <div class="card-body">
                     <form id="reportForm">
                         @csrf
+                        <!-- Date Range (Always First) -->
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -51,21 +52,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">{{__('advance_report.Categories')}}</label>
-                                    <select name="categories[]" class="form-control select2" multiple="multiple" id="categories">
-                                        <option value="all">{{__('advance_report.Select All Categories')}}</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{$category->id}}">{{$category->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">{{__('advance_report.Status')}}</label>
@@ -78,7 +65,38 @@
                                     </select>
                                 </div>
                             </div>
-                            
+                        </div>
+
+                        <!-- Category & Sub Category (Related Fields Together) -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">{{__('advance_report.Categories')}}</label>
+                                    <select name="categories[]" class="form-control select2" multiple="multiple" id="categories">
+                                        <option value="all">{{__('advance_report.Select All Categories')}}</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{$category->id}}">{{$category->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Sub Categories</label>
+                                    <select name="sub_categories[]" class="form-control select2" multiple="multiple" id="sub_categories">
+                                        <option value="all">Select All Sub Categories</option>
+                                        @php($subCategories = \App\Models\SubCategory::orderBy('name', 'ASC')->get())
+                                        @foreach($subCategories as $subCategory)
+                                            <option value="{{$subCategory->id}}">{{$subCategory->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Priority & Type (Key Classification Fields) -->
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">{{__('advance_report.Priority')}}</label>
@@ -90,14 +108,77 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">{{__('aduan_pertanyaan.Label')}}</label>
+                                    <select name="aduan_pertanyaan[]" class="form-control select2" multiple="multiple" id="aduan_pertanyaan">
+                                        <option value="all">Select All Types</option>
+                                        <option value="aduan">{{__('aduan_pertanyaan.Aduan')}}</option>
+                                        <option value="pertanyaan">{{__('aduan_pertanyaan.Pertanyaan')}}</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        
+
+                        <!-- Reporting Method & Agency (Process-Related Fields) -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">{{__('lookup_kaedah_melapor.Kaedah Melapor')}}</label>
+                                    <select name="kaedah_melapor[]" class="form-control select2" multiple="multiple" id="kaedah_melapor">
+                                        <option value="all">Select All Kaedah Melapor</option>
+                                        @php($kaedahMelapor = \App\Models\LookupKaedahMelapor::where('is_active', 1)->orderBy('nama', 'ASC')->get())
+                                        @foreach($kaedahMelapor as $kaedah)
+                                            <option value="{{$kaedah->id}}">{{$kaedah->nama}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">{{__('lookup_agensi.Agensi')}}</label>
+                                    <select name="agensi[]" class="form-control select2" multiple="multiple" id="agensi">
+                                        <option value="all">Select All Agensi</option>
+                                        @php($agensi = \App\Models\LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get())
+                                        @foreach($agensi as $ag)
+                                            <option value="{{$ag->id}}">{{$ag->nama}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- License & BL Number (Document-Related Fields) -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">{{__('main.Lesen')}}</label>
+                                    <select name="lesen[]" class="form-control select2" multiple="multiple" id="lesen">
+                                        <option value="all">Select All Lesen</option>
+                                        @php($lesen = \App\Models\LookupLesen::where('is_active', 1)->orderBy('nama', 'ASC')->get())
+                                        @foreach($lesen as $l)
+                                            <option value="{{$l->id}}">{{$l->nama}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">BL No</label>
+                                    <input type="text" name="bl_no" class="form-control" id="bl_no" placeholder="Enter BL Number to filter">
+                                </div>
+                            </div>
+                        </div>
+
                         @if($customFields->count() > 0)
                         <!-- Advanced Filters Section -->
                         <div id="advancedFiltersSection" style="display: none;">
                             <hr>
                             <h6 class="text-info"><i class="fa fa-filter"></i> {{__('advance_report.Advanced Filters')}}</h6>
-                            
+
                             <div class="row">
                                 @foreach($customFields as $field)
                                 <div class="col-md-6">
@@ -115,7 +196,7 @@
                             </div>
                         </div>
                         @endif
-                        
+
                         <div class="row">
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-primary" id="previewBtn">
@@ -203,7 +284,7 @@
     <script src="{{ URL::asset('assets/plugins/bootstrap-daterangepicker/moment.min.js')}}"></script>
     <script src="{{ URL::asset('assets/plugins/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
     <script src="{{ URL::asset('assets/plugins/select2/select2.full.min.js')}}"></script>
-    
+
     <script>
         $(document).ready(function() {
             // Initialize date range picker
@@ -239,7 +320,7 @@
             function handleSelectAll(selectId) {
                 $('#' + selectId).on('change', function() {
                     var selectedValues = $(this).val();
-                    
+
                     if (selectedValues && selectedValues.includes('all')) {
                         // If "Select All" is selected, select all other options except "all"
                         var allOptions = [];
@@ -255,9 +336,14 @@
 
             // Apply select all functionality to all multi-select dropdowns
             handleSelectAll('categories');
+            handleSelectAll('sub_categories');
             handleSelectAll('status');
             handleSelectAll('priority');
-            
+            handleSelectAll('aduan_pertanyaan');
+            handleSelectAll('kaedah_melapor');
+            handleSelectAll('agensi');
+            handleSelectAll('lesen');
+
             // Apply select all functionality to custom field filters
             $('select[id^="custom_field_"]').each(function() {
                 var fieldId = $(this).attr('id');
@@ -268,7 +354,7 @@
             $('#toggleAdvancedFilters').click(function() {
                 var section = $('#advancedFiltersSection');
                 var button = $(this);
-                
+
                 if (section.is(':visible')) {
                     section.slideUp();
                     button.html('<i class="fa fa-plus"></i> {{__('advance_report.Show Advanced Filters')}}');
@@ -277,7 +363,7 @@
                     section.slideDown();
                     button.html('<i class="fa fa-minus"></i> {{__('advance_report.Hide Advanced Filters')}}');
                     button.removeClass('btn-outline-info').addClass('btn-outline-danger');
-                    
+
                     // Reinitialize Select2 for custom fields to fix width issues
                     setTimeout(function() {
                         $('select[id^="custom_field_"]').select2('destroy').select2({
@@ -341,10 +427,16 @@
                                 date_from: $('#date_from').val(),
                                 date_to: $('#date_to').val(),
                                 categories: $('select[name="categories[]"]').val(),
+                                sub_categories: $('select[name="sub_categories[]"]').val(),
                                 status: $('select[name="status[]"]').val(),
-                                priority: $('select[name="priority[]"]').val()
+                                priority: $('select[name="priority[]"]').val(),
+                                aduan_pertanyaan: $('select[name="aduan_pertanyaan[]"]').val(),
+                                kaedah_melapor: $('select[name="kaedah_melapor[]"]').val(),
+                                agensi: $('select[name="agensi[]"]').val(),
+                                lesen: $('select[name="lesen[]"]').val(),
+                                bl_no: $('#bl_no').val()
                             };
-                            
+
                             // Add custom field filters
                             $('select[id^="custom_field_"]').each(function() {
                                 var fieldName = $(this).attr('name');
@@ -353,10 +445,10 @@
                                     formData[fieldName.replace('[]', '')] = fieldValue;
                                 }
                             });
-                            
+
                             // Debug logging
                             console.log('Sending data:', formData);
-                            
+
                             // Merge with DataTables parameters
                             return $.extend({}, d, formData);
                         },
@@ -384,14 +476,14 @@
                         // Update record count
                         var recordCount = settings.json.recordsTotal || 0;
                         $('#recordCount').text(recordCount + ' {{__('advance_report.records')}}');
-                        
+
                         // Show export button if there are records
                         if (recordCount > 0) {
                             $('#exportBtn').show();
                         } else {
                             $('#exportBtn').hide();
                         }
-                        
+
                         // Reset button text
                         $('#previewBtn').html('<i class="fa fa-search"></i> Filter Data');
                         $('#previewBtn').prop('disabled', false);
@@ -399,7 +491,7 @@
                     initComplete: function(settings, json) {
                         // Show preview section when table is ready
                         $('#previewSection').show();
-                        
+
                         // Reset button text
                         $('#previewBtn').html('<i class="fa fa-search"></i> Filter Data');
                         $('#previewBtn').prop('disabled', false);
@@ -451,6 +543,18 @@
                     });
                 }
 
+                // Add sub categories
+                var subCategories = $('select[name="sub_categories[]"]').val();
+                if (subCategories) {
+                    subCategories.forEach(function(subCat) {
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'sub_categories[]',
+                            'value': subCat
+                        }));
+                    });
+                }
+
                 // Add status
                 var status = $('select[name="status[]"]').val();
                 if (status) {
@@ -473,6 +577,64 @@
                             'value': pri
                         }));
                     });
+                }
+
+                // Add aduan_pertanyaan
+                var aduanPertanyaan = $('select[name="aduan_pertanyaan[]"]').val();
+                if (aduanPertanyaan) {
+                    aduanPertanyaan.forEach(function(ap) {
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'aduan_pertanyaan[]',
+                            'value': ap
+                        }));
+                    });
+                }
+
+                // Add kaedah_melapor
+                var kaedahMelapor = $('select[name="kaedah_melapor[]"]').val();
+                if (kaedahMelapor) {
+                    kaedahMelapor.forEach(function(km) {
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'kaedah_melapor[]',
+                            'value': km
+                        }));
+                    });
+                }
+
+                // Add agensi
+                var agensi = $('select[name="agensi[]"]').val();
+                if (agensi) {
+                    agensi.forEach(function(ag) {
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'agensi[]',
+                            'value': ag
+                        }));
+                    });
+                }
+
+                // Add lesen
+                var lesen = $('select[name="lesen[]"]').val();
+                if (lesen) {
+                    lesen.forEach(function(l) {
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'lesen[]',
+                            'value': l
+                        }));
+                    });
+                }
+
+                // Add bl_no
+                var blNo = $('#bl_no').val();
+                if (blNo) {
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'bl_no',
+                        'value': blNo
+                    }));
                 }
 
                 // Add custom field filters
@@ -506,33 +668,33 @@
             $('#resetBtn').click(function() {
                 // Reset form
                 $('#reportForm')[0].reset();
-                
+
                 // Clear hidden date fields
                 $('#date_from').val('');
                 $('#date_to').val('');
-                
+
                 // Reset select2 dropdowns
                 $('.select2').val(null).trigger('change');
-                
+
                 // Hide advanced filters section and reset button
                 $('#advancedFiltersSection').hide();
                 $('#toggleAdvancedFilters').html('<i class="fa fa-plus"></i> {{__('advance_report.Show Advanced Filters')}}')
                     .removeClass('btn-outline-danger').addClass('btn-outline-info');
-                
+
                 // Clear date range picker
                 $('#daterange').val('');
-                
+
                 // Hide preview section and export button
                 $('#previewSection').hide();
                 $('#exportBtn').hide();
                 $('#recordCount').text('0 {{__('advance_report.records')}}');
-                
+
                 // Properly destroy and clear the table
                 if (table) {
                     table.destroy();
                     table = null;
                 }
-                
+
                 // Clear the table HTML
                 $('#reportTable').empty();
                 $('#reportTable').html(`
@@ -549,16 +711,16 @@
                         </tr>
                     </thead>
                 `);
-                
+
                 console.log('Form reset completed');
             });
 
             // Ticket Details Modal Functionality
             $(document).on('click', '.ticket-detail-link', function(e) {
                 e.preventDefault();
-                
+
                 var trackid = $(this).data('trackid');
-                
+
                 // Show modal with loading state
                 $('#ticketDetailsModal').modal('show');
                 $('#ticketDetailsContent').html(`
@@ -567,10 +729,10 @@
                         <p class="mt-2">{{__('advance_report.Loading')}}...</p>
                     </div>
                 `);
-                
+
                 // Update "View Full Ticket" link
                 $('#viewFullTicket').attr('href', '/ticket/' + trackid);
-                
+
                 // Fetch ticket details
                 $.get('{{ route("advance-report.ticket-details", ":trackid") }}'.replace(':trackid', trackid))
                     .done(function(response) {
@@ -579,50 +741,50 @@
                                 <div class="col-md-6">
                                     <h6><strong>{{__('advance_report.Reference Number')}}:</strong></h6>
                                     <p>${response.trackid}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Subject')}}:</strong></h6>
                                     <p>${response.subject}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Customer Name')}}:</strong></h6>
                                     <p>${response.name}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Customer Email')}}:</strong></h6>
                                     <p>${response.email}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Category')}}:</strong></h6>
                                     <p>${response.category}</p>
                                 </div>
                                 <div class="col-md-6">
                                     <h6><strong>{{__('advance_report.Status')}}:</strong></h6>
                                     <p>${response.status}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Priority')}}:</strong></h6>
                                     <p>${response.priority}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Owner')}}:</strong></h6>
                                     <p>${response.owner}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Created Date')}}:</strong></h6>
                                     <p>${response.dt}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Last Updated')}}:</strong></h6>
                                     <p>${response.lastchange}</p>
-                                    
+
                                     <h6><strong>{{__('advance_report.Replies Count')}}:</strong></h6>
                                     <p>${response.replies_count}</p>
                                 </div>
                             </div>
-                            
+
                             <hr>
                         `;
-                        
+
                         // Add custom fields if any
                         if (response.custom_fields && response.custom_fields.length > 0) {
                             html += `
                                 <h6><strong>{{__('advance_report.Custom Fields')}}:</strong></h6>
                                 <div class="row mb-3">
                             `;
-                            
+
                             response.custom_fields.forEach(function(field) {
                                 html += `
                                     <div class="col-md-6 mb-2">
@@ -631,17 +793,17 @@
                                     </div>
                                 `;
                             });
-                            
+
                             html += `</div><hr>`;
                         }
-                        
+
                         html += `
                             <h6><strong>{{__('advance_report.Message')}}:</strong></h6>
                             <div class="border p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
                                 ${response.message}
                             </div>
                         `;
-                        
+
                         // Add replies if any
                         if (response.replies && response.replies.length > 0) {
                             html += `
@@ -649,7 +811,7 @@
                                 <h6><strong>{{__('advance_report.Recent Replies')}}:</strong></h6>
                                 <div style="max-height: 300px; overflow-y: auto;">
                             `;
-                            
+
                             response.replies.slice(-3).forEach(function(reply) {
                                 html += `
                                     <div class="card mb-2">
@@ -663,10 +825,10 @@
                                     </div>
                                 `;
                             });
-                            
+
                             html += `</div>`;
                         }
-                        
+
                         $('#ticketDetailsContent').html(html);
                     })
                     .fail(function() {
