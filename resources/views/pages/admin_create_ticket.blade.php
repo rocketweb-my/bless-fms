@@ -55,10 +55,14 @@
                                                             <label class="form-label">Email <small class="text-danger">*</small></label>
                                                             <input type="email" class="form-control" name="email">
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">Phone Number</label>
                                                             <input type="text" class="form-control" name="phone_number" placeholder="Enter phone number">
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">{{__('aduan_pertanyaan.Label')}} <small class="text-danger">*</small></label>
                                                             <select name="aduan_pertanyaan" id="select-aduan-pertanyaan" class="form-control custom-select" required>
@@ -67,6 +71,8 @@
                                                                 <option value="pertanyaan">{{__('aduan_pertanyaan.Pertanyaan')}}</option>
                                                             </select>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">Priority<small class="text-danger">*</small></label>
                                                             <select name="priority" id="select-priority" class="form-control custom-select">
@@ -77,6 +83,8 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">{{__('lookup_kaedah_melapor.Kaedah Melapor')}} <small class="text-danger">*</small></label>
                                                             <select name="kaedah_melapor_id" id="select-kaedah-melapor" class="form-control custom-select" required>
@@ -86,6 +94,8 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">{{__('lookup_agensi.Agensi')}}</label>
                                                             <select name="agensi_id" id="agensi-select" class="form-control custom-select">
@@ -95,12 +105,16 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">{{__('main.Lesen')}}</label>
                                                             <select name="lesen_id" id="admin-lesen-select" class="form-control custom-select" disabled>
                                                                 <option value="">Pilih Lesen</option>
                                                             </select>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">BL No</label>
                                                             <input type="text" class="form-control" id="bl_no" name="bl_no" placeholder="Enter BL Number">
@@ -230,7 +244,7 @@
     <script>
         var _validFileExtensions = [".gif", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
         var maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
-        
+
         function ValidateSingleInput(oInput) {
             if (oInput.type == "file") {
                 var sFileName = oInput.value;
@@ -268,11 +282,11 @@
         function showNextAttachment() {
             var attachmentRows = document.querySelectorAll('.attachment-row');
             var addButton = document.getElementById('add-attachment-btn');
-            
+
             for (var i = 0; i < attachmentRows.length; i++) {
                 if (attachmentRows[i].style.display === 'none') {
                     attachmentRows[i].style.display = 'block';
-                    
+
                     // Hide button if all 6 attachments are visible
                     if (i === attachmentRows.length - 1) {
                         addButton.style.display = 'none';
@@ -293,11 +307,11 @@
         $('#agensi-select').on('change', function() {
             var agensiId = $(this).val();
             var lesenSelect = $('#admin-lesen-select');
-            
+
             // Reset lesen dropdown
             lesenSelect.html('<option value="">Pilih Lesen</option>');
             lesenSelect.prop('disabled', true);
-            
+
             if (agensiId) {
                 // Fetch lesen for selected agensi
                 $.ajax({
@@ -325,10 +339,10 @@
         $('#assignment-kumpulan-pengguna-select').on('change', function() {
             var kumpulanPenggunaId = $(this).val();
             var ownerSelect = $('#select-owner');
-            
+
             // Reset owner dropdown to default options
             ownerSelect.html('<option value="-1" selected>> Unassigned <</option>');
-            
+
             if (kumpulanPenggunaId) {
                 // Fetch team members for selected kumpulan pengguna
                 $.ajax({

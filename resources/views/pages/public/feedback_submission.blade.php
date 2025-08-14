@@ -51,10 +51,14 @@
                                                         <label class="form-label">{{__('public/feedback_submission.Email')}} <small class="text-danger">*</small></label>
                                                         <input type="email" class="form-control" name="email" @if (env('OTP_SERVICE') == 'enabled') value="{{ Session::get('email_otp') }}" disabled @endif required>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="form-label">{{__('public/feedback_submission.Phone Number')}}</label>
                                                         <input type="text" class="form-control" name="phone_number">
                                                     </div>
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="form-label">{{__('aduan_pertanyaan.Label')}} <small class="text-danger">*</small></label>
                                                         <select name="aduan_pertanyaan" id="select-aduan-pertanyaan" class="form-control custom-select" required>
@@ -63,6 +67,8 @@
                                                             <option value="pertanyaan">{{__('aduan_pertanyaan.Pertanyaan')}}</option>
                                                         </select>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="form-label">{{__('public/feedback_submission.Priority')}}<small class="text-danger">*</small></label>
                                                         <select name="priority" id="select-priority" class="form-control custom-select">
@@ -73,6 +79,8 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="form-label">{{__('lookup_agensi.Agensi')}}</label>
                                                         <select name="agensi_id" id="public-agensi-select" class="form-control custom-select">
@@ -82,12 +90,16 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="form-label">{{__('main.Lesen')}}</label>
                                                         <select name="lesen_id" id="public-lesen-select" class="form-control custom-select" disabled>
                                                             <option value="">Pilih Lesen</option>
                                                         </select>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="form-label">BL No</label>
                                                         <input type="text" class="form-control" name="bl_no" placeholder="Enter BL Number">
@@ -173,7 +185,7 @@
     <script>
         var _validFileExtensions = [".gif", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
         var maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
-        
+
         function ValidateSingleInput(oInput) {
             if (oInput.type == "file") {
                 var sFileName = oInput.value;
@@ -211,11 +223,11 @@
         function showNextPublicAttachment() {
             var attachmentRows = document.querySelectorAll('#public-attachment-container .attachment-row');
             var addButton = document.getElementById('add-public-attachment-btn');
-            
+
             for (var i = 0; i < attachmentRows.length; i++) {
                 if (attachmentRows[i].style.display === 'none') {
                     attachmentRows[i].style.display = 'block';
-                    
+
                     // Hide button if all 6 attachments are visible
                     if (i === attachmentRows.length - 1) {
                         addButton.style.display = 'none';
