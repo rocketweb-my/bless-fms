@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'Kumpulan Pengguna'                 => 'User Group',
-    'Senarai Kumpulan Pengguna'        => 'User Group List',
-    'Tambah Kumpulan Pengguna'         => 'Add User Group',
-    'Kemaskini Kumpulan Pengguna'      => 'Update User Group',
+    'Kumpulan Pengguna'                 => 'Kumpulan Pengguna',
+    'Senarai Kumpulan Pengguna'        => 'Kumpulan Pengguna List',
+    'Tambah Kumpulan Pengguna'         => 'Add Kumpulan Pengguna',
+    'Kemaskini Kumpulan Pengguna'      => 'Update Kumpulan Pengguna',
     'Nama'                              => 'Name',
     'Deskripsi'                         => 'Description',
     'Status'                            => 'Status',
