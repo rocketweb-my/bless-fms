@@ -119,8 +119,16 @@
                                                                                     @php($attachments = explode(",",trim($replies[$total_num]->attachments,',')))
                                                                                     @for($y = 0; $y < count($attachments); $y++)
                                                                                         @php($attachment_detail = explode('#',$attachments[$y]))
-                                                                                        @php($attachment_file = \App\Models\Attachment::where('att_id',$attachment_detail[0])->first())
-                                                                                        <a href={{ asset('storage/attachment/'.$attachment_file->saved_name) }} class="btn btn-success mr-2 mb-2" target="_blank"><i class="fa fa-download"></i> {{__('public/feedback_reply.Attachment')}} #{{$y+1}}</a>
+                                                                                        @if(count($attachment_detail) > 1)
+                                                                                            {{-- New format: att_id#filename --}}
+                                                                                            @php($attachment_file = \App\Models\Attachment::where('att_id',$attachment_detail[0])->first())
+                                                                                            @if($attachment_file)
+                                                                                                <a href="{{ asset('storage/attachment/'.$attachment_file->saved_name) }}" class="btn btn-success mr-2 mb-2" target="_blank"><i class="fa fa-download"></i> {{__('public/feedback_reply.Attachment')}} #{{$y+1}}</a>
+                                                                                            @endif
+                                                                                        @else
+                                                                                            {{-- Old format: just filename --}}
+                                                                                            <a href="{{ asset('storage/attachment/ticket/'.rawurlencode($attachments[$y])) }}" class="btn btn-success mr-2 mb-2" target="_blank"><i class="fa fa-download"></i> {{__('public/feedback_reply.Attachment')}} #{{$y+1}}</a>
+                                                                                        @endif
                                                                                     @endfor
                                                                                 @endif
                                                                             </div>

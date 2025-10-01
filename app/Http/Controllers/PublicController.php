@@ -555,20 +555,31 @@ class PublicController extends Controller
         ]);
 
         // Handle file attachments
-        $attachmentNames = [];
+        $attachment_list = '';
         if ($request->hasFile('file')) {
-            foreach ($request->file('file') as $file) {
-                if ($file) {
-                    $fileName = time() . '_' . $file->getClientOriginalName();
-                    $file->storeAs('attachment/ticket', $fileName, 'public');
-                    $attachmentNames[] = $fileName;
+            for ($x = 1; $x <= 6; $x++) {
+                if (isset($request->file[$x]) && $request->file[$x]) {
+                    $file = $request->file[$x];
+                    $save_file_name = $ticket->trackid . '_' . $file->hashName();
+                    $file->storeAs('public/attachment', $save_file_name);
+                    $file_size = $file->getSize();
+                    $original_file_name = $file->getClientOriginalName();
+
+                    $attachment = Attachment::create([
+                        'ticket_id' => $ticket->trackid,
+                        'saved_name' => $save_file_name,
+                        'real_name' => $original_file_name,
+                        'size' => $file_size,
+                    ]);
+
+                    $attachment_list .= $attachment->att_id . '#' . $original_file_name . ',';
                 }
             }
         }
 
         // Update attachments field
-        if (!empty($attachmentNames)) {
-            $ticket->update(['attachments' => implode(',', $attachmentNames)]);
+        if (!empty($attachment_list)) {
+            $ticket->update(['attachments' => rtrim($attachment_list, ',')]);
         }
 
         // Send email notification to customer

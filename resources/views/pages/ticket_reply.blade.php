@@ -119,8 +119,16 @@
                                             @php($attachments = explode(",",trim($ticket->attachments,',')))
                                             @for($x = 0; $x < count($attachments); $x++)
                                                 @php($attachment_detail = explode('#',$attachments[$x]))
-                                                @php($attachment_file = \App\Models\Attachment::where('att_id',$attachment_detail[0])->first())
-                                                <a href={{ asset('storage/attachment/'.$attachment_file->saved_name) }} class="btn btn-success mr-2 mb-2" target="_blank"><i class="fa fa-download"></i> Attachment #{{$x+1}}</a>
+                                                @if(count($attachment_detail) > 1)
+                                                    {{-- New format: att_id#filename --}}
+                                                    @php($attachment_file = \App\Models\Attachment::where('att_id',$attachment_detail[0])->first())
+                                                    @if($attachment_file)
+                                                        <a href="{{ asset('storage/attachment/'.$attachment_file->saved_name) }}" class="btn btn-success mr-2 mb-2" target="_blank"><i class="fa fa-download"></i> Attachment #{{$x+1}}</a>
+                                                    @endif
+                                                @else
+                                                    {{-- Old format: just filename --}}
+                                                    <a href="{{ asset('storage/attachment/ticket/'.rawurlencode($attachments[$x])) }}" class="btn btn-success mr-2 mb-2" target="_blank"><i class="fa fa-download"></i> Attachment #{{$x+1}}</a>
+                                                @endif
                                             @endfor
                                             @endif
                                             @foreach($notes as $note)
