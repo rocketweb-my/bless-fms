@@ -492,9 +492,9 @@ class PublicController extends Controller
         }
 
         // Determine name and email based on user type
-        $name = $request->user_type == 'other' ? $request->name : $pic->name;
-        $email = $request->user_type == 'other' ? $request->email : $pic->email;
-        $phone = $request->user_type == 'other' ? $request->phone_number : $pic->phone_number;
+        $name = ($request->user_type == 'other' || $request->user_type == 'public') ? $request->name : $pic->name;
+        $email = ($request->user_type == 'other' || $request->user_type == 'public') ? $request->email : $pic->email;
+        $phone = ($request->user_type == 'other' || $request->user_type == 'public') ? $request->phone_number : $pic->phone_number;
 
         // Get category name
         $category = \App\Models\Category::find($request->category_id);
@@ -505,6 +505,8 @@ class PublicController extends Controller
             'name' => $name,
             'email' => $email,
             'phone_number' => $phone,
+            'user_type' => $request->user_type,
+            'pic_id' => $pic->id,
             'category' => $request->category_id,
             'sub_category' => null,
             'priority' => '3', // Medium priority

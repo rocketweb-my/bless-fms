@@ -48,9 +48,13 @@
                                                         <input type="radio" id="user-type-self" name="user_type" value="self" class="custom-control-input" {{ old('user_type', 'self') == 'self' ? 'checked' : '' }}>
                                                         <label class="custom-control-label" for="user-type-self">Diri Sendiri</label>
                                                     </div>
-                                                    <div class="custom-control custom-radio">
+                                                    <div class="custom-control custom-radio mr-4">
                                                         <input type="radio" id="user-type-other" name="user_type" value="other" class="custom-control-input" {{ old('user_type') == 'other' ? 'checked' : '' }}>
                                                         <label class="custom-control-label" for="user-type-other">Anggota/Pegawai Lain</label>
+                                                    </div>
+                                                    <div class="custom-control custom-radio">
+                                                        <input type="radio" id="user-type-public" name="user_type" value="public" class="custom-control-input" {{ old('user_type') == 'public' ? 'checked' : '' }}>
+                                                        <label class="custom-control-label" for="user-type-public">Syarikat/Orang Awam</label>
                                                     </div>
                                                 </div>
                                             </div>

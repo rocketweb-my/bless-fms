@@ -84,7 +84,7 @@
                                     </div>
 
                                     {{-- PBM Information Card --}}
-                                    @if($ticket->kementerian_id || $ticket->agensi_id || $ticket->kategori_aduan || $ticket->nombor_serahan || $ticket->jenis_permohonan || $ticket->lesen_id || $ticket->bl_no)
+                                    @if($ticket->user_type || $ticket->pic_id || $ticket->kementerian_id || $ticket->agensi_id || $ticket->kategori_aduan || $ticket->nombor_serahan || $ticket->jenis_permohonan || $ticket->lesen_id || $ticket->bl_no)
                                     <div class="card">
                                         <div class="card-header">
                                             <h3 class="card-title">Ticket Information</h3>
@@ -94,6 +94,40 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
+                                                @if($ticket->pic_id)
+                                                <div class="col-2 mb-2">
+                                                    <label>Created By (PIC)</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->pic->name ?? 'N/A' }}</span>
+                                                    @if($ticket->pic)
+                                                        <br><small class="text-muted">{{ $ticket->pic->email }}</small>
+                                                        @if($ticket->pic->phone_number)
+                                                            <br><small class="text-muted">{{ $ticket->pic->phone_number }}</small>
+                                                        @endif
+                                                    @endif
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->user_type)
+                                                <div class="col-2 mb-2">
+                                                    <label>Jenis Pengadu</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">
+                                                        @if($ticket->user_type == 'self')
+                                                            Diri Sendiri
+                                                        @elseif($ticket->user_type == 'other')
+                                                            Anggota/Pegawai Lain
+                                                        @elseif($ticket->user_type == 'public')
+                                                            Syarikat/Orang Awam
+                                                        @else
+                                                            {{ ucfirst($ticket->user_type) }}
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                                @endif
+
                                                 @if($ticket->kementerian_id)
                                                 <div class="col-2 mb-2">
                                                     <label>Kementerian</label>

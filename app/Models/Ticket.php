@@ -63,4 +63,9 @@ class Ticket extends Model
     {
         return $this->belongsTo('App\Models\LookupAgensi', 'agensi_id', 'id');
     }
+
+    public function pic()
+    {
+        return $this->belongsTo('App\Models\PersonInCharge', 'pic_id', 'id');
+    }
 }
