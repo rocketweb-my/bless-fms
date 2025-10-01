@@ -359,6 +359,7 @@ Route::prefix('pic')->name('pic.')->group(function () {
     Route::middleware('pic.auth')->group(function () {
         Route::get('/create-ticket', [\App\Http\Controllers\PublicController::class, 'picCreateTicket'])->name('create.ticket');
         Route::post('/store-ticket', [\App\Http\Controllers\PublicController::class, 'picStoreTicket'])->name('store.ticket');
+        Route::get('/ticket-success/{trackingId}', [\App\Http\Controllers\PublicController::class, 'picTicketSuccess'])->name('ticket.success');
     });
 });
 

@@ -67,7 +67,7 @@
 
                 <div class="tracking-id">
                     <p class="mb-2 text-muted"><strong>Your Tracking ID:</strong></p>
-                    <h3>{{ $ticket->tracking_id }}</h3>
+                    <h3>{{ $ticket->trackid }}</h3>
                     <small class="text-muted">Please save this tracking ID for future reference</small>
                 </div>
 
@@ -84,23 +84,23 @@
                         </tr>
                         <tr>
                             <th>Category:</th>
-                            <td>{{ $ticket->category->name ?? 'N/A' }}</td>
+                            <td>{{ $ticket->category_detail->name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th>Priority:</th>
                             <td>
-                                <span class="badge badge-{{ $ticket->priority == 'High' ? 'danger' : ($ticket->priority == 'Medium' ? 'warning' : 'info') }}">
-                                    {{ $ticket->priority }}
+                                <span class="badge badge-{{ $ticket->priority == '1' ? 'danger' : ($ticket->priority == '2' ? 'warning' : 'info') }}">
+                                    {{ $ticket->priority == '1' ? 'High' : ($ticket->priority == '2' ? 'Medium' : 'Low') }}
                                 </span>
                             </td>
                         </tr>
                         <tr>
                             <th>Status:</th>
-                            <td><span class="badge badge-primary">{{ $ticket->status }}</span></td>
+                            <td><span class="badge badge-primary">{{ $ticket->status_detail ?? 'New' }}</span></td>
                         </tr>
                         <tr>
                             <th>Submitted:</th>
-                            <td>{{ $ticket->created_at->format('d M Y, h:i A') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($ticket->dt)->format('d M Y, h:i A') }}</td>
                         </tr>
                     </table>
                 </div>

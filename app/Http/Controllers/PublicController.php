@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomField;
 use Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
@@ -478,7 +479,7 @@ class PublicController extends Controller
     public function picStoreTicket(Request $request)
     {
         $request->validate([
-            'subject' => 'required|string|max:255',
+            'subject' => 'required|string|max:70',
             'category_id' => 'required|exists:categories,id',
             'message' => 'required|string',
         ]);
@@ -490,53 +491,109 @@ class PublicController extends Controller
             return redirect()->route('pic.login')->with('error', 'Session expired. Please login again.');
         }
 
+        // Determine name and email based on user type
+        $name = $request->user_type == 'other' ? $request->name : $pic->name;
+        $email = $request->user_type == 'other' ? $request->email : $pic->email;
+        $phone = $request->user_type == 'other' ? $request->phone_number : $pic->phone_number;
+
+        // Get category name
+        $category = \App\Models\Category::find($request->category_id);
+
         // Create ticket
         $ticket = Ticket::create([
-            'tracking_id' => $this->generateTrackingId(),
+            'trackid' => $this->generateTrackingId(),
+            'name' => $name,
+            'email' => $email,
+            'phone_number' => $phone,
+            'category' => $request->category_id,
+            'sub_category' => null,
+            'priority' => '3', // Medium priority
+            'kementerian_id' => $pic->kementerian_id,
+            'agensi_id' => $request->agensi_id,
+            'lesen_id' => $request->lesen_id,
+            'bl_no' => $request->bl_no,
+            'kategori_aduan' => $category ? $category->name : null,
+            'nombor_serahan' => $request->nombor_serahan,
+            'jenis_permohonan' => $request->jenis_permohonan,
             'subject' => $request->subject,
-            'category_id' => $request->category_id,
-            'email' => $pic->email,
-            'name' => $pic->name,
-            'phone_number' => $pic->phone_number,
             'message' => $request->message,
-            'status' => 'Open',
-            'priority' => $request->priority ?? 'Medium',
-            'source' => 'PIC Portal',
-            'custom_fields' => $request->custom_fields ? json_encode($request->custom_fields) : null,
+            'dt' => now(),
+            'lastchange' => now(),
+            'ip' => $request->ip(),
+            'language' => app()->getLocale(),
+            'status' => '0', // New
+            'openedby' => 0,
+            'owner' => 0,
+            'replies' => 0,
+            'staffreplies' => 0,
+            'lastreplier' => '0',
+            'archive' => '0',
+            'locked' => '0',
+            'attachments' => '',
+            'merged' => '',
+            'history' => '',
+            'custom1' => '',
+            'custom2' => '',
+            'custom3' => '',
+            'custom4' => '',
+            'custom5' => '',
+            'custom6' => '',
+            'custom7' => '',
+            'custom8' => '',
+            'custom9' => '',
+            'custom10' => '',
+            'custom11' => '',
+            'custom12' => '',
+            'custom13' => '',
+            'custom14' => '',
+            'custom15' => '',
+            'custom16' => '',
+            'custom17' => '',
+            'custom18' => '',
+            'custom19' => '',
+            'custom20' => '',
         ]);
 
-        // Handle attachments if any
-        if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->storeAs('public/attachment/ticket', $fileName);
-
-                Attachment::create([
-                    'ticket_id' => $ticket->id,
-                    'real_name' => $file->getClientOriginalName(),
-                    'saved_name' => $fileName,
-                ]);
-            }
-        }
-
-        // Send email notifications
-        try {
-            Mail::to($pic->email)->send(new ClientNotificationSumbmission($ticket));
-
-            // Notify staff
-            $category = Category::find($request->category_id);
-            if ($category && $category->user_id) {
-                $staff = User::find($category->user_id);
-                if ($staff) {
-                    Mail::to($staff->email)->send(new StaffNotificationSumbmission($ticket));
+        // Handle file attachments
+        $attachmentNames = [];
+        if ($request->hasFile('file')) {
+            foreach ($request->file('file') as $file) {
+                if ($file) {
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $file->storeAs('attachment/ticket', $fileName, 'public');
+                    $attachmentNames[] = $fileName;
                 }
             }
-        } catch (\Exception $e) {
-            // Log error but don't fail ticket creation
-            \Log::error('Failed to send ticket notification: ' . $e->getMessage());
         }
 
-        return redirect()->route('pic.ticket.success', $ticket->tracking_id);
+        // Update attachments field
+        if (!empty($attachmentNames)) {
+            $ticket->update(['attachments' => implode(',', $attachmentNames)]);
+        }
+
+        // Send email notification to customer
+        $data = [
+            'trackid' => $ticket->trackid,
+            'name' => $ticket->name,
+            'email' => $ticket->email,
+            'subject' => $ticket->subject,
+            'message' => $ticket->message,
+            'category' => $category ? $category->name : 'N/A',
+            'priority' => $ticket->priority == '1' ? 'High' : ($ticket->priority == '2' ? 'Medium' : 'Low'),
+            'status' => 'New',
+            'created_at' => $ticket->dt,
+        ];
+
+        try {
+            Log::info('Attempting to send ticket confirmation email to: ' . $ticket->email);
+            Mail::to($ticket->email)->send(new ClientNotificationSumbmission($data));
+            Log::info('Ticket confirmation email sent successfully to: ' . $ticket->email);
+        } catch (\Exception $e) {
+            Log::error('Failed to send ticket confirmation email: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+        }
+
+        return redirect()->route('pic.ticket.success', $ticket->trackid);
     }
 
     /**
@@ -555,7 +612,7 @@ class PublicController extends Controller
                 $character = $characters[$position];
                 $code = $code . $character;
             }
-        } while (Ticket::where('tracking_id', $code)->exists());
+        } while (Ticket::where('trackid', $code)->exists());
 
         return $code;
     }
@@ -565,7 +622,7 @@ class PublicController extends Controller
      */
     public function picTicketSuccess($trackingId)
     {
-        $ticket = Ticket::where('tracking_id', $trackingId)->firstOrFail();
+        $ticket = Ticket::where('trackid', $trackingId)->firstOrFail();
         return view('pages.pic.ticket-success', compact('ticket'));
     }
 }

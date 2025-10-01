@@ -3,18 +3,19 @@
 namespace App\Mail\Client;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class PublicSubmission extends Mailable
 {
     use Queueable, SerializesModels;
+
     public $data;
+
     /**
      * Create a new message instance.
-     *
-     * @return void
      */
     public function __construct($data)
     {
@@ -22,29 +23,32 @@ class PublicSubmission extends Mailable
     }
 
     /**
-     * Build the message.
-     *
-     * @return $this
+     * Get the message envelope.
      */
-    public function build()
+    public function envelope(): Envelope
     {
-        if(systemGeneralSetting() != null && systemGeneralSetting()->from_email != null)
-        {
-            $default_mail_address = systemGeneralSetting()->from_email;
-        }else{
-            $default_mail_address = 'noreply@antaradesk.com';
-        }
+        return new Envelope(
+            subject: 'Support Ticket Successfully Submitted',
+        );
+    }
 
-        if(systemGeneralSetting() != null && systemGeneralSetting()->from_name != null)
-        {
-            $default_mail_name = systemGeneralSetting()->from_name;
-        }else{
-            $default_mail_name = 'Antara Desk';
-        }
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.client.public_submission',
+        );
+    }
 
-        return $this->markdown('emails.client.public_submission')
-                    ->subject('Support Ticket Successfully Submitted')
-                    ->from($default_mail_address,$default_mail_name);
-
+    /**
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
     }
 }

@@ -22,6 +22,20 @@
                                         <h3 class="mb-0 card-title">Borang Aduan PBM Sistem BLESS</h3>
                                     </div>
                                     <div class="card-body">
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <strong>Ralat!</strong> Sila betulkan ralat berikut:
+                                                <ul class="mb-0 mt-2">
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+
                                         <form action="{{route('pic.store.ticket')}}" method="post" enctype="multipart/form-data" id="pic-ticket-form">
                                             @csrf
 
@@ -31,11 +45,11 @@
                                             <div class="form-group">
                                                 <div class="d-flex">
                                                     <div class="custom-control custom-radio mr-4">
-                                                        <input type="radio" id="user-type-self" name="user_type" value="self" class="custom-control-input" checked>
+                                                        <input type="radio" id="user-type-self" name="user_type" value="self" class="custom-control-input" {{ old('user_type', 'self') == 'self' ? 'checked' : '' }}>
                                                         <label class="custom-control-label" for="user-type-self">Diri Sendiri</label>
                                                     </div>
                                                     <div class="custom-control custom-radio">
-                                                        <input type="radio" id="user-type-other" name="user_type" value="other" class="custom-control-input">
+                                                        <input type="radio" id="user-type-other" name="user_type" value="other" class="custom-control-input" {{ old('user_type') == 'other' ? 'checked' : '' }}>
                                                         <label class="custom-control-label" for="user-type-other">Anggota/Pegawai Lain</label>
                                                     </div>
                                                 </div>
@@ -49,7 +63,10 @@
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Nama <small class="text-danger">*</small></label>
-                                                        <input type="text" class="form-control" id="nama" name="name" value="{{ $pic->name }}" readonly required>
+                                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="nama" name="name" value="{{ old('name', $pic->name) }}" readonly required>
+                                                        @error('name')
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -58,13 +75,19 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="form-label">Alamat Email <small class="text-danger">*</small></label>
-                                                        <input type="email" class="form-control" id="email" name="email" value="{{ $pic->email }}" readonly required>
+                                                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $pic->email) }}" readonly required>
+                                                        @error('email')
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="form-label">Nombor Telefon <small class="text-danger">*</small></label>
-                                                        <input type="text" class="form-control" id="no-telefon" name="phone_number" value="{{ $pic->phone_number }}" readonly required>
+                                                        <input type="text" class="form-control @error('phone_number') is-invalid @enderror" id="no-telefon" name="phone_number" value="{{ old('phone_number', $pic->phone_number) }}" readonly required>
+                                                        @error('phone_number')
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -81,7 +104,7 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="form-label">Bahagian/Agensi/Seksyen</label>
-                                                        <select id="agensi-select" name="agensi_id" class="form-control select2">
+                                                        <select id="agensi-select" name="agensi_id" class="form-control select2 @error('agensi_id') is-invalid @enderror">
                                                             <option value="">Sila Pilih</option>
                                                             @php
                                                                 $agensi_list = \App\Models\LookupAgensi::where('kementerian_id', $pic->kementerian_id)
@@ -90,9 +113,12 @@
                                                                     ->get();
                                                             @endphp
                                                             @foreach($agensi_list as $agensi)
-                                                                <option value="{{ $agensi->id }}" {{ $agensi->id == $pic->agensi_id ? 'selected' : '' }}>{{ $agensi->nama }}</option>
+                                                                <option value="{{ $agensi->id }}" {{ old('agensi_id', $pic->agensi_id) == $agensi->id ? 'selected' : '' }}>{{ $agensi->nama }}</option>
                                                             @endforeach
                                                         </select>
+                                                        @error('agensi_id')
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -105,59 +131,86 @@
                                             <!-- Kategori Aduan/Pertanyaan dropdown -->
                                             <div class="form-group">
                                                 <label class="form-label">Kategori Aduan/Pertanyaan <small class="text-danger">*</small></label>
-                                                <select id="kategori-aduan" name="category_id" class="form-control custom-select" required>
+                                                <select id="kategori-aduan" name="category_id" class="form-control custom-select @error('category_id') is-invalid @enderror" required>
                                                     <option value="">Sila Pilih</option>
                                                     @php
                                                         $categories = \App\Models\Category::where('type', '0')->orderBy('cat_order', 'ASC')->get();
                                                     @endphp
                                                     @foreach($categories as $category)
-                                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                                     @endforeach
                                                 </select>
+                                                @error('category_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
 
                                             <!-- Conditional fields container -->
                                             <div id="conditional-fields-container" style="display: none;">
                                                 <div class="form-group">
                                                     <label class="form-label">Nombor Serahan</label>
-                                                    <input type="text" id="nombor-serahan" name="nombor_serahan" class="form-control">
+                                                    <input type="text" id="nombor-serahan" name="nombor_serahan" class="form-control @error('nombor_serahan') is-invalid @enderror" value="{{ old('nombor_serahan') }}">
+                                                    @error('nombor_serahan')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label class="form-label">Lesen</label>
-                                                    <select id="lesen" name="lesen_id" class="form-control custom-select">
+                                                    <select id="lesen" name="lesen_id" class="form-control custom-select @error('lesen_id') is-invalid @enderror">
                                                         <option value="">Sila Pilih</option>
                                                         @php
                                                             $lesens = \App\Models\LookupLesen::where('agensi_id', $pic->agensi_id)->get();
                                                         @endphp
                                                         @foreach($lesens as $lesen)
-                                                            <option value="{{ $lesen->id }}">{{ $lesen->nama }}</option>
+                                                            <option value="{{ $lesen->id }}" {{ old('lesen_id') == $lesen->id ? 'selected' : '' }}>{{ $lesen->nama }}</option>
                                                         @endforeach
                                                     </select>
+                                                    @error('lesen_id')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label class="form-label">Jenis Permohonan</label>
-                                                    <select id="jenis-permohonan" name="jenis_permohonan" class="form-control custom-select">
+                                                    <select id="jenis-permohonan" name="jenis_permohonan" class="form-control custom-select @error('jenis_permohonan') is-invalid @enderror">
                                                         <option value="">Sila Pilih</option>
-                                                        <option value="Baharu">Baharu</option>
-                                                        <option value="Pembaharuan">Pembaharuan</option>
-                                                        <option value="Pindaan">Pindaan</option>
-                                                        <option value="Pembatalan">Pembatalan</option>
-                                                        <option value="Cetakan Semula">Cetakan Semula</option>
+                                                        <option value="Baharu" {{ old('jenis_permohonan') == 'Baharu' ? 'selected' : '' }}>Baharu</option>
+                                                        <option value="Pembaharuan" {{ old('jenis_permohonan') == 'Pembaharuan' ? 'selected' : '' }}>Pembaharuan</option>
+                                                        <option value="Pindaan" {{ old('jenis_permohonan') == 'Pindaan' ? 'selected' : '' }}>Pindaan</option>
+                                                        <option value="Pembatalan" {{ old('jenis_permohonan') == 'Pembatalan' ? 'selected' : '' }}>Pembatalan</option>
+                                                        <option value="Cetakan Semula" {{ old('jenis_permohonan') == 'Cetakan Semula' ? 'selected' : '' }}>Cetakan Semula</option>
                                                     </select>
+                                                    @error('jenis_permohonan')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
+                                            </div>
+
+                                            <!-- BL No field -->
+                                            <div class="form-group">
+                                                <label class="form-label">BL No</label>
+                                                <input type="text" class="form-control @error('bl_no') is-invalid @enderror" name="bl_no" value="{{ old('bl_no') }}" placeholder="Enter BL Number">
+                                                @error('bl_no')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
 
                                             <!-- Tajuk and Keterangan fields -->
                                             <div class="form-group">
                                                 <label class="form-label">Tajuk Pertanyaan/Aduan <small class="text-danger">*</small></label>
-                                                <input type="text" id="tajuk-aduan" name="subject" class="form-control" required>
+                                                <input type="text" id="tajuk-aduan" name="subject" class="form-control @error('subject') is-invalid @enderror" value="{{ old('subject') }}" required>
+                                                @error('subject')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
 
                                             <div class="form-group">
                                                 <label class="form-label">Keterangan <small class="text-danger">*</small></label>
-                                                <textarea id="keterangan-aduan" name="message" rows="5" class="form-control" required></textarea>
+                                                <textarea id="keterangan-aduan" name="message" rows="5" class="form-control @error('message') is-invalid @enderror" required>{{ old('message') }}</textarea>
+                                                @error('message')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
 
                                             <!-- Attachment fields -->
