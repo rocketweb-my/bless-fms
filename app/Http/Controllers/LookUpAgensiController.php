@@ -134,4 +134,20 @@ class LookUpAgensiController extends Controller
                               ->get(['id', 'nama']);
         return response()->json($agensi);
     }
+
+    public function getAgensiDetails($agensiId)
+    {
+        $agensi = LookupAgensi::find($agensiId);
+
+        if (!$agensi) {
+            return response()->json(['error' => 'Agensi not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $agensi->id,
+            'nama' => $agensi->nama,
+            'negeri_nama' => $agensi->negeri ?? '',
+            'cawangan' => $agensi->cawangan ?? '',
+        ]);
+    }
 }

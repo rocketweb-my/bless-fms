@@ -314,6 +314,9 @@ Route::get('/get-sub-agensi/{agensiId}', [LookUpSubAgensiController::class, 'get
 // Agensi by Kementerian API
 Route::get('/get-agensi/{kementerianId}', [LookUpAgensiController::class, 'getAgensiByKementerian'])->name('get-agensi');
 
+// Agensi details API
+Route::get('/get-agensi-details/{agensiId}', [LookUpAgensiController::class, 'getAgensiDetails'])->name('get-agensi-details');
+
 // Lesen by Agensi API
 Route::get('/get-lesen/{agensiId}', [LookUpLesenController::class, 'getLesenByAgensi'])->name('get-lesen');
 
@@ -343,9 +346,20 @@ Route::get('/lang/{locale}', function ($locale) {
 });
 
 
-Route::get('/otp-request', [\App\Http\Controllers\OtpController::class, 'requestForOtp'])->name('opt_request');
-Route::get('/test/otp-validate', [\App\Http\Controllers\OtpController::class, 'validateOtp'])->name('opt_verify');
-Route::get('/test/otp-resend', [\App\Http\Controllers\OtpController::class, 'resendOtp']);
+// PIC OTP Authentication Routes
+Route::prefix('pic')->name('pic.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\OtpController::class, 'showLoginForm'])->name('login');
+    Route::post('/request-otp', [\App\Http\Controllers\OtpController::class, 'requestOtp'])->name('request.otp');
+    Route::get('/verify-otp', [\App\Http\Controllers\OtpController::class, 'showVerifyForm'])->name('verify.form');
+    Route::post('/verify-otp', [\App\Http\Controllers\OtpController::class, 'verifyOtp'])->name('verify.otp');
+    Route::post('/resend-otp', [\App\Http\Controllers\OtpController::class, 'resendOtp'])->name('resend.otp');
+    Route::get('/logout', [\App\Http\Controllers\OtpController::class, 'logout'])->name('logout');
 
+    // Protected routes (require OTP authentication)
+    Route::middleware('pic.auth')->group(function () {
+        Route::get('/create-ticket', [\App\Http\Controllers\PublicController::class, 'picCreateTicket'])->name('create.ticket');
+        Route::post('/store-ticket', [\App\Http\Controllers\PublicController::class, 'picStoreTicket'])->name('store.ticket');
+    });
+});
 
 URL::forceScheme('https');

@@ -3,59 +3,173 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-use Ferdous\OtpValidator\Object\OtpRequestObject;
-use Ferdous\OtpValidator\OtpValidator;
-use Ferdous\OtpValidator\Object\OtpValidateRequestObject;
 use Illuminate\Support\Facades\Session;
+use App\Models\PersonInCharge;
 
 class OtpController extends Controller
 {
-    public function requestForOtp(Request $request)
+    /**
+     * Show PIC login page
+     */
+    public function showLoginForm()
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersNumber = strlen($characters);
-        $codeLength = 10;
-        $code = '';
-
-        while (strlen($code) < $codeLength) {
-            $position = rand(0, $charactersNumber - 1);
-            $character = $characters[$position];
-            $code = $code.$character;
-        }
-        $client_id = $code;
-
-        $otp_request =  OtpValidator::requestOtp(
-            new OtpRequestObject($client_id, $request->type, '', $request->email)
-        );
-
-        if($tp_request['code'] = 201)
-        {
-            Session::put('uid_otp', $otp_request['uniqueId']);
-            Session::put('email_otp', $request->email);
-        }
-
-        return $otp_request;
+        return view('pages.pic.login');
     }
 
-    public function validateOtp(Request $request)
+    /**
+     * Request OTP for registered PIC
+     */
+    public function requestOtp(Request $request)
     {
-        $uniqId = $request->otp_uid;
-        $otp = $request->otp;
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        $otp_verification = OtpValidator::validateOtp(
-            new OtpValidateRequestObject($uniqId,$otp)
-        );
-        if($otp_verification['code'] = 200)
-        {
-            Session::put('email_otp_verified', 1);
+        // Find PIC by email
+        $pic = PersonInCharge::where('email', $request->email)
+            ->where('status', 1)
+            ->first();
+
+        if (!$pic) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email not found. Please contact administrator to register as Person In Charge.',
+            ], 404);
         }
-        return $otp_verification;
+
+        // Check rate limiting - prevent spam (1 OTP per minute)
+        if ($pic->last_otp_request && $pic->last_otp_request->diffInSeconds(now()) < 60) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please wait before requesting another OTP. You can request a new OTP in ' . (60 - $pic->last_otp_request->diffInSeconds(now())) . ' seconds.',
+            ], 429);
+        }
+
+        try {
+            // Generate and send OTP
+            $pic->generateOtp();
+
+            // Store PIC ID in session
+            Session::put('pic_id', $pic->id);
+            Session::put('pic_email', $pic->email);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP has been sent to your email. Please check your inbox.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send OTP. Please try again later.',
+            ], 500);
+        }
     }
 
+    /**
+     * Show OTP verification page
+     */
+    public function showVerifyForm()
+    {
+        if (!Session::has('pic_id')) {
+            return redirect()->route('pic.login')->with('error', 'Please request OTP first.');
+        }
+
+        return view('pages.pic.verify-otp');
+    }
+
+    /**
+     * Verify OTP
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|digits:6',
+        ]);
+
+        if (!Session::has('pic_id')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please request OTP again.',
+            ], 401);
+        }
+
+        $pic = PersonInCharge::find(Session::get('pic_id'));
+
+        if (!$pic) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid session. Please request OTP again.',
+            ], 401);
+        }
+
+        if ($pic->verifyOtp($request->otp)) {
+            // OTP verified successfully
+            Session::put('pic_authenticated', true);
+            Session::put('pic_name', $pic->name);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP verified successfully!',
+                'redirect' => route('pic.create.ticket'),
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired OTP. Please try again.',
+            ], 401);
+        }
+    }
+
+    /**
+     * Resend OTP
+     */
     public function resendOtp(Request $request)
     {
-        $uniqueId = $request->input('uniqueId');
-        return OtpValidator::resendOtp($uniqueId);
+        if (!Session::has('pic_id')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please request OTP again.',
+            ], 401);
+        }
+
+        $pic = PersonInCharge::find(Session::get('pic_id'));
+
+        if (!$pic) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid session.',
+            ], 401);
+        }
+
+        // Check rate limiting
+        if ($pic->last_otp_request && $pic->last_otp_request->diffInSeconds(now()) < 60) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please wait before requesting another OTP.',
+            ], 429);
+        }
+
+        try {
+            $pic->generateOtp();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'New OTP has been sent to your email.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send OTP. Please try again later.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Logout PIC
+     */
+    public function logout()
+    {
+        Session::forget(['pic_id', 'pic_email', 'pic_authenticated', 'pic_name']);
+        return redirect()->route('pic.login')->with('success', 'You have been logged out.');
     }
 }

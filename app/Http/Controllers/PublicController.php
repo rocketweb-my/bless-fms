@@ -460,4 +460,112 @@ class PublicController extends Controller
         return Response::download(storage_path('app/public/attachment/knowledgebase').'/'.$attachment->saved_name, $attachment->real_name);
 
     }
+
+    /**
+     * Show PIC ticket creation form
+     */
+    public function picCreateTicket()
+    {
+        $categories = Category::where('type', '0')->get();
+        $customFields = CustomField::where('use', '1')->whereNotNull('value')->orderBy('order', 'ASC')->get();
+
+        return view('pages.pic.create-ticket', compact('categories', 'customFields'));
+    }
+
+    /**
+     * Store PIC ticket
+     */
+    public function picStoreTicket(Request $request)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'message' => 'required|string',
+        ]);
+
+        // Get authenticated PIC details from session
+        $pic = \App\Models\PersonInCharge::find(session('pic_id'));
+
+        if (!$pic) {
+            return redirect()->route('pic.login')->with('error', 'Session expired. Please login again.');
+        }
+
+        // Create ticket
+        $ticket = Ticket::create([
+            'tracking_id' => $this->generateTrackingId(),
+            'subject' => $request->subject,
+            'category_id' => $request->category_id,
+            'email' => $pic->email,
+            'name' => $pic->name,
+            'phone_number' => $pic->phone_number,
+            'message' => $request->message,
+            'status' => 'Open',
+            'priority' => $request->priority ?? 'Medium',
+            'source' => 'PIC Portal',
+            'custom_fields' => $request->custom_fields ? json_encode($request->custom_fields) : null,
+        ]);
+
+        // Handle attachments if any
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/attachment/ticket', $fileName);
+
+                Attachment::create([
+                    'ticket_id' => $ticket->id,
+                    'real_name' => $file->getClientOriginalName(),
+                    'saved_name' => $fileName,
+                ]);
+            }
+        }
+
+        // Send email notifications
+        try {
+            Mail::to($pic->email)->send(new ClientNotificationSumbmission($ticket));
+
+            // Notify staff
+            $category = Category::find($request->category_id);
+            if ($category && $category->user_id) {
+                $staff = User::find($category->user_id);
+                if ($staff) {
+                    Mail::to($staff->email)->send(new StaffNotificationSumbmission($ticket));
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail ticket creation
+            \Log::error('Failed to send ticket notification: ' . $e->getMessage());
+        }
+
+        return redirect()->route('pic.ticket.success', $ticket->tracking_id);
+    }
+
+    /**
+     * Generate unique tracking ID
+     */
+    private function generateTrackingId()
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersNumber = strlen($characters);
+        $codeLength = 10;
+
+        do {
+            $code = '';
+            while (strlen($code) < $codeLength) {
+                $position = rand(0, $charactersNumber - 1);
+                $character = $characters[$position];
+                $code = $code . $character;
+            }
+        } while (Ticket::where('tracking_id', $code)->exists());
+
+        return $code;
+    }
+
+    /**
+     * Show ticket success page
+     */
+    public function picTicketSuccess($trackingId)
+    {
+        $ticket = Ticket::where('tracking_id', $trackingId)->firstOrFail();
+        return view('pages.pic.ticket-success', compact('ticket'));
+    }
 }
