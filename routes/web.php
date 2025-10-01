@@ -34,6 +34,7 @@ use App\Http\Controllers\LookUpStatusLogController;
 use App\Http\Controllers\LookUpKaedahMelaporController;
 use App\Http\Controllers\LookUpLesenController;
 use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\PersonInChargeController;
 use Illuminate\Support\Facades\App;
 
 
@@ -266,6 +267,14 @@ use Illuminate\Support\Facades\App;
         //Thank You Message
         Route::get('/thank_you_message',[ThankYouMessageController::class, 'index'])->name('thank.index');
         Route::post('/thank_you_message/store',[ThankYouMessageController::class, 'store'])->name('thank.store');
+
+        //Person In Charge
+        Route::get('/personincharge',[PersonInChargeController::class, 'index'])->name('personincharge.index');
+        Route::get('/personincharge/add',[PersonInChargeController::class, 'create'])->name('personincharge.create');
+        Route::post('/personincharge/edit',[PersonInChargeController::class, 'edit'])->name('personincharge.edit');
+        Route::post('/personincharge/store',[PersonInChargeController::class, 'store'])->name('personincharge.store');
+        Route::post('/personincharge/update',[PersonInChargeController::class, 'update'])->name('personincharge.update');
+        Route::post('/personincharge/delete',[PersonInChargeController::class, 'destroy'])->name('personincharge.delete');
 
 
 

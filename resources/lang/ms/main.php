@@ -19,6 +19,7 @@ return array (
     'Templates' => 'Templat',
     'Create New Ticket' => 'Cipta Tiket Baru',
     'Teams' => 'Kumpulan',
+    'Person In Charge' => 'Orang Yang Bertanggungjawab',
     'Reports' => 'Laporan',
     'Advanced Reports' => 'Laporan Lanjutan',
     'Responses' => 'Balasan',

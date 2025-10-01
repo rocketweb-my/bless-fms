@@ -47,6 +47,9 @@
                         <li>
                             <a class="side-menu__item" href="{{route('team.index')}}"><i class="side-menu__icon fa fa-users"></i><span class="side-menu__label">{{__('main.Teams')}}</span></a>
                         </li>
+                        <li>
+                            <a class="side-menu__item" href="{{route('personincharge.index')}}"><i class="side-menu__icon fa fa-user-circle"></i><span class="side-menu__label">Person In Charge</span></a>
+                        </li>
 {{--                        <li class="slide">--}}
 {{--                            <a class="side-menu__item"  data-toggle="slide" href="#"><i class="side-menu__icon fa fa-bar-chart-o"></i><span class="side-menu__label">{{__('main.Reports')}}</span><i class="angle fa fa-angle-right"></i></a>--}}
 {{--                            <ul class="slide-menu">--}}

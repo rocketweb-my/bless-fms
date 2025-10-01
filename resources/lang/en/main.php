@@ -11,6 +11,7 @@ return [
     'Sub Categories'    => 'Sub Categories',
     'Management'        => 'Management',
     'Teams'             => 'Teams',
+    'Person In Charge'  => 'Person In Charge',
     'Reports'           => 'Reports',
     'Advanced Reports'  => 'Advanced Reports',
     'Run Reports'       => 'Run Reports',
