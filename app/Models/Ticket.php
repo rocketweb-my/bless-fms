@@ -53,4 +53,14 @@ class Ticket extends Model
     {
         return $this->belongsTo('App\Models\LookupLesen', 'lesen_id', 'id');
     }
+
+    public function kementerian()
+    {
+        return $this->belongsTo('App\Models\LookupKementerian', 'kementerian_id', 'id');
+    }
+
+    public function agensi()
+    {
+        return $this->belongsTo('App\Models\LookupAgensi', 'agensi_id', 'id');
+    }
 }

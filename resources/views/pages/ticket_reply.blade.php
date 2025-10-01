@@ -82,6 +82,85 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    {{-- PBM Information Card --}}
+                                    @if($ticket->kementerian_id || $ticket->agensi_id || $ticket->kategori_aduan || $ticket->nombor_serahan || $ticket->jenis_permohonan || $ticket->lesen_id || $ticket->bl_no)
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Ticket Information</h3>
+                                            <div class="card-options">
+                                                <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                @if($ticket->kementerian_id)
+                                                <div class="col-2 mb-2">
+                                                    <label>Kementerian</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->kementerian->nama ?? 'N/A' }}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->agensi_id)
+                                                <div class="col-2 mb-2">
+                                                    <label>Bahagian/Agensi/Seksyen</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->agensi->nama ?? 'N/A' }}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->kategori_aduan)
+                                                <div class="col-2 mb-2">
+                                                    <label>Kategori Aduan</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->kategori_aduan }}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->nombor_serahan)
+                                                <div class="col-2 mb-2">
+                                                    <label>Nombor Serahan</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->nombor_serahan }}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->lesen_id)
+                                                <div class="col-2 mb-2">
+                                                    <label>Lesen</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->lesen->nama ?? 'N/A' }}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->jenis_permohonan)
+                                                <div class="col-2 mb-2">
+                                                    <label>Jenis Permohonan</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->jenis_permohonan }}</span>
+                                                </div>
+                                                @endif
+
+                                                @if($ticket->bl_no)
+                                                <div class="col-2 mb-2">
+                                                    <label>BL No</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->bl_no }}</span>
+                                                </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+
                                     <div class="card">
                                         <div class="card-header">
                                             <h3 class="card-title">{{$ticket->subject}}</h3>
