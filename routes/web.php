@@ -35,6 +35,7 @@ use App\Http\Controllers\LookUpKaedahMelaporController;
 use App\Http\Controllers\LookUpLesenController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\PersonInChargeController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\App;
 
 
@@ -122,6 +123,15 @@ use Illuminate\Support\Facades\App;
         Route::post('/teams/profile/update', [TeamController::class, 'update_profile'])->name('team.profile.update');
         Route::post('/teams/change_password', [TeamController::class, 'change_password_team'])->name('team.change_password');
         Route::post('/teams/remove', [TeamController::class, 'remove_team'])->name('team.remove');
+
+        // Vendor Management Routes
+        Route::get('/vendors', [VendorController::class, 'index'])->name('vendor.index');
+        Route::post('/vendors/store', [VendorController::class, 'store'])->name('vendor.store');
+        Route::get('/vendors/profile/{id}', [VendorController::class, 'profile'])->name('vendor.profile');
+        Route::post('/vendors/update/{id}', [VendorController::class, 'update'])->name('vendor.update');
+        Route::post('/vendors/update-status', [VendorController::class, 'updateStatus'])->name('vendor.updateStatus');
+        Route::post('/vendors/delete', [VendorController::class, 'destroy'])->name('vendor.delete');
+        Route::post('/vendors/password/update/{id}', [VendorController::class, 'updatePassword'])->name('vendor.password.update');
 
         Route::get('/test', [TestController::class, 'index'])->name('test.index');
 

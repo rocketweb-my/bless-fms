@@ -19,8 +19,8 @@ class TeamController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            //Datatable
-            $data = User::orderBy('id', 'DESC')->get();
+            //Datatable - only show staff, exclude vendors
+            $data = User::where('user_type', 'staff')->orderBy('id', 'DESC')->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($data) {
@@ -113,6 +113,7 @@ class TeamController extends Controller
                 'user' =>  $request->username,
                 'pass' => $passhash,
                 'isadmin' => $request->isadmin,
+                'user_type' => 'staff',
                 'name' => $request->name,
                 'email' => $request->email,
                 'signature' => $signature,
@@ -149,6 +150,7 @@ class TeamController extends Controller
                 'user' => $request->username,
                 'pass' => $passhash,
                 'isadmin' => $request->isadmin,
+                'user_type' => 'staff',
                 'name' => $request->name,
                 'email' => $request->email,
                 'signature' => $signature,
