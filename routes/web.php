@@ -79,7 +79,7 @@ use Illuminate\Support\Facades\App;
         Route::post('/bulk_assign', [TicketController::class, 'bulk_assign'])->name('bulk_assign');
         Route::post('/bulk_priority_update', [TicketController::class, 'bulk_priority_update'])->name('bulk_priority_update');
         Route::post('/store_filter', [TicketController::class, 'store_filter'])->name('store_filter');
-        Route::post('/admin/create_ticket', [TicketController::class, 'admin_create_ticket'])->name('admin_create_ticket');
+        Route::get('/admin/create_ticket', [TicketController::class, 'admin_create_ticket'])->name('admin_create_ticket');
         Route::post('/admin/create_ticket/store', [TicketController::class, 'admin_create_ticket_store'])->name('admin_create_ticket.store');
 
         //Reply Ticket Controller

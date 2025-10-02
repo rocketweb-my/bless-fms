@@ -1,247 +1,433 @@
 @extends('layouts.master')
 @section('css')
+    <link href="{{ URL::asset('assets/plugins/select2/select2.min.css')}}" rel="stylesheet">
     <link href="{{ URL::asset('assets/plugins/datatable/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
-    <link href="{{ URL::asset('assets/plugins/single-page/css/main.css')}}" rel="stylesheet">
 @endsection
 @section('page-header')
-						<!-- PAGE-HEADER -->
-							<div>
-								<h1 class="page-title">Create New Ticket</h1>
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="#">New Ticket</a></li>
-								</ol>
-							</div>
-						<!-- PAGE-HEADER END -->
+    <!-- PAGE-HEADER -->
+    <div>
+        <h1 class="page-title">Create New Ticket</h1>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create New Ticket</li>
+        </ol>
+    </div>
+    <!-- PAGE-HEADER END -->
 @endsection
 @section('content')
-						<!-- ROW-1 OPEN -->
+    <!-- ROW-1 OPEN -->
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            @if (count($errors) > 0)
+                <div class="alert alert-danger" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li><i class="fa fa-exclamation mr-2" aria-hidden="true"></i> {{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0 card-title">Create New Ticket</h3>
+                </div>
+                <div class="card-body">
+                    <form action="{{route('admin_create_ticket.store')}}" method="post" enctype="multipart/form-data">
+                        @csrf
+
+                        <!-- Section 1: Maklumat Aduan -->
+                        <h5 class="font-weight-bold mb-3">1. Maklumat Aduan</h5>
+
                         <div class="row">
-                            <div class="col-md-12 col-lg-12">
-                                @if (count($errors) > 0)
-                                    @foreach ($errors->all() as $error)
-                                        <div class="alert alert-danger" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                            <i class="fa fa-exclamation mr-2" aria-hidden="true"></i> {{ $error }}
-                                        </div>
-                                    @endforeach
-                                @endif
-
-                                <div class="card">
-                                        <div class="card-header">
-                                            <h3 class="mb-0 card-title">Create New Ticket for <u>{{categoryName($selected_category)->name}}</u> - <u>{{\App\Models\SubCategory::find($selected_sub_category)->name ?? 'Unknown Sub Category'}}</u></h3>
-                                        </div>
-                                        <div class="card-body">
-                                            <form action="{{route('admin_create_ticket.store')}}" method="post" enctype="multipart/form-data">
-                                                @csrf
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">Name <small class="text-danger">*</small></label>
-                                                            <input type="text" class="form-control" name="name">
-                                                        </div>
-
-                                                        {{--                                                    <div class="form-group">--}}
-                                                        {{--                                                        <label class="form-label">Category<small class="text-danger">*</small></label>--}}
-                                                        {{--                                                        <select name="category" id="select-category" class="form-control custom-select">--}}
-                                                        {{--                                                            @foreach(getCategoryList() as $category)--}}
-                                                        {{--                                                                <option value="{{$category->id}}">{{$category->name}}</option>--}}
-                                                        {{--                                                            @endforeach--}}
-                                                        {{--                                                        </select>--}}
-                                                        {{--                                                    </div>--}}
-                                                    </div>
-
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">Email <small class="text-danger">*</small></label>
-                                                            <input type="email" class="form-control" name="email">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">Phone Number</label>
-                                                            <input type="text" class="form-control" name="phone_number" placeholder="Enter phone number">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">{{__('aduan_pertanyaan.Label')}} <small class="text-danger">*</small></label>
-                                                            <select name="aduan_pertanyaan" id="select-aduan-pertanyaan" class="form-control custom-select" required>
-                                                                <option value="">{{__('aduan_pertanyaan.Select Type')}}</option>
-                                                                <option value="aduan">{{__('aduan_pertanyaan.Aduan')}}</option>
-                                                                <option value="pertanyaan">{{__('aduan_pertanyaan.Pertanyaan')}}</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">Priority<small class="text-danger">*</small></label>
-                                                            <select name="priority" id="select-priority" class="form-control custom-select">
-                                                                @foreach($activePriorities as $priority)
-                                                                    <option value="{{ $priority->priority_value }}" {{ $priority->priority_value == 3 ? 'selected' : '' }}>
-                                                                        {{ $priority->name }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">{{__('lookup_kaedah_melapor.Kaedah Melapor')}} <small class="text-danger">*</small></label>
-                                                            <select name="kaedah_melapor_id" id="select-kaedah-melapor" class="form-control custom-select" required>
-                                                                <option value="">{{__('lookup_kaedah_melapor.Select Kaedah Melapor')}}</option>
-                                                                @foreach($kaedah_melapor as $kaedah)
-                                                                    <option value="{{ $kaedah->id }}">{{ $kaedah->nama }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">{{__('lookup_agensi.Agensi')}}</label>
-                                                            <select name="agensi_id" id="agensi-select" class="form-control custom-select">
-                                                                <option value="">{{__('lookup_agensi.Select Agensi')}}</option>
-                                                                @foreach($agensi as $ag)
-                                                                    <option value="{{ $ag->id }}">{{ $ag->nama }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">{{__('main.Lesen')}}</label>
-                                                            <select name="lesen_id" id="admin-lesen-select" class="form-control custom-select" disabled>
-                                                                <option value="">Pilih Lesen</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">BL No</label>
-                                                            <input type="text" class="form-control" id="bl_no" name="bl_no" placeholder="Enter BL Number">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @if($before_messages->count() != 0)
-                                                    <hr>
-                                                    <div class="row">
-                                                        @foreach( $before_messages as $before_message)
-                                                            <div class="col-md-12">
-                                                                {!! customFieldProcessor($before_message) !!}
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                @endif
-                                                <hr>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label class="form-label">Select a ticket template</label>
-                                                            <select name="template" id="select-template" class="form-control custom-select">
-                                                                <option value="" hidden>Select Template</option>
-                                                            @foreach($ticket_templates as $ticket_template)
-                                                                    <option value="{{$ticket_template->message}}" >{{$ticket_template->title}}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label class="form-label">Subject <small class="text-danger">*</small></label>
-                                                            <input type="text" class="form-control" id="subject" name="subject" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="form-label">Message <small class="text-danger">*</small></label>
-                                                            <textarea class="form-control" name="message" id="message" rows="6" required></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @if($after_messages->count() != 0)
-                                                    <hr>
-                                                    <div class="row">
-                                                        @foreach( $after_messages as $after_message)
-                                                            <div class="col-md-12">
-                                                                {!! customFieldProcessor($after_message) !!}
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                @endif
-                                                <hr>
-                                                <div class="form-group">
-                                                    <label class="form-label">Attachment</label>
-                                                    <div id="attachment-container">
-                                                        <div class="attachment-row mb-2">
-                                                            <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
-                                                        </div>
-                                                        <div class="attachment-row mb-2">
-                                                            <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
-                                                        </div>
-                                                        <div class="attachment-row mb-2" style="display: none;">
-                                                            <input type="file" name="file[3]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
-                                                        </div>
-                                                        <div class="attachment-row mb-2" style="display: none;">
-                                                            <input type="file" name="file[4]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
-                                                        </div>
-                                                        <div class="attachment-row mb-2" style="display: none;">
-                                                            <input type="file" name="file[5]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
-                                                        </div>
-                                                        <div class="attachment-row mb-2" style="display: none;">
-                                                            <input type="file" name="file[6]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" id="add-attachment-btn" class="btn btn-sm btn-secondary" onclick="showNextAttachment()">Add Another Attachment</button>
-                                                    <small class="d-block mt-2">Max file size: 20MB | File format: .gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label class="form-label">Options</label>
-                                                    <div class="custom-controls-stacked">
-                                                        <label class="custom-control custom-checkbox">
-                                                            @if(User()->notify_customer_new == 1)
-                                                                <input type="checkbox" class="custom-control-input" id="create_notify1" name="notify" value="1" checked="">
-                                                            @else
-                                                                <input type="checkbox" class="custom-control-input" id="create_notify1" name="notify" value="1">
-                                                            @endif
-                                                            <span class="custom-control-label">Send email notification to the customer</span>
-                                                        </label>
-{{--                                                        <label class="custom-control custom-checkbox">--}}
-{{--                                                            <input type="checkbox" class="custom-control-input" id="create_show1" name="show" value="1" checked="">--}}
-{{--                                                            <span class="custom-control-label">Show the ticket after submission</span>--}}
-{{--                                                        </label>--}}
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-label">Select Kumpulan Pengguna for Assignment</label>
-                                                    <select name="assignment_kumpulan_pengguna_id" id="assignment-kumpulan-pengguna-select" class="form-control custom-select">
-                                                        <option value="">Pilih Kumpulan Pengguna</option>
-                                                        @foreach(\App\Models\LookupKumpulanPengguna::where('is_active', 1)->orderBy('nama', 'ASC')->get() as $kp)
-                                                            <option value="{{$kp->id}}">{{$kp->nama}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-label">Assign this ticket to</label>
-                                                    <select name="owner" id="select-owner" class="form-control custom-select">
-                                                        <option value="-1" selected>> Unassigned <</option>
-                                                    </select>
-                                                </div>
-                                                <input type="hidden" name="openby" value="{{Illuminate\Support\Facades\Session::get('user_id')}}">
-                                                <hr>
-                                                <input type="hidden" name="category" value="{{$selected_category}}">
-                                                <input type="hidden" name="sub_category" value="{{$selected_sub_category}}">
-                                                <input type="hidden" name="dt" value="{{\Carbon\Carbon::now()}}">
-                                                <input type="hidden" name="lastchange" value="{{\Carbon\Carbon::now()}}">
-                                                <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                                            </form>
-                                        </div>
-                                    </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Kaedah Aduan <small class="text-danger">*</small></label>
+                                    <select name="kaedah_melapor_id" id="kaedah-aduan" class="form-control custom-select @error('kaedah_melapor_id') is-invalid @enderror" required>
+                                        <option value="">Sila Pilih</option>
+                                        @foreach($kaedah_melapor as $kaedah)
+                                            <option value="{{ $kaedah->id }}" {{ old('kaedah_melapor_id') == $kaedah->id ? 'selected' : '' }}>{{ $kaedah->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('kaedah_melapor_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Tarikh Aduan <small class="text-danger">*</small></label>
+                                    <input type="date" name="tarikh_aduan" id="tarikh-aduan" class="form-control @error('tarikh_aduan') is-invalid @enderror" value="{{ old('tarikh_aduan', date('Y-m-d')) }}" required>
+                                    @error('tarikh_aduan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Masa Aduan <small class="text-danger">*</small></label>
+                                    <input type="time" name="masa_aduan" id="masa-aduan" class="form-control @error('masa_aduan') is-invalid @enderror" value="{{ old('masa_aduan', date('H:i')) }}" required>
+                                    @error('masa_aduan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-					</div>
-					<!-- CONTAINER CLOSED -->
-				</div>
-			</div>
+
+                        <hr class="my-4">
+
+                        <!-- Section 2: Maklumat Pengadu -->
+                        <h5 class="font-weight-bold mb-3">2. Maklumat Pengadu</h5>
+
+                        <div class="form-group">
+                            <label class="form-label">Nama <small class="text-danger">*</small></label>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" id="alamat-emel-label">Alamat E-mel <small class="text-danger">*</small></label>
+                                    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nombor Telefon <small class="text-danger">*</small></label>
+                                    <input type="tel" name="phone_number" id="no-telefon" maxlength="13" class="form-control @error('phone_number') is-invalid @enderror" value="{{ old('phone_number') }}" required>
+                                    @error('phone_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Login ID Sistem (Pilihan)</label>
+                                    <input type="text" name="login_id" class="form-control @error('login_id') is-invalid @enderror" value="{{ old('login_id') }}">
+                                    @error('login_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Jantina <small class="text-danger">*</small></label>
+                                    <select name="jantina" class="form-control custom-select @error('jantina') is-invalid @enderror" required>
+                                        <option value="">Sila Pilih</option>
+                                        <option value="Lelaki" {{ old('jantina') == 'Lelaki' ? 'selected' : '' }}>Lelaki</option>
+                                        <option value="Perempuan" {{ old('jantina') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                    </select>
+                                    @error('jantina')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Section 3: Maklumat Pertanyaan -->
+                        <h5 class="font-weight-bold mb-3">3. Maklumat Pertanyaan</h5>
+
+                        <!-- Radio buttons for complaint type -->
+                        <div class="form-group">
+                            <label class="form-label">Jenis <small class="text-danger">*</small></label>
+                            <div class="d-flex align-items-center">
+                                <label class="custom-control custom-radio mr-4">
+                                    <input type="radio" class="custom-control-input" name="complaint_type" value="general" {{ old('complaint_type', 'general') == 'general' ? 'checked' : '' }}>
+                                    <span class="custom-control-label">Pertanyaan Umum</span>
+                                </label>
+                                <label class="custom-control custom-radio mr-4">
+                                    <input type="radio" class="custom-control-input" name="complaint_type" value="technical" {{ old('complaint_type') == 'technical' ? 'checked' : '' }}>
+                                    <span class="custom-control-label">Aduan Aplikasi</span>
+                                </label>
+                                <label class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="complaint_type" value="server" {{ old('complaint_type') == 'server' ? 'checked' : '' }}>
+                                    <span class="custom-control-label">Aduan Server</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Pertanyaan Umum Fields -->
+                        <div id="pertanyaan-container" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">Agensi</label>
+                                <select name="agensi_id_umum" id="agensi-select-umum" class="form-control custom-select @error('agensi_id_umum') is-invalid @enderror">
+                                    <option value="">Sila Pilih Agensi</option>
+                                    @foreach($agensi as $ag)
+                                        <option value="{{ $ag->id }}" {{ old('agensi_id_umum') == $ag->id ? 'selected' : '' }}>{{ $ag->nama }}</option>
+                                    @endforeach
+                                </select>
+                                @error('agensi_id_umum')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Pertanyaan berkaitan :-</label>
+                                <select name="pertanyaan" id="pertanyaan" class="form-control custom-select @error('pertanyaan') is-invalid @enderror">
+                                    <option value="">Sila Pilih</option>
+                                    <option value="Lesen" {{ old('pertanyaan') == 'Lesen' ? 'selected' : '' }}>Lesen</option>
+                                    <option value="Borang Permohonan" {{ old('pertanyaan') == 'Borang Permohonan' ? 'selected' : '' }}>Borang Permohonan</option>
+                                    <option value="Proses" {{ old('pertanyaan') == 'Proses' ? 'selected' : '' }}>Proses</option>
+                                    <option value="Profil" {{ old('pertanyaan') == 'Profil' ? 'selected' : '' }}>Profil</option>
+                                    <option value="Status Permohonan" {{ old('pertanyaan') == 'Status Permohonan' ? 'selected' : '' }}>Status Permohonan</option>
+                                    <option value="Lain-lain" {{ old('pertanyaan') == 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                </select>
+                                @error('pertanyaan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Conditional Lesen Fields for Pertanyaan Umum -->
+                            <div id="kategori-umum-lesen" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">Lesen</label>
+                                    <select name="lesen_id_umum" id="lesen-select-umum" class="form-control custom-select @error('lesen_id_umum') is-invalid @enderror">
+                                        <option value="">Sila Pilih</option>
+                                    </select>
+                                    @error('lesen_id_umum')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Jenis Permohonan</label>
+                                    <select name="jenis_permohonan_umum" class="form-control custom-select @error('jenis_permohonan_umum') is-invalid @enderror">
+                                        <option value="">Sila Pilih</option>
+                                        <option value="New" {{ old('jenis_permohonan_umum') == 'New' ? 'selected' : '' }}>New</option>
+                                        <option value="Renewal" {{ old('jenis_permohonan_umum') == 'Renewal' ? 'selected' : '' }}>Renewal</option>
+                                        <option value="Update" {{ old('jenis_permohonan_umum') == 'Update' ? 'selected' : '' }}>Update</option>
+                                        <option value="Revoke/Cancel" {{ old('jenis_permohonan_umum') == 'Revoke/Cancel' ? 'selected' : '' }}>Revoke/Cancel</option>
+                                    </select>
+                                    @error('jenis_permohonan_umum')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Nombor Serahan</label>
+                                    <input type="text" name="nombor_serahan_umum" class="form-control @error('nombor_serahan_umum') is-invalid @enderror" value="{{ old('nombor_serahan_umum') }}" placeholder="cth: BL20250001">
+                                    @error('nombor_serahan_umum')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aduan Aplikasi Fields -->
+                        <div id="technical-fields-container" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">Agensi</label>
+                                <select name="agensi_id_teknikal" id="agensi-select-teknikal" class="form-control custom-select @error('agensi_id_teknikal') is-invalid @enderror">
+                                    <option value="">Sila Pilih Agensi</option>
+                                    @foreach($agensi as $ag)
+                                        <option value="{{ $ag->id }}" {{ old('agensi_id_teknikal') == $ag->id ? 'selected' : '' }}>{{ $ag->nama }}</option>
+                                    @endforeach
+                                </select>
+                                @error('agensi_id_teknikal')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Kategori <small class="text-danger">*</small></label>
+                                <select name="kategori_aplikasi" id="kategori-aplikasi" class="form-control custom-select @error('kategori_aplikasi') is-invalid @enderror">
+                                    <option value="">Sila Pilih</option>
+                                    <option value="Lesen" {{ old('kategori_aplikasi') == 'Lesen' ? 'selected' : '' }}>Lesen</option>
+                                    <option value="Main App" {{ old('kategori_aplikasi') == 'Main App' ? 'selected' : '' }}>Main App</option>
+                                    <option value="Lain-lain" {{ old('kategori_aplikasi') == 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
+                                </select>
+                                @error('kategori_aplikasi')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Conditional Lesen Fields for Aduan Aplikasi -->
+                            <div id="kategori-aplikasi-lesen" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">Lesen</label>
+                                    <select name="lesen_id_teknikal" id="lesen-select-teknikal" class="form-control custom-select @error('lesen_id_teknikal') is-invalid @enderror">
+                                        <option value="">Sila Pilih</option>
+                                    </select>
+                                    @error('lesen_id_teknikal')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Jenis Permohonan</label>
+                                    <select name="jenis_permohonan_teknikal" class="form-control custom-select @error('jenis_permohonan_teknikal') is-invalid @enderror">
+                                        <option value="">Sila Pilih</option>
+                                        <option value="New" {{ old('jenis_permohonan_teknikal') == 'New' ? 'selected' : '' }}>New</option>
+                                        <option value="Renewal" {{ old('jenis_permohonan_teknikal') == 'Renewal' ? 'selected' : '' }}>Renewal</option>
+                                        <option value="Update" {{ old('jenis_permohonan_teknikal') == 'Update' ? 'selected' : '' }}>Update</option>
+                                        <option value="Revoke/Cancel" {{ old('jenis_permohonan_teknikal') == 'Revoke/Cancel' ? 'selected' : '' }}>Revoke/Cancel</option>
+                                    </select>
+                                    @error('jenis_permohonan_teknikal')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Nombor Serahan</label>
+                                    <input type="text" name="nombor_serahan_teknikal" class="form-control @error('nombor_serahan_teknikal') is-invalid @enderror" value="{{ old('nombor_serahan_teknikal') }}" placeholder="cth: BL20250001">
+                                    @error('nombor_serahan_teknikal')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aduan Server Fields -->
+                        <div id="server-fields-container" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">Kategori <small class="text-danger">*</small></label>
+                                <select name="kategori_server" class="form-control custom-select @error('kategori_server') is-invalid @enderror">
+                                    <option value="">Sila Pilih</option>
+                                    <option value="Portal BLESS" {{ old('kategori_server') == 'Portal BLESS' ? 'selected' : '' }}>Portal BLESS</option>
+                                    <option value="BLESS Generasi Baharu" {{ old('kategori_server') == 'BLESS Generasi Baharu' ? 'selected' : '' }}>BLESS Generasi Baharu</option>
+                                    <option value="BLESS 1.0" {{ old('kategori_server') == 'BLESS 1.0' ? 'selected' : '' }}>BLESS 1.0</option>
+                                    <option value="Aplikasi Mudah Alih" {{ old('kategori_server') == 'Aplikasi Mudah Alih' ? 'selected' : '' }}>Aplikasi Mudah Alih</option>
+                                </select>
+                                @error('kategori_server')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Common Fields: Subject and Message -->
+                        <div class="form-group">
+                            <label class="form-label">Subjek <small class="text-danger">*</small></label>
+                            <input type="text" name="subject" id="tajuk-aduan" class="form-control @error('subject') is-invalid @enderror" value="{{ old('subject') }}" required>
+                            @error('subject')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Keterangan <small class="text-danger">*</small></label>
+                            <textarea name="message" id="keterangan-aduan" rows="5" class="form-control @error('message') is-invalid @enderror" required>{{ old('message') }}</textarea>
+                            @error('message')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Attachment fields -->
+                        <div class="form-group">
+                            <label class="form-label">Lampiran (Pilihan)</label>
+                            <small class="d-block text-muted mb-2">Format fail: .gif, .jpg, .png, .zip, .rar, .csv, .doc, .docx, .xls, .xlsx, .txt, .pdf | Max: 20MB</small>
+                            <div id="attachment-container">
+                                <div class="attachment-row mb-2">
+                                    <input type="file" name="file[1]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                </div>
+                                <div class="attachment-row mb-2">
+                                    <input type="file" name="file[2]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                </div>
+                                <div class="attachment-row mb-2" style="display: none;">
+                                    <input type="file" name="file[3]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                </div>
+                                <div class="attachment-row mb-2" style="display: none;">
+                                    <input type="file" name="file[4]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                </div>
+                                <div class="attachment-row mb-2" style="display: none;">
+                                    <input type="file" name="file[5]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                </div>
+                                <div class="attachment-row mb-2" style="display: none;">
+                                    <input type="file" name="file[6]" size="50" onchange="ValidateSingleInput(this);" class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf">
+                                </div>
+                            </div>
+                            <button type="button" id="add-attachment-btn" class="btn btn-sm btn-secondary" onclick="showNextAttachment()">Tambah Lampiran Lain</button>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Priority -->
+                        <div class="form-group">
+                            <label class="form-label">Priority <small class="text-danger">*</small></label>
+                            <select name="priority" class="form-control custom-select @error('priority') is-invalid @enderror" required>
+                                @foreach($activePriorities as $priority)
+                                    <option value="{{ $priority->priority_value }}" {{ old('priority', 3) == $priority->priority_value ? 'selected' : '' }}>
+                                        {{ $priority->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('priority')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Assignment Options -->
+                        <div class="form-group">
+                            <label class="form-label">Select Kumpulan Pengguna for Assignment</label>
+                            <select name="assignment_kumpulan_pengguna_id" id="assignment-kumpulan-pengguna-select" class="form-control custom-select">
+                                <option value="">Pilih Kumpulan Pengguna</option>
+                                @foreach(\App\Models\LookupKumpulanPengguna::where('is_active', 1)->orderBy('nama', 'ASC')->get() as $kp)
+                                    <option value="{{$kp->id}}" {{ old('assignment_kumpulan_pengguna_id') == $kp->id ? 'selected' : '' }}>{{$kp->nama}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Assign this ticket to</label>
+                            <select name="owner" id="select-owner" class="form-control custom-select">
+                                <option value="-1" selected>> Unassigned <</option>
+                            </select>
+                        </div>
+
+                        <!-- Notification Option -->
+                        <div class="form-group">
+                            <label class="form-label">Options</label>
+                            <div class="custom-controls-stacked">
+                                <label class="custom-control custom-checkbox">
+                                    @if(User()->notify_customer_new == 1)
+                                        <input type="checkbox" class="custom-control-input" name="notify" value="1" checked="">
+                                    @else
+                                        <input type="checkbox" class="custom-control-input" name="notify" value="1">
+                                    @endif
+                                    <span class="custom-control-label">Send email notification to the customer</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" name="openby" value="{{Illuminate\Support\Facades\Session::get('user_id')}}">
+                        <input type="hidden" name="dt" value="{{\Carbon\Carbon::now()}}">
+                        <input type="hidden" name="lastchange" value="{{\Carbon\Carbon::now()}}">
+
+                        <hr>
+                        <button type="submit" class="btn btn-primary btn-block">Hantar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ROW-1 CLOSED -->
 @endsection
+
 @section('js')
+    <script src="{{ URL::asset('assets/plugins/select2/select2.full.min.js') }}"></script>
     <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('.select2').select2();
+
+            // Initialize form on page load
+            updateConditionalFields();
+        });
+
         var _validFileExtensions = [".gif", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".csv", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".pdf"];
         var maxFileSize = 20 * 1024 * 1024; // 20MB in bytes
 
@@ -260,7 +446,7 @@
                     }
 
                     if (!blnValid) {
-                        alert("Sorry, invalid attachment file format");
+                        alert("Format fail tidak sah");
                         oInput.value = "";
                         return false;
                     }
@@ -269,7 +455,7 @@
                     if (oInput.files && oInput.files[0]) {
                         var fileSize = oInput.files[0].size;
                         if (fileSize > maxFileSize) {
-                            alert("File size exceeds 20MB limit. Please choose a smaller file.");
+                            alert("Saiz fail melebihi had 20MB. Sila pilih fail yang lebih kecil.");
                             oInput.value = "";
                             return false;
                         }
@@ -280,7 +466,7 @@
         }
 
         function showNextAttachment() {
-            var attachmentRows = document.querySelectorAll('.attachment-row');
+            var attachmentRows = document.querySelectorAll('#attachment-container .attachment-row');
             var addButton = document.getElementById('add-attachment-btn');
 
             for (var i = 0; i < attachmentRows.length; i++) {
@@ -295,22 +481,76 @@
                 }
             }
         }
-        $('#select-template').on('change', function (e) {
-            var message = this.value;
-            var name = $("#select-template  option:selected").text();
 
-            $("#message").val(message);
-            $("#subject").val(name);
+        // Function to handle the visibility of conditional fields
+        function updateConditionalFields() {
+            const selectedType = document.querySelector('input[name="complaint_type"]:checked').value;
+
+            // Hide all conditional containers first
+            document.getElementById('pertanyaan-container').style.display = 'none';
+            document.getElementById('technical-fields-container').style.display = 'none';
+            document.getElementById('server-fields-container').style.display = 'none';
+
+            // Show the relevant container
+            if (selectedType === 'general') {
+                document.getElementById('pertanyaan-container').style.display = 'block';
+            } else if (selectedType === 'technical') {
+                document.getElementById('technical-fields-container').style.display = 'block';
+            } else if (selectedType === 'server') {
+                document.getElementById('server-fields-container').style.display = 'block';
+            }
+        }
+
+        // Add event listeners to the radio buttons
+        document.getElementsByName('complaint_type').forEach(radio => {
+            radio.addEventListener('change', updateConditionalFields);
         });
 
-        // Agensi dependent dropdown functionality for Lesen
-        $('#agensi-select').on('change', function() {
-            var agensiId = $(this).val();
-            var lesenSelect = $('#admin-lesen-select');
+        // Phone number formatting
+        document.getElementById('no-telefon').addEventListener('input', function (e) {
+            const input = e.target;
+            let value = input.value.replace(/\D/g, ''); // Remove all non-digit characters
 
-            // Reset lesen dropdown
-            lesenSelect.html('<option value="">Pilih Lesen</option>');
-            lesenSelect.prop('disabled', true);
+            // Limit to 11 digits
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+
+            // Add dashes and spaces to match the desired format
+            if (value.length > 7) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 7) + ' ' + value.substring(7);
+            } else if (value.length > 3) {
+                value = value.substring(0, 3) + '-' + value.substring(3);
+            }
+
+            input.value = value;
+        });
+
+        // Handle Pertanyaan dropdown change
+        $('#pertanyaan').on('change', function() {
+            var pertanyaan = $(this).val();
+
+            if(pertanyaan == 'Lesen') {
+                $('#kategori-umum-lesen').show();
+            } else {
+                $('#kategori-umum-lesen').hide();
+            }
+        });
+
+        // Handle Kategori Aplikasi dropdown change
+        $('#kategori-aplikasi').on('change', function() {
+            var kategori = $(this).val();
+
+            if(kategori == 'Lesen') {
+                $('#kategori-aplikasi-lesen').show();
+            } else {
+                $('#kategori-aplikasi-lesen').hide();
+            }
+        });
+
+        // Handle Agensi change for Pertanyaan Umum - update Lesen dropdown
+        $('#agensi-select-umum').on('change', function() {
+            var agensiId = $(this).val();
 
             if (agensiId) {
                 // Fetch lesen for selected agensi
@@ -318,20 +558,43 @@
                     url: '/get-lesen/' + agensiId,
                     type: 'GET',
                     success: function(response) {
+                        var lesenSelect = $('#lesen-select-umum');
+                        lesenSelect.html('<option value="">Sila Pilih</option>');
+
                         if (response.length > 0) {
                             $.each(response, function(index, lesen) {
                                 lesenSelect.append('<option value="' + lesen.id + '">' + lesen.nama + '</option>');
                             });
-                            lesenSelect.prop('disabled', false);
-                        } else {
-                            lesenSelect.html('<option value="">Tiada Lesen Tersedia</option>');
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching lesen:', xhr, status, error);
-                        alert('Error fetching lesen: ' + error);
                     }
                 });
+            } else {
+                $('#lesen-select-umum').html('<option value="">Sila Pilih</option>');
+            }
+        });
+
+        // Handle Agensi change for Aduan Aplikasi - update Lesen dropdown
+        $('#agensi-select-teknikal').on('change', function() {
+            var agensiId = $(this).val();
+
+            if (agensiId) {
+                // Fetch lesen for selected agensi
+                $.ajax({
+                    url: '/get-lesen/' + agensiId,
+                    type: 'GET',
+                    success: function(response) {
+                        var lesenSelect = $('#lesen-select-teknikal');
+                        lesenSelect.html('<option value="">Sila Pilih</option>');
+
+                        if (response.length > 0) {
+                            $.each(response, function(index, lesen) {
+                                lesenSelect.append('<option value="' + lesen.id + '">' + lesen.nama + '</option>');
+                            });
+                        }
+                    }
+                });
+            } else {
+                $('#lesen-select-teknikal').html('<option value="">Sila Pilih</option>');
             }
         });
 
@@ -357,10 +620,15 @@
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching team members:', xhr, status, error);
-                        alert('Error fetching team members: ' + error);
                     }
                 });
             }
+        });
+
+        // Form submission
+        $('form').submit(function() {
+            $(this).find("button[type='submit']").attr("disabled","disabled");
+            $(this).find("button[type='submit']").text('Menghantar tiket sila tunggu...');
         });
     </script>
 @endsection

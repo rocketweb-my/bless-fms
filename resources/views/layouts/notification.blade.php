@@ -17,7 +17,7 @@
 {{--								</div><!-- SEARCH -->--}}
 								<div class="dropdown d-md-flex">
 {{--                                    <button type="button" class="btn btn-primary mt-2 mb-2" data-toggle="modal" data-target="#addTicketModal" ><i class="fe fe-plus-circle mr-2"></i>Create New Ticket</button>--}}
-                                    <a href="{{route('admin_choose_category')}}"><button type="button" class="btn btn-primary mt-2 mb-2"><i class="fe fe-plus-circle mr-2"></i>{{ __('main.Create New Ticket') }}</button></a>
+                                    <a href="{{route('admin_create_ticket')}}"><button type="button" class="btn btn-primary mt-2 mb-2"><i class="fe fe-plus-circle mr-2"></i>{{ __('main.Create New Ticket') }}</button></a>
 								</div>
                                 <div class="dropdown d-md-flex">
 									<a class="nav-link icon full-screen-link nav-link-bg">

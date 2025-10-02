@@ -534,20 +534,16 @@ class TicketController extends Controller
 
     public function admin_create_ticket(Request $request)
     {
-        $selected_category = $request->category;
-        $selected_sub_category = $request->sub_category;
-
-        $ticket_templates =  TicketTemplate::orderBy('tpl_order','ASC')->get();
-
-        $after_messages = CustomField::where('place', '1')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
-
-        $before_messages = CustomField::where('place', '0')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
-
+        // No longer requires category selection - form includes category selection
         $kaedah_melapor = \App\Models\LookupKaedahMelapor::where('is_active', 1)->orderBy('nama', 'ASC')->get();
         $agensi = \App\Models\LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get();
         $activePriorities = \App\Models\LookupPriority::where('is_active', 1)->orderBy('priority_value', 'ASC')->get();
 
-        return view('pages.admin_create_ticket', compact('before_messages', 'after_messages','selected_category','selected_sub_category','ticket_templates','kaedah_melapor','agensi','activePriorities'));
+        $before_messages = CustomField::where('place', '0')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
+        $after_messages = CustomField::where('place', '1')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
+        $ticket_templates = TicketTemplate::orderBy('tpl_order','ASC')->get();
+
+        return view('pages.admin_create_ticket', compact('kaedah_melapor', 'agensi', 'activePriorities', 'before_messages', 'after_messages', 'ticket_templates'));
     }
 
     public function admin_create_ticket_store(Request $request)
@@ -555,13 +551,48 @@ class TicketController extends Controller
         // Validate required fields for admin ticket creation
         $request->validate([
             'kaedah_melapor_id' => 'required|exists:lookup_kaedah_melapor,id',
-            'aduan_pertanyaan' => 'required|in:aduan,pertanyaan',
+            'tarikh_aduan' => 'required|date',
+            'masa_aduan' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone_number' => 'required|string',
+            'jantina' => 'required|in:Lelaki,Perempuan',
+            'complaint_type' => 'required|in:general,technical,server',
+            'subject' => 'required|string',
+            'message' => 'required|string',
+            'priority' => 'required',
         ], [
-            'kaedah_melapor_id.required' => 'Kaedah Melapor is required.',
-            'kaedah_melapor_id.exists' => 'Selected Kaedah Melapor is invalid.',
-            'aduan_pertanyaan.required' => 'Aduan/Pertanyaan selection is required.',
-            'aduan_pertanyaan.in' => 'Invalid Aduan/Pertanyaan selection.',
+            'kaedah_melapor_id.required' => 'Kaedah Aduan is required.',
+            'kaedah_melapor_id.exists' => 'Selected Kaedah Aduan is invalid.',
+            'tarikh_aduan.required' => 'Tarikh Aduan is required.',
+            'masa_aduan.required' => 'Masa Aduan is required.',
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Email must be valid.',
+            'phone_number.required' => 'Phone number is required.',
+            'jantina.required' => 'Gender is required.',
+            'complaint_type.required' => 'Complaint type is required.',
+            'subject.required' => 'Subject is required.',
+            'message.required' => 'Message is required.',
+            'priority.required' => 'Priority is required.',
         ]);
+
+        // Map complaint_type to category
+        $categoryMapping = [
+            'general' => 'Pertanyaan Umum',
+            'technical' => 'Aduan Aplikasi',
+            'server' => 'Aduan Server',
+        ];
+
+        // Find or create category based on complaint_type
+        $categoryName = $categoryMapping[$request->complaint_type];
+        $category = Category::firstOrCreate(['name' => $categoryName]);
+
+        // Add category to request
+        $request->merge(['category' => $category->id]);
+
+        // Set aduan_pertanyaan based on complaint_type
+        $request->merge(['aduan_pertanyaan' => $request->complaint_type === 'general' ? 'pertanyaan' : 'aduan']);
 
         $tracking_id = generateTicketID();
         $history = '';
