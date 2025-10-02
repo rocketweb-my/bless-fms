@@ -480,7 +480,7 @@ class PublicController extends Controller
     {
         $request->validate([
             'subject' => 'required|string|max:70',
-            'category_id' => 'required|exists:categories,id',
+            'ticket_type_id' => 'required|exists:ticket_types,id',
             'message' => 'required|string',
         ]);
 
@@ -496,8 +496,18 @@ class PublicController extends Controller
         $email = ($request->user_type == 'other' || $request->user_type == 'public') ? $request->email : $pic->email;
         $phone = ($request->user_type == 'other' || $request->user_type == 'public') ? $request->phone_number : $pic->phone_number;
 
-        // Get category name
-        $category = \App\Models\Category::find($request->category_id);
+        // Get or create a default category for PBM tickets
+        $defaultCategory = \App\Models\Category::where('type', '0')->first();
+        if (!$defaultCategory) {
+            // If no category exists, create a default one
+            $defaultCategory = \App\Models\Category::create([
+                'name' => 'PBM Support',
+                'cat_order' => 99,
+                'autoassign' => '1',
+                'type' => '0',
+                'priority' => '3',
+            ]);
+        }
 
         // Create ticket
         $ticket = Ticket::create([
@@ -507,14 +517,15 @@ class PublicController extends Controller
             'phone_number' => $phone,
             'user_type' => $request->user_type,
             'pic_id' => $pic->id,
-            'category' => $request->category_id,
+            'category' => $defaultCategory->id,
+            'ticket_type_id' => $request->ticket_type_id,
             'sub_category' => null,
             'priority' => '3', // Medium priority
             'kementerian_id' => $pic->kementerian_id,
             'agensi_id' => $request->agensi_id,
             'lesen_id' => $request->lesen_id,
             'bl_no' => $request->bl_no,
-            'kategori_aduan' => $category ? $category->name : null,
+            'kategori_aduan' => $defaultCategory->name,
             'nombor_serahan' => $request->nombor_serahan,
             'jenis_permohonan' => $request->jenis_permohonan,
             'subject' => $request->subject,
@@ -591,7 +602,7 @@ class PublicController extends Controller
             'email' => $ticket->email,
             'subject' => $ticket->subject,
             'message' => $ticket->message,
-            'category' => $category ? $category->name : 'N/A',
+            'category' => $defaultCategory->name,
             'priority' => $ticket->priority == '1' ? 'High' : ($ticket->priority == '2' ? 'Medium' : 'Low'),
             'status' => 'New',
             'created_at' => $ticket->dt,

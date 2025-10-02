@@ -22,14 +22,16 @@ use Illuminate\Support\Collection;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Log;
 
 class ReplyTicketController extends Controller
 {
 
     public function index($track_id)
     {
+        $current_user = User();
 
-        if (user()->isadmin != 1)
+        if ($current_user->isadmin != 1)
         {
             if(userPermissionChecker('can_view_tickets') == false)
             {
@@ -38,10 +40,31 @@ class ReplyTicketController extends Controller
         }
 
         $ticket = Ticket::where('trackid', $track_id)->first();
-        //Check Permission To View Ticket//
-        if(User()->id != $ticket->owner && userPermissionChecker('can_view_ass_others') == false)
+
+        // Check if user is vendor with technical type - allow only their assigned tickets
+        if ($current_user->user_type == 'vendor' && $current_user->vendor_type == 'technical')
         {
-            if (User()->isadmin == 0)
+            if ($ticket->vendor_id != $current_user->id)
+            {
+                toastr()->error('You do not have permission to view this ticket', 'Error');
+                return redirect()->route('ticket.index');
+            }
+        }
+        // Check if user is vendor admin - allow only Aduan Aplikasi and Aduan Server
+        elseif ($current_user->user_type == 'vendor' && $current_user->vendor_type == 'admin')
+        {
+            $vendorCategories = Category::whereIn('name', ['Aduan Aplikasi', 'Aduan Server'])->pluck('id')->toArray();
+
+            if (!in_array($ticket->category, $vendorCategories))
+            {
+                toastr()->error('You do not have permission to view this ticket', 'Error');
+                return redirect()->route('ticket.index');
+            }
+        }
+        //Check Permission To View Ticket//
+        elseif($current_user->id != $ticket->owner && userPermissionChecker('can_view_ass_others') == false)
+        {
+            if ($current_user->isadmin == 0)
             {
                 toastr()->error('You do not have permission to view this ticket', 'Error');
                 return redirect()->route('ticket.index');
@@ -63,15 +86,15 @@ class ReplyTicketController extends Controller
 
         if (user()->isadmin == 1 || userPermissionChecker('can_assign_self') == true && userPermissionChecker('can_assign_others') == true)
         {
-            $users = User::where('is_active', 1)->get();
+            $users = User::where('is_active', 1)->where('user_type', 'staff')->get();
 
         } else{
             if( userPermissionChecker('can_assign_self') == true && userPermissionChecker('can_assign_others') == false )
             {
-                $users = User::where('id', user()->id)->get();
+                $users = User::where('id', user()->id)->where('user_type', 'staff')->get();
             }elseif( userPermissionChecker('can_assign_self') == false && userPermissionChecker('can_assign_others') == true )
             {
-                $users = User::where('id','!=', user()->id)->where('is_active', 1)->get();
+                $users = User::where('id','!=', user()->id)->where('is_active', 1)->where('user_type', 'staff')->get();
             }else{
                 $users = null;
             }
@@ -417,6 +440,66 @@ class ReplyTicketController extends Controller
         }
 
         flash('Ticket successfully assigned to '.$assignedUser->name, 'success');
+        return redirect()->back();
+    }
+
+    public function assign_ticket_to_vendor(Request $request)
+    {
+        $request->validate([
+            'ticket_id' => 'required|exists:tickets,id',
+            'vendor_id' => 'required|exists:users,id',
+            'vendor_type' => 'required|in:admin,technical',
+        ]);
+
+        $ticket = Ticket::findOrFail($request->ticket_id);
+        $vendor = User::where('user_type', 'vendor')->findOrFail($request->vendor_id);
+
+        // Update the ticket vendor
+        $ticket->vendor_id = $request->vendor_id;
+
+        // Add history entry
+        $history = '<li class="smaller">'.Carbon::now().' | assigned to vendor '.$vendor->name.' ('.$vendor->company.') by '.User()->name.'</li>';
+        $ticket->history = $ticket->history.$history;
+
+        $ticket->save();
+
+        // Prepare email data
+        $emailData = [
+            'subject' => $ticket->subject,
+            'trackid' => $ticket->trackid,
+            'assigned_by' => User()->name,
+            'vendor_name' => $vendor->name,
+            'vendor_company' => $vendor->company,
+        ];
+
+        // Send email notification to assigned vendor
+        try {
+            Mail::to($vendor->email)->send(new NewTicketAssign($emailData));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send vendor assignment email to vendor: ' . $e->getMessage());
+        }
+
+        // Send email notification to ticket owner if owner exists
+        if($ticket->owner && $ticket->owner != 0) {
+            $owner = User::find($ticket->owner);
+            if($owner && $owner->notify_assign == 1) {
+                try {
+                    $ownerEmailData = [
+                        'subject' => $ticket->subject,
+                        'trackid' => $ticket->trackid,
+                        'assigned_by' => User()->name,
+                        'vendor_name' => $vendor->name,
+                        'vendor_company' => $vendor->company,
+                        'message' => 'This ticket has been assigned to vendor '.$vendor->name.' ('.$vendor->company.').',
+                    ];
+                    Mail::to($owner->email)->send(new NewTicketAssign($ownerEmailData));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send vendor assignment email to owner: ' . $e->getMessage());
+                }
+            }
+        }
+
+        flash('Ticket successfully assigned to vendor '.$vendor->name, 'success');
         return redirect()->back();
     }
 

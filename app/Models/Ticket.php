@@ -68,4 +68,14 @@ class Ticket extends Model
     {
         return $this->belongsTo('App\Models\PersonInCharge', 'pic_id', 'id');
     }
+
+    public function ticketType()
+    {
+        return $this->belongsTo('App\Models\TicketType', 'ticket_type_id', 'id');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo('App\Models\User', 'vendor_id', 'id');
+    }
 }

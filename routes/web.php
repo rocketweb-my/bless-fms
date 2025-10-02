@@ -332,6 +332,12 @@ Route::get('/get-lesen/{agensiId}', [LookUpLesenController::class, 'getLesenByAg
 
 // Team Members by Kumpulan Pengguna API
 Route::get('/get-team/{kumpulanPenggunaId}', [TeamController::class, 'getTeamByKumpulanPengguna'])->name('get-team');
+
+// Vendors by Vendor Type API
+Route::get('/get-vendors/{vendorType}', [VendorController::class, 'getVendorsByType'])->name('get-vendors');
+
+// Vendor Assignment Route
+Route::post('/ticket/reply/assign-vendor', [ReplyTicketController::class, 'assign_ticket_to_vendor'])->name('ticket.reply.assign.vendor');
 Route::post('/public/reply_form',[PublicController::class, 'reply_form'])->name('public.reply_form');
 Route::post('/public/close_ticket',[PublicController::class, 'close_ticket'])->name('public.close_ticket');
 Route::post('/public/forgot_tracking',[PublicController::class, 'forgot_tracking'])->name('public.forgot_tracking');

@@ -84,7 +84,7 @@
                                     </div>
 
                                     {{-- PBM Information Card --}}
-                                    @if($ticket->user_type || $ticket->pic_id || $ticket->kementerian_id || $ticket->agensi_id || $ticket->kategori_aduan || $ticket->nombor_serahan || $ticket->jenis_permohonan || $ticket->lesen_id || $ticket->bl_no)
+                                    @if($ticket->user_type || $ticket->pic_id || $ticket->kementerian_id || $ticket->agensi_id || $ticket->ticket_type_id || $ticket->kategori_aduan || $ticket->nombor_serahan || $ticket->jenis_permohonan || $ticket->lesen_id || $ticket->bl_no)
                                     <div class="card">
                                         <div class="card-header">
                                             <h3 class="card-title">Ticket Information</h3>
@@ -146,6 +146,15 @@
                                                 </div>
                                                 @endif
 
+                                                @if($ticket->ticket_type_id)
+                                                <div class="col-2 mb-2">
+                                                    <label>Jenis Aduan/Pertanyaan</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->ticketType->name ?? 'N/A' }}</span>
+                                                </div>
+                                                @endif
+
                                                 @if($ticket->kategori_aduan)
                                                 <div class="col-2 mb-2">
                                                     <label>Kategori Aduan</label>
@@ -188,6 +197,47 @@
                                                 </div>
                                                 <div class="col-10 mb-2">
                                                     <span class="font-weight-bold">{{ $ticket->bl_no }}</span>
+                                                </div>
+                                                @endif
+
+                                                @php
+                                                    $category = \App\Models\Category::find($ticket->category);
+                                                    $isPertanyaanUmum = $category && $category->name == 'Pertanyaan Umum';
+                                                @endphp
+
+                                                @if(!$isPertanyaanUmum && $ticket->vendor_id)
+                                                <div class="col-12 mb-2 mt-3">
+                                                    <hr>
+                                                    <h5 class="text-primary">Vendor Information</h5>
+                                                </div>
+
+                                                <div class="col-2 mb-2">
+                                                    <label>Assigned Vendor</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    <span class="font-weight-bold">{{ $ticket->vendor->name ?? 'N/A' }}</span>
+                                                    @if($ticket->vendor)
+                                                        <br><small class="text-muted">{{ $ticket->vendor->company }}</small>
+                                                        <br><small class="text-muted">{{ $ticket->vendor->email }}</small>
+                                                        @if($ticket->vendor->no_hp)
+                                                            <br><small class="text-muted">{{ $ticket->vendor->no_hp }}</small>
+                                                        @endif
+                                                    @endif
+                                                </div>
+
+                                                <div class="col-2 mb-2">
+                                                    <label>Vendor Type</label>
+                                                </div>
+                                                <div class="col-10 mb-2">
+                                                    @if($ticket->vendor)
+                                                        @if($ticket->vendor->vendor_type == 'admin')
+                                                            <span class="badge badge-primary">Admin</span>
+                                                        @elseif($ticket->vendor->vendor_type == 'technical')
+                                                            <span class="badge badge-info">Technical</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="font-weight-bold">N/A</span>
+                                                    @endif
                                                 </div>
                                                 @endif
                                             </div>
@@ -380,7 +430,7 @@
 
                                         </div>
                                     </div>
-                                    @if(user()->isadmin == 1 || ( User()->id == $ticket->owner && userPermissionChecker('can_reply_tickets') == true))
+                                    @if(user()->isadmin == 1 || ( User()->id == $ticket->owner && userPermissionChecker('can_reply_tickets') == true) || (User()->user_type == 'vendor' && User()->vendor_type == 'admin') || (User()->user_type == 'vendor' && User()->vendor_type == 'technical' && $ticket->vendor_id == User()->id))
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card">
@@ -441,18 +491,14 @@
                                                     <br>
                                                     <small>Max file size: 20MB | {{ __('ticket_reply.File format') }}: .gif,.jpg,.jpeg,.png,.zip,.rar,.csv,.doc,.docx,.xls,.xlsx,.txt,.pdf</small>
                                                 </div>
-                                                <div class="form-group form-elements mb-3">
+                                                <div class="form-group form-elements mb-3" style="display: none;">
                                                     <div class="custom-controls-stacked">
                                                         <label class="custom-control custom-checkbox">
                                                             <input type="checkbox" class="custom-control-input" name="signature" value="1" checked="">
                                                             <span class="custom-control-label">{{__('ticket_reply.Attach signature')}}</span>
                                                         </label>
                                                         <label class="custom-control custom-checkbox">
-                                                            @if(User()->notify_customer_reply == 1)
-                                                                <input type="checkbox" class="custom-control-input" name="no_notify" value="1">
-                                                            @else
-                                                                <input type="checkbox" class="custom-control-input" name="no_notify" value="1" checked="">
-                                                            @endif
+                                                            <input type="checkbox" class="custom-control-input" name="no_notify" value="1">
                                                             <span class="custom-control-label">{{__('ticket_reply.Don\'t send email notification of this reply to the customer')}}</span>
                                                         </label>
                                                     </div>
@@ -523,6 +569,9 @@
                                         </div>
                                     </div>
                                     <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">{{ __('ticket_reply.Action') }}</h3>
+                                        </div>
                                         <div class="row m-2">
 
                                             <div class="col-5 mb-2">
@@ -631,6 +680,7 @@
                                             </form>
                                         </div>
                                     </div>
+                                    @if(User()->user_type == 'vendor' && User()->vendor_type == 'admin')
                                     <div class="card">
                                         <div class="card-header">
                                             <h3 class="card-title">{{__('ticket_reply.Assign Ticket')}}</h3>
@@ -639,33 +689,34 @@
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            <form id="assignment-form" method="post" action="{{ route('ticket.reply.assign') }}">
+                                            <!-- Vendor Admin Assignment Form -->
+                                            <form id="vendor-assignment-form" method="post" action="{{ route('ticket.reply.assign.vendor') }}">
                                                 @csrf
                                                 <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
-                                                
+
                                                 <div class="form-group">
-                                                    <label class="form-label">Select Kumpulan Pengguna</label>
-                                                    <select name="kumpulan_pengguna_id" id="assignment-kumpulan-pengguna-select-reply" class="form-control custom-select">
-                                                        <option value="">Pilih Kumpulan Pengguna</option>
-                                                        @foreach(\App\Models\LookupKumpulanPengguna::where('is_active', 1)->orderBy('nama', 'ASC')->get() as $kp)
-                                                            <option value="{{$kp->id}}">{{$kp->nama}}</option>
-                                                        @endforeach
+                                                    <label class="form-label">Jenis Vendor</label>
+                                                    <select name="vendor_type" id="vendor-type-select" class="form-control custom-select" required>
+                                                        <option value="">Pilih Jenis Vendor</option>
+                                                        <option value="admin">Admin</option>
+                                                        <option value="technical">Technical</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="form-label">Assign to Team Member</label>
-                                                    <select name="assigned_user_id" id="assignment-user-select-reply" class="form-control custom-select">
-                                                        <option value="">Select Team Member</option>
+                                                    <label class="form-label">Assign to Vendor</label>
+                                                    <select name="vendor_id" id="vendor-select" class="form-control custom-select" required>
+                                                        <option value="">Select Vendor</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <button type="submit" class="btn btn-primary btn-block">Assign Ticket</button>
+                                                    <button type="submit" class="btn btn-primary btn-block">Assign to Vendor</button>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
+                                    @endif
                                     <div class="card">
                                         <div class="card-header">
                                             <h3 class="card-title">{{__('ticket_reply.Ticket Details')}}</h3>
@@ -943,10 +994,10 @@
             $('#assignment-kumpulan-pengguna-select-reply').on('change', function() {
                 var kumpulanPenggunaId = $(this).val();
                 var ownerSelect = $('#assignment-user-select-reply');
-                
+
                 // Reset owner dropdown to default options
                 ownerSelect.html('<option value="">Select Team Member</option>');
-                
+
                 if (kumpulanPenggunaId) {
                     // Fetch team members for selected kumpulan pengguna
                     $.ajax({
@@ -962,6 +1013,34 @@
                         error: function(xhr, status, error) {
                             console.error('Error fetching team members:', xhr, status, error);
                             alert('Error fetching team members: ' + error);
+                        }
+                    });
+                }
+            });
+
+            // Vendor Type dependent dropdown functionality for vendor assignment
+            $('#vendor-type-select').on('change', function() {
+                var vendorType = $(this).val();
+                var vendorSelect = $('#vendor-select');
+
+                // Reset vendor dropdown to default options
+                vendorSelect.html('<option value="">Select Vendor</option>');
+
+                if (vendorType) {
+                    // Fetch vendors for selected vendor type
+                    $.ajax({
+                        url: '/get-vendors/' + vendorType,
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.length > 0) {
+                                $.each(response, function(index, vendor) {
+                                    vendorSelect.append('<option value="' + vendor.id + '">' + vendor.name + ' (' + vendor.company + ')</option>');
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching vendors:', xhr, status, error);
+                            alert('Error fetching vendors: ' + error);
                         }
                     });
                 }

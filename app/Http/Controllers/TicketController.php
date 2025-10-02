@@ -38,7 +38,60 @@ class TicketController extends Controller
             return (string) $value;
         })->toArray();
         $filter_onwer = [];
-        if ($current_user->isadmin == 1)
+
+        // Check if user is vendor with technical type
+        if ($current_user->user_type == 'vendor' && $current_user->vendor_type == 'technical')
+        {
+            // Technical vendor can only see tickets assigned to them
+            $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id','category')
+                ->where('vendor_id', $current_user->id);
+
+            if ( session('statusFilter') != null ) {
+                $status = explode(',',Session::get('statusFilter'));
+                $data = $data->whereIn('status', $status);
+                $current_status_filtered = $status;
+            }else{
+                $data = $data->whereIn('status', $status_default);
+                $current_status_filtered = $status_default;
+            }
+
+            if ( session('priorityFilter') != null ) {
+                $priority= explode(',',Session::get('priorityFilter'));
+                $data = $data->whereIn('priority', $priority);
+                $current_priority_filtered = $priority;
+            }else{
+                $data = $data->whereIn('priority', $priority_default);
+                $current_priority_filtered = $priority_default;
+            }
+        }
+        // Check if user is vendor with admin type
+        elseif ($current_user->user_type == 'vendor' && $current_user->vendor_type == 'admin')
+        {
+            // Vendor admin can only see tickets with categories "Aduan Aplikasi" and "Aduan Server"
+            $vendorCategories = Category::whereIn('name', ['Aduan Aplikasi', 'Aduan Server'])->pluck('id')->toArray();
+
+            $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id','category')
+                ->whereIn('category', $vendorCategories);
+
+            if ( session('statusFilter') != null ) {
+                $status = explode(',',Session::get('statusFilter'));
+                $data = $data->whereIn('status', $status);
+                $current_status_filtered = $status;
+            }else{
+                $data = $data->whereIn('status', $status_default);
+                $current_status_filtered = $status_default;
+            }
+
+            if ( session('priorityFilter') != null ) {
+                $priority= explode(',',Session::get('priorityFilter'));
+                $data = $data->whereIn('priority', $priority);
+                $current_priority_filtered = $priority;
+            }else{
+                $data = $data->whereIn('priority', $priority_default);
+                $current_priority_filtered = $priority_default;
+            }
+        }
+        elseif ($current_user->isadmin == 1)
         {
             if (session('showMyTicket') == null && session('showNoOwnerTicket') == null && session('showOtherTicket') == null)
             {
@@ -47,7 +100,7 @@ class TicketController extends Controller
                 Session::put('showNoOwnerTicket', 'true');
             }
 
-            $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id');
+            $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id','category');
 
             if ( session('statusFilter') != null ) {
                 $status = explode(',',Session::get('statusFilter'));
@@ -102,9 +155,9 @@ class TicketController extends Controller
 
             if(userPermissionChecker('can_view_ass_others') == true)
             {
-                $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id');
+                $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id','category');
             }else{
-                $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id')->where('owner', $current_user->id);
+                $data = Ticket::select('trackid','lastchange','name','subject','status','lastreplier','replierid','owner','priority','dt','id','category')->where('owner', $current_user->id);
             }
             if ( session('statusFilter') != null ) {
                 $status = explode(',',Session::get('statusFilter'));
@@ -138,6 +191,10 @@ class TicketController extends Controller
 
         if ($request->tracking_id) {
             $data = $data->where('trackid', 'like', '%' . $request->tracking_id . '%');
+        }
+
+        if ($request->category) {
+            $data = $data->where('category', $request->category);
         }
 
         $data = $data->orderBy('lastchange', 'DESC')->get();
@@ -239,6 +296,11 @@ class TicketController extends Controller
                     return $link;
                 })
 
+                ->addColumn('category_name', function ($data) {
+                    $category = Category::find($data->category);
+                    return $category ? $category->name : 'N/A';
+                })
+
                 ->addColumn('checkbox', function ($data) {
 
                     $checkbox = '<input type="checkbox" id="ticket_checkbox" name="ticket_checkbox" value="'. $data->id .'">';
@@ -253,15 +315,15 @@ class TicketController extends Controller
 
         if (user()->isadmin == 1 || userPermissionChecker('can_assign_self') == true && userPermissionChecker('can_assign_others') == true)
         {
-            $users = User::all();
+            $users = User::where('is_active', 1)->where('user_type', 'staff')->get();
 
         } else{
             if( userPermissionChecker('can_assign_self') == true && userPermissionChecker('can_assign_others') == false )
             {
-                $users = User::where('id', user()->id)->get();
+                $users = User::where('id', user()->id)->where('user_type', 'staff')->get();
             }elseif( userPermissionChecker('can_assign_self') == false && userPermissionChecker('can_assign_others') == true )
             {
-                $users = User::where('id','!=', user()->id)->get();
+                $users = User::where('id','!=', user()->id)->where('is_active', 1)->where('user_type', 'staff')->get();
             }else{
                 $users = null;
             }

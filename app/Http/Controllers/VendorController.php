@@ -178,4 +178,16 @@ class VendorController extends Controller
 
         return redirect()->route('vendor.profile', $id)->with('success', 'Password updated successfully.');
     }
+
+    public function getVendorsByType($vendorType)
+    {
+        $vendors = User::where('user_type', 'vendor')
+            ->where('vendor_type', $vendorType)
+            ->where('is_active', 1)
+            ->select('id', 'name', 'company', 'email')
+            ->orderBy('name', 'ASC')
+            ->get();
+
+        return response()->json($vendors);
+    }
 }

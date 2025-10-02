@@ -38,7 +38,7 @@
                                                         </div>
                                                         <div class="col-lg-8 col-md-12 col-sm-12">
                                                             <div class="form-group">
-                                                                <input type="text" class="form-control" name="client_name" value="">
+                                                                <input type="text" class="form-control" name="client_name" value="{{ request('client_name') }}">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -52,7 +52,7 @@
                                                         </div>
                                                         <div class="col-lg-8 col-md-12 col-sm-12">
                                                             <div class="form-group">
-                                                                <input type="email" class="form-control" name="client_email" value="">
+                                                                <input type="email" class="form-control" name="client_email" value="{{ request('client_email') }}">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -66,7 +66,26 @@
                                                         </div>
                                                         <div class="col-lg-8 col-md-12 col-sm-12">
                                                             <div class="form-group">
-                                                                <input type="text" class="form-control" name="tracking_id" value="">
+                                                                <input type="text" class="form-control" name="tracking_id" value="{{ request('tracking_id') }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-10 col-md-12 col-sm-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-4 col-md-12 col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="form-label text-right">Category</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-8 col-md-12 col-sm-12">
+                                                            <div class="form-group">
+                                                                <select name="category" class="form-control custom-select">
+                                                                    <option value="">All Categories</option>
+                                                                    @foreach(\App\Models\Category::orderBy('name', 'ASC')->get() as $cat)
+                                                                        <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -109,6 +128,7 @@
                                                     <th class="">{{__('ticket.Updated')}}</th>
                                                     <th class="">{{__('ticket.Name')}}</th>
                                                     <th class="">{{__('ticket.Subject')}}</th>
+                                                    <th width="100px">Category</th>
                                                     <th width="70px">{{__('ticket.Status')}}</th>
                                                     <th class="">{{__('ticket.Owner')}}</th>
                                                     <th class="">{{__('ticket.Last Replier')}}</th>
@@ -325,6 +345,7 @@
                         d.client_name = $('input[name=client_name]').val();
                         d.client_email = $('input[name=client_email]').val();
                         d.tracking_id = $('input[name=tracking_id]').val();
+                        d.category = $('select[name=category]').val();
                     }
                 },
                 columns: [
@@ -334,6 +355,7 @@
                     {data: { '_': 'lastchange.display', 'sort': 'lastchange' }, name: 'lastchange.timestamp'},
                     {data: 'name', name: 'name'},
                     {data: 'subject_edit', name: 'subject_edit', orderable: false,},
+                    {data: 'category_name', name: 'category_name'},
                     {data: 'status_edit', name: 'status_edit'},
                     {data: 'owner_edit', name: 'owner_edit', orderable: false,},
                     {data: 'lastreplier_edit', name: 'lastreplier_edit'},

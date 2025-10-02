@@ -132,19 +132,19 @@
 
                                             <h5 class="font-weight-bold mb-3">2. Maklumat Aduan/Pertanyaan</h5>
 
-                                            <!-- Kategori Aduan/Pertanyaan dropdown -->
+                                            <!-- Jenis Aduan/Pertanyaan dropdown -->
                                             <div class="form-group">
-                                                <label class="form-label">Kategori Aduan/Pertanyaan <small class="text-danger">*</small></label>
-                                                <select id="kategori-aduan" name="category_id" class="form-control custom-select @error('category_id') is-invalid @enderror" required>
+                                                <label class="form-label">Jenis Aduan/Pertanyaan <small class="text-danger">*</small></label>
+                                                <select id="ticket-type" name="ticket_type_id" class="form-control custom-select @error('ticket_type_id') is-invalid @enderror" required>
                                                     <option value="">Sila Pilih</option>
                                                     @php
-                                                        $categories = \App\Models\Category::where('type', '0')->orderBy('cat_order', 'ASC')->get();
+                                                        $ticketTypes = \App\Models\TicketType::where('is_active', 1)->orderBy('order', 'ASC')->get();
                                                     @endphp
-                                                    @foreach($categories as $category)
-                                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                    @foreach($ticketTypes as $type)
+                                                        <option value="{{ $type->id }}" {{ old('ticket_type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('category_id')
+                                                @error('ticket_type_id')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -355,16 +355,16 @@
             radio.addEventListener('change', updateUserFields);
         });
 
-        // Show/hide conditional fields based on kategori aduan
-        const kategoriAduanSelect = document.getElementById('kategori-aduan');
+        // Show/hide conditional fields based on ticket type
+        const ticketTypeSelect = document.getElementById('ticket-type');
         const conditionalFieldsContainer = document.getElementById('conditional-fields-container');
-        const relevantCategories = ["Berkaitan Borang Permohonan", "Berkaitan Proses", "Berkaitan status permohonan"];
+        const relevantTypes = ["Berkaitan Borang Permohonan", "Berkaitan Proses", "Berkaitan status permohonan"];
 
-        kategoriAduanSelect.addEventListener('change', function() {
+        ticketTypeSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
-            const selectedCategoryName = selectedOption.text;
+            const selectedTypeName = selectedOption.text;
 
-            if (relevantCategories.includes(selectedCategoryName)) {
+            if (relevantTypes.includes(selectedTypeName)) {
                 conditionalFieldsContainer.style.display = 'block';
             } else {
                 conditionalFieldsContainer.style.display = 'none';
