@@ -18,6 +18,9 @@
                         <li>
                             <a class="side-menu__item" href="{{route('ticket.index')}}"><i class="side-menu__icon fa fa-ticket"></i><span class="side-menu__label">{{__('main.Tickets')}}</span></a>
                         </li>
+                        <li>
+                            <a class="side-menu__item" href="{{route('admin_draft_tickets.index')}}"><i class="side-menu__icon fa fa-file-text-o"></i><span class="side-menu__label">Draft Tickets</span></a>
+                        </li>
                         @if(user()->isadmin == 1 || userPermissionChecker('can_man_canned') == true || userPermissionChecker('can_man_ticket_tpl') == true)
                         <li class="slide">
                             <a class="side-menu__item"  data-toggle="slide" href="#" style="width: 100%!important;"><i class="side-menu__icon fa fa-newspaper-o"></i><span class="side-menu__label" style="text-align: left !important;">{{__('main.Templates')}}</span><i class="angle fa fa-angle-right"></i></a>

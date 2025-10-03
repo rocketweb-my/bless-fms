@@ -81,6 +81,13 @@ use Illuminate\Support\Facades\App;
         Route::post('/store_filter', [TicketController::class, 'store_filter'])->name('store_filter');
         Route::get('/admin/create_ticket', [TicketController::class, 'admin_create_ticket'])->name('admin_create_ticket');
         Route::post('/admin/create_ticket/store', [TicketController::class, 'admin_create_ticket_store'])->name('admin_create_ticket.store');
+        Route::post('/admin/create_ticket/save_draft', [TicketController::class, 'admin_save_draft'])->name('admin_create_ticket.save_draft');
+        Route::post('/admin/create_ticket/save_tutup', [TicketController::class, 'admin_save_tutup'])->name('admin_create_ticket.save_tutup');
+        Route::get('/draft_tickets', [TicketController::class, 'draft_tickets_index'])->name('admin_draft_tickets.index');
+        Route::get('/draft_tickets/data', [TicketController::class, 'draft_tickets_data'])->name('admin_draft_tickets.data');
+        Route::get('/draft_tickets/{id}/edit', [TicketController::class, 'edit_draft'])->name('admin_draft_tickets.edit');
+        Route::post('/draft_tickets/{id}/submit', [TicketController::class, 'submit_draft_to_ticket'])->name('admin_draft_tickets.submit');
+        Route::delete('/draft_tickets/{id}', [TicketController::class, 'delete_draft'])->name('admin_draft_tickets.delete');
 
         //Reply Ticket Controller
         Route::get('/ticket/{trackid}', [ReplyTicketController::class, 'index'])->name('ticket.reply');

@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Ticket;
 use App\Models\Category;
+use App\Models\SubCategory;
+use App\Models\DraftTicket;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\File;
 use App\Models\Attachment;
@@ -18,6 +20,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Mail\Client\ForgotTracking;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
@@ -539,17 +542,36 @@ class TicketController extends Controller
         $agensi = \App\Models\LookupAgensi::where('is_active', 1)->orderBy('nama', 'ASC')->get();
         $activePriorities = \App\Models\LookupPriority::where('is_active', 1)->orderBy('priority_value', 'ASC')->get();
 
+        // Get categories and sub-categories
+        $categories = Category::all();
+        $aduanAplikasiSubCategories = SubCategory::whereHas('category', function($q) {
+            $q->where('name', 'Aduan Aplikasi');
+        })->get();
+        $aduanServerSubCategories = SubCategory::whereHas('category', function($q) {
+            $q->where('name', 'Aduan Server');
+        })->get();
+
         $before_messages = CustomField::where('place', '0')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
         $after_messages = CustomField::where('place', '1')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
         $ticket_templates = TicketTemplate::orderBy('tpl_order','ASC')->get();
 
-        return view('pages.admin_create_ticket', compact('kaedah_melapor', 'agensi', 'activePriorities', 'before_messages', 'after_messages', 'ticket_templates'));
+        return view('pages.admin_create_ticket', compact('kaedah_melapor', 'agensi', 'activePriorities', 'categories', 'aduanAplikasiSubCategories', 'aduanServerSubCategories', 'before_messages', 'after_messages', 'ticket_templates'));
     }
 
     public function admin_create_ticket_store(Request $request)
     {
+        // Route based on action type
+        $action = $request->input('action', 'submit');
+
+        if ($action === 'draft') {
+            return $this->admin_save_draft($request);
+        } elseif ($action === 'tutup') {
+            return $this->admin_save_tutup($request);
+        }
+
+        // Default: Normal ticket submission
         // Validate required fields for admin ticket creation
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'kaedah_melapor_id' => 'required|exists:lookup_kaedah_melapor,id',
             'tarikh_aduan' => 'required|date',
             'masa_aduan' => 'required',
@@ -577,6 +599,12 @@ class TicketController extends Controller
             'priority.required' => 'Priority is required.',
         ]);
 
+        if ($validator->fails()) {
+            return redirect()->route('admin_create_ticket')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
         // Map complaint_type to category
         $categoryMapping = [
             'general' => 'Pertanyaan Umum',
@@ -590,6 +618,15 @@ class TicketController extends Controller
 
         // Add category to request
         $request->merge(['category' => $category->id]);
+
+        // Set sub_category based on complaint_type
+        $subCategoryId = null;
+        if ($request->complaint_type === 'technical' && $request->kategori_aplikasi) {
+            $subCategoryId = $request->kategori_aplikasi;
+        } elseif ($request->complaint_type === 'server' && $request->kategori_server) {
+            $subCategoryId = $request->kategori_server;
+        }
+        $request->merge(['sub_category' => $subCategoryId]);
 
         // Set aduan_pertanyaan based on complaint_type
         $request->merge(['aduan_pertanyaan' => $request->complaint_type === 'general' ? 'pertanyaan' : 'aduan']);
@@ -740,9 +777,13 @@ class TicketController extends Controller
         $request->request->add(['language' => null]);
         $request->request->add(['articles' => null]);
         $request->request->add(['ip' => $request->ip()]);
+        $request->request->add(['status' => $request->input('status', 1)]); // Default to status 1 (New) if not set
 
         $data = $request->all();
-        Ticket::create($data);
+        $ticket = Ticket::create($data);
+
+        // Add created_at for email templates
+        $data['created_at'] = now();
 
         if ($owner >= 1)
         {
@@ -769,6 +810,14 @@ class TicketController extends Controller
         }
 
 
+
+        // If this was created from a draft, update the draft status to 'sent'
+        if ($request->has('draft_id') && $request->draft_id) {
+            $draft = DraftTicket::find($request->draft_id);
+            if ($draft) {
+                $draft->update(['status' => 'sent']);
+            }
+        }
 
         flash('Ticket Successfully Created', 'success');
         return redirect()->route('ticket.index');
@@ -968,5 +1017,360 @@ class TicketController extends Controller
 
 
         });
+    }
+
+    // Save ticket as draft
+    public function admin_save_draft(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'subject' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin_create_ticket')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Check if updating existing draft or creating new
+        $draftId = $request->input('draft_id');
+        $draft = null;
+
+        if ($draftId) {
+            $draft = DraftTicket::find($draftId);
+            // Verify ownership
+            if (!$draft || $draft->created_by != Session::get('user_id')) {
+                flash('Unauthorized access to draft', 'danger');
+                return redirect()->route('admin_draft_tickets.index');
+            }
+            $draftTicketId = 'DRAFT_' . $draft->id;
+        } else {
+            $draftTicketId = 'DRAFT_' . uniqid();
+        }
+
+        // Process attachments - use draft ID for tracking
+        $attachment_list = $draft ? $draft->attachments : '';
+        if($request->file()) {
+            $this->validate($request, [
+                'file.*' => 'mimes:gif,jpg,jpeg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:20480',
+            ]);
+
+            for ($x = 1; $x <= 6 ; $x++) {
+                if (isset($request->file[$x])) {
+                    $save_file_name = $draftTicketId.'_'.$request->file[$x]->hashName();
+                    $path = $request->file[$x]->storeAs('public/attachment',$save_file_name);
+                    $file_size = $request->file[$x]->getSize();
+                    $original_file_name = $request->file[$x]->getClientOriginalName();
+                    $attachment = Attachment::create([
+                        'ticket_id' => $draftTicketId,
+                        'saved_name' => $save_file_name,
+                        'real_name' => $original_file_name,
+                        'size'      => $file_size,
+                    ]);
+                    $attachment_list .= $attachment->id . '#' . $original_file_name .',';
+                }
+            }
+        }
+
+        // Process custom fields
+        for ($x = 1; $x <= 50; $x++) {
+            if (!$request->has('custom'.$x)) {
+                $request->request->add(['custom'.$x => '']);
+            }
+        }
+
+        $data = $request->except(['_token', 'action', 'draft_id']);
+        $data['created_by'] = Session::get('user_id');
+        $data['status'] = 'draft';
+        $data['attachments'] = $attachment_list;
+        // No trackid for draft - will be generated on submit
+
+        if ($draft) {
+            // Update existing draft
+            $draft->update($data);
+            flash('Draft ticket updated successfully', 'success');
+        } else {
+            // Create new draft
+            DraftTicket::create($data);
+            flash('Draft ticket saved successfully', 'success');
+        }
+
+        return redirect()->route('admin_draft_tickets.index');
+    }
+
+    // Save and auto-resolve ticket (Tutup) 
+    public function admin_save_tutup(Request $request)
+    {
+        // Validate and process similar to normal store
+        $validator = Validator::make($request->all(), [
+            'kaedah_melapor_id' => 'required|exists:lookup_kaedah_melapor,id',
+            'tarikh_aduan' => 'required|date',
+            'masa_aduan' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone_number' => 'required|string',
+            'jantina' => 'required|in:Lelaki,Perempuan',
+            'complaint_type' => 'required|in:general,technical,server',
+            'subject' => 'required|string',
+            'message' => 'required|string',
+            'priority' => 'required',
+        ], [
+            'kaedah_melapor_id.required' => 'Kaedah Aduan is required.',
+            'kaedah_melapor_id.exists' => 'Selected Kaedah Aduan is invalid.',
+            'tarikh_aduan.required' => 'Tarikh Aduan is required.',
+            'masa_aduan.required' => 'Masa Aduan is required.',
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Email must be valid.',
+            'phone_number.required' => 'Phone number is required.',
+            'jantina.required' => 'Gender is required.',
+            'complaint_type.required' => 'Complaint type is required.',
+            'subject.required' => 'Subject is required.',
+            'message.required' => 'Message is required.',
+            'priority.required' => 'Priority is required.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin_create_ticket')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Map complaint_type to category
+        $categoryMapping = [
+            'general' => 'Pertanyaan Umum',
+            'technical' => 'Aduan Aplikasi',
+            'server' => 'Aduan Server',
+        ];
+
+        $categoryName = $categoryMapping[$request->complaint_type];
+        $category = Category::firstOrCreate(['name' => $categoryName]);
+        $request->merge(['category' => $category->id]);
+
+        // Set sub_category
+        $subCategoryId = null;
+        if ($request->complaint_type === 'technical' && $request->kategori_aplikasi) {
+            $subCategoryId = $request->kategori_aplikasi;
+        } elseif ($request->complaint_type === 'server' && $request->kategori_server) {
+            $subCategoryId = $request->kategori_server;
+        }
+        $request->merge(['sub_category' => $subCategoryId]);
+        $request->merge(['aduan_pertanyaan' => $request->complaint_type === 'general' ? 'pertanyaan' : 'aduan']);
+
+        $tracking_id = generateTicketID();
+        $history = '';
+        $attachment_list = '';
+
+        // Process attachments (same as store)
+        if($request->file()) {
+            $this->validate($request, [
+                'file.*' => 'mimes:gif,jpg,jpeg,png,zip,rar,csv,doc,docx,xls,xlsx,txt,pdf|max:20480',
+            ]);
+            for ($x = 1; $x <= 6 ; $x++) {
+                if (isset($request->file[$x])) {
+                    $save_file_name = $tracking_id.'_'.$request->file[$x]->hashName();
+                    $path = $request->file[$x]->storeAs('public/attachment',$save_file_name);
+                    $file_size = $request->file[$x]->getSize();
+                    $original_file_name = $request->file[$x]->getClientOriginalName();
+                    $attachment = Attachment::create([
+                        'ticket_id' => $tracking_id,
+                        'saved_name' => $save_file_name,
+                        'real_name' => $original_file_name,
+                        'size'      => $file_size,
+                    ]);
+                    $attachment_list .= $attachment->id . '#' . $original_file_name .',';
+                }
+            }
+        }
+
+        // Process custom fields
+        for ($x = 1; $x <= 50; $x++) {
+            if (!$request->has('custom'.$x)) {
+                $request->request->add(['custom'.$x => '']);
+            }
+        }
+
+        $owner = $request->owner ?? 0;
+        if ($owner == -1) {
+            $owner = 0;
+        }
+
+        $request->request->add(['trackid' => $tracking_id]);
+        $request->request->add(['owner' => $owner]);
+        $request->request->add(['history' => $history]);
+        $request->request->add(['attachments' => $attachment_list]);
+        $request->request->add(['merged' => '']);
+        $request->request->add(['language' => null]);
+        $request->request->add(['articles' => null]);
+        $request->request->add(['ip' => $request->ip()]);
+
+        // Auto-resolve: Find "Resolved" status
+        $resolvedStatus = \App\Models\LookupStatusLog::where('nama', 'Selesai')->orWhere('nama', 'Resolved')->first();
+        $request->request->add(['status' => $resolvedStatus ? $resolvedStatus->id : 3]); // Default to 3 if not found
+
+        $data = $request->all();
+        Ticket::create($data);
+
+        flash('Ticket closed and resolved successfully', 'success');
+        return redirect()->route('ticket.index');
+    }
+
+    // View draft tickets list
+    public function draft_tickets_index()
+    {
+        return view('pages.admin_draft_tickets');
+    }
+
+    // DataTables data for draft tickets
+    public function draft_tickets_data()
+    {
+        $drafts = DraftTicket::where('created_by', Session::get('user_id'))
+            ->where('status', 'draft')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return DataTables::of($drafts)
+            ->addColumn('category', function($draft) {
+                return $draft->category_detail ? $draft->category_detail->name : '-';
+            })
+            ->addColumn('priority', function($draft) {
+                return getPriorityName($draft->priority) ?: '-';
+            })
+            ->addColumn('status', function($draft) {
+                $statusClass = $draft->status == 'draft' ? 'warning' : 'success';
+                return '<span class="badge badge-'.$statusClass.'">'.ucfirst($draft->status).'</span>';
+            })
+            ->addColumn('action', function($draft) {
+                $editBtn = '<a href="'.route('admin_draft_tickets.edit', $draft->id).'" class="btn btn-sm btn-info" title="Edit"><i class="fe fe-edit"></i></a>';
+                $deleteBtn = '<button onclick="deleteDraft('.$draft->id.')" class="btn btn-sm btn-danger ml-1" title="Padam"><i class="fe fe-trash"></i></button>';
+                return $editBtn . $deleteBtn;
+            })
+            ->rawColumns(['status', 'action'])
+            ->make(true);
+    }
+
+    // Edit draft - load draft data into create ticket form
+    public function edit_draft($id)
+    {
+        $draft = DraftTicket::findOrFail($id);
+
+        // Check if user owns this draft
+        if ($draft->created_by != Session::get('user_id')) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Get necessary data for the form
+        $kaedah_melapor = \App\Models\LookupKaedahMelapor::where('is_active', 1)->get();
+        $agensi = \App\Models\LookupAgensi::where('is_active', 1)->get();
+        $activePriorities = \App\Models\LookupPriority::active()->get();
+        $categories = Category::all();
+
+        $aduanAplikasiSubCategories = SubCategory::whereHas('category', function($q) {
+            $q->where('name', 'Aduan Aplikasi');
+        })->get();
+
+        $aduanServerSubCategories = SubCategory::whereHas('category', function($q) {
+            $q->where('name', 'Aduan Server');
+        })->get();
+
+        $before_messages = CustomField::where('place', '0')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
+        $after_messages = CustomField::where('place', '1')->whereIn('use', ['1','2'])->whereNotNull('value')->orderBy('order','ASC')->get();
+        $ticket_templates = TicketTemplate::orderBy('tpl_order','ASC')->get();
+
+        return view('pages.admin_create_ticket', compact(
+            'kaedah_melapor', 'agensi', 'activePriorities', 'categories',
+            'aduanAplikasiSubCategories', 'aduanServerSubCategories',
+            'before_messages', 'after_messages', 'ticket_templates', 'draft'
+        ));
+    }
+
+    // Delete draft
+    public function delete_draft($id)
+    {
+        $draft = DraftTicket::findOrFail($id);
+
+        // Check if user owns this draft
+        if ($draft->created_by != Session::get('user_id')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $draft->delete();
+
+        return response()->json(['message' => 'Draft deleted successfully']);
+    }
+
+    // Submit draft to ticket
+    public function submit_draft_to_ticket($id)
+    {
+        \Log::info('Submit draft to ticket called', ['id' => $id]);
+
+        $draft = DraftTicket::findOrFail($id);
+
+        \Log::info('Draft found', ['draft' => $draft->toArray()]);
+
+        // Check if user owns this draft
+        if ($draft->created_by != Session::get('user_id')) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Generate tracking ID
+        $tracking_id = generateTicketID();
+
+        // Copy draft data to ticket
+        $ticketData = $draft->toArray();
+        unset($ticketData['id'], $ticketData['created_at'], $ticketData['updated_at'], $ticketData['created_by'], $ticketData['draft_id']);
+        $ticketData['trackid'] = $tracking_id;
+        $ticketData['status'] = 1; // New status
+        $ticketData['dt'] = now();
+        $ticketData['lastchange'] = now();
+
+        // Update attachment ticket_id if exists
+        if ($ticketData['attachments']) {
+            $attachmentIds = explode(',', rtrim($ticketData['attachments'], ','));
+            foreach ($attachmentIds as $attachmentStr) {
+                if (!empty($attachmentStr)) {
+                    $attachmentId = explode('#', $attachmentStr)[0];
+                    Attachment::where('id', $attachmentId)->update(['ticket_id' => $tracking_id]);
+                }
+            }
+        }
+
+        // Create the ticket
+        $ticket = Ticket::create($ticketData);
+
+        // Refresh ticket to get timestamps and add to data for email templates
+        $ticket->refresh();
+        $ticketData['created_at'] = $ticket->created_at ?? now();
+        $ticketData['updated_at'] = $ticket->updated_at ?? now();
+
+        // Send email notifications
+        $owner = $ticketData['owner'] ?? 0;
+
+        // Send to assigned owner or admin
+        if ($owner >= 1) {
+            $user = User::find($owner);
+            if ($user && $user->notify_new_my == 1) {
+                Mail::to($user->email)->send(new StaffNotificationSumbmission($ticketData));
+            }
+        } else {
+            $admin = User::where('isadmin', 1)->first();
+            if ($admin && $admin->notify_new_my == 1) {
+                Mail::to($admin->email)->send(new StaffNotificationSumbmission($ticketData));
+            }
+        }
+
+        // Send to customer if notify is enabled
+        if (isset($ticketData['notify']) && $ticketData['notify'] == 1) {
+            Mail::to($ticketData['email'])->send(new ClientNotificationSumbmission($ticketData));
+        }
+
+        // Update draft status to 'sent' so it won't show in draft list
+        $draft->update(['status' => 'sent']);
+
+        \Log::info('Draft status updated to sent', ['draft_id' => $id]);
+
+        flash('Draft ticket submitted successfully with ID: ' . $tracking_id, 'success');
+        return redirect()->route('ticket.index');
     }
 }
